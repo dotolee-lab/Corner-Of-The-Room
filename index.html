@@ -60,7 +60,15 @@ button{font:inherit;color:inherit}
 /* header */
 .top{position:sticky;top:0;z-index:5;padding-top:env(safe-area-inset-top);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .top-in{max-width:1120px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
-.brand{font-weight:800;font-size:17px;letter-spacing:-.02em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand{font:inherit;font-weight:800;font-size:17px;letter-spacing:-.02em;white-space:nowrap;background:none;border:0;padding:0;cursor:pointer;color:var(--ink)}
+.brand .b-short{display:none}
+.top-in .sp{flex:1}
+.catsw{flex:1;display:flex;gap:4px;min-width:0}
+.catsw button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 11px;font-size:13px;font-weight:700;cursor:pointer;color:var(--sub);white-space:nowrap}
+.catsw button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.catsw .cs{display:none}
+@media (max-width:700px){.brand .b-full{display:none}.brand .b-short{display:inline}.catsw .cl{display:none}.catsw .cs{display:inline}.me{gap:8px}.me .link{font-size:12px}}
+@media (max-width:480px){.catsw .cs{display:none}.catsw button{padding:4px 9px;font-size:15px}.admin-tag{display:none}}
 .me{display:flex;gap:12px;align-items:center}
 .tabs{max-width:1120px;margin:0 auto;padding:0 16px;display:flex;gap:4px}
 .tabs button{background:none;border:0;padding:8px 12px 10px;cursor:pointer;font-weight:700;color:var(--sub);border-bottom:2px solid transparent}
@@ -268,6 +276,106 @@ button{font:inherit;color:inherit}
 .tm-opt:hover{border-color:var(--accent)}
 .tm-opt img,.tm-opt .ph{width:32px;height:48px;object-fit:cover;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--chip)}
 .tm-opt small{color:var(--sub)}
+.home{max-width:860px;margin:0 auto;padding:6vh 0 20px}
+.home-hi{font-size:26px;font-weight:800;letter-spacing:-.03em}
+.home-sub{color:var(--sub);margin:4px 0 22px}
+.home-grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:700px){.home-grid{grid-template-columns:1fr 1fr}}
+.home-card{text-align:left;border:1px solid var(--line);border-radius:22px;padding:24px 22px 20px;cursor:pointer;color:#f4efe2;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:6px;transition:transform .2s,border-color .2s;min-height:280px}
+.home-card:hover{transform:translateY(-3px)}
+.hc-movie{background:radial-gradient(120% 120% at 100% 0%,rgba(238,122,69,.35),transparent 55%),linear-gradient(160deg,#2a1a12,#15120f);border-color:rgba(238,122,69,.4)}
+.hc-travel{background:radial-gradient(120% 120% at 100% 0%,rgba(124,196,168,.35),transparent 55%),linear-gradient(160deg,#10231d,#0f1513);border-color:rgba(124,196,168,.4)}
+.hc-icon{font-size:40px}
+.hc-title{font-size:24px;font-weight:800;letter-spacing:-.03em}
+.hc-desc{font-size:14px;color:#c9c0ad}
+.hc-facts{list-style:none;margin:12px 0 8px;padding:12px 0 0;border-top:1px solid rgba(255,255,255,.12);display:flex;flex-direction:column;gap:6px}
+.hc-facts li{display:flex;justify-content:space-between;gap:10px;font-size:14px}
+.hc-facts span{color:#a9a091}
+.hc-facts b{text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hc-facts b.hot{color:#f2b33d}
+.hc-go{margin-top:auto;font-weight:700;font-size:14px;color:#f2b33d}
+.tv-hero{margin-top:18px;padding:24px 22px;border-radius:22px;background:radial-gradient(120% 140% at 100% 0%,rgba(124,196,168,.3),transparent 60%),linear-gradient(160deg,#10231d,#0f1513);border:1px solid rgba(124,196,168,.35);color:#f4efe2;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.tv-hero p{margin:4px 0 0;color:#b9c9c1;font-size:14px}
+.tv-stats{display:flex;gap:18px}
+.tv-stats div{display:flex;flex-direction:column;align-items:center}
+.tv-stats b{font-size:26px;color:#7cc4a8;line-height:1}
+.tv-stats small{font-size:12px;color:#b9c9c1;margin-top:4px}
+.trip-grid{display:grid;gap:14px;margin-top:12px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:640px){.trip-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:980px){.trip-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.trip-card{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;padding:0;display:flex;flex-direction:column;transition:transform .2s,border-color .2s}
+.trip-card:hover{transform:translateY(-2px);border-color:#7cc4a8}
+.trip-cover{position:relative;aspect-ratio:16/9;background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:14px;color:#fff}
+.trip-st{position:absolute;top:12px;left:12px;font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(0,0,0,.45);color:#fff;backdrop-filter:blur(4px)}
+.trip-st.soon{background:#f2b33d;color:#1a1408}.trip-st.now{background:#7cc4a8;color:#0b1a14}
+.trip-cv-txt b{display:block;font-size:20px;letter-spacing:-.02em;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+.trip-cv-txt span{font-size:13px;opacity:.9}
+.trip-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px}
+.trip-date{font-size:13px;color:var(--sub);font-weight:600}
+.trip-meta{font-size:12px;color:var(--sub)}
+.trip-head{position:relative;margin-top:10px;border-radius:22px;min-height:220px;background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:20px;color:#fff}
+.trip-head .trip-date{color:rgba(255,255,255,.85)}
+.trip-head .aw-who i{background:rgba(0,0,0,.35);color:#fff}
+.trip-edit{position:absolute;top:10px;right:10px;color:#fff;background:rgba(0,0,0,.35)}
+.trip-head-txt{display:flex;flex-direction:column;gap:4px}
+.trip-place{font-size:13px;font-weight:700;opacity:.9}
+.trip-title{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1.2;text-shadow:0 1px 10px rgba(0,0,0,.4)}
+.trip-memo{color:var(--sub);font-size:14px;margin:12px 2px 0;white-space:pre-wrap}
+.day{margin-top:18px}
+.day-h{font-size:14px;color:var(--sub);margin-bottom:8px}
+.day-h b{color:#7cc4a8}
+.tl{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:6px 10px}
+.tl-item{display:grid;grid-template-columns:48px 14px minmax(0,1fr) 28px;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}
+.tl-item:last-child{border-bottom:0}
+.tl-time{font-size:13px;font-weight:700;color:var(--sub);padding-top:2px;font-variant-numeric:tabular-nums}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:#7cc4a8;margin-top:6px}
+.tl-title{font-weight:700;font-size:15px}
+.tl-place{font-size:13px;color:#7cc4a8;text-decoration:none}
+.tl-memo{font-size:13px;color:var(--sub)}
+.money-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:16px}
+.money-sum div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.money-sum small{display:block;font-size:12px;color:var(--sub);font-weight:600}
+.money-sum b{font-size:19px;letter-spacing:-.02em}
+.money-grid{display:grid;gap:0 14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:760px){.money-grid{grid-template-columns:1fr 1fr}}
+.xfer{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:var(--bg);margin-top:6px;font-size:15px}
+.xfer.mine{outline:1.5px solid var(--accent)}
+.xfer .arrow{color:var(--sub)}
+.xfer .amt{margin-left:auto;font-weight:800;color:var(--accent)}
+.pbal{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.pbal:last-child{border-bottom:0}
+.pbal span{font-weight:700}
+.pbal small{color:var(--sub);font-size:12px;grid-column:1/3}
+.pbal b{grid-row:1/3;grid-column:3;font-variant-numeric:tabular-nums}
+.pbal b.plus{color:#7cc4a8}.pbal b.minus{color:var(--danger)}
+.exp-amt{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
+.rv-grid{display:grid;gap:12px;margin-top:12px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:640px){.rv-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:980px){.rv-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.rv-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.rv-top{display:flex;justify-content:space-between;align-items:center}
+.rv-kind{font-size:12px;font-weight:700;color:var(--sub)}
+.rv-avg{font-weight:800;color:var(--star)}
+.rv-name{font-size:17px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rv-line{padding-left:10px;border-left:2px solid var(--line)}
+.rv-who{display:flex;align-items:center;gap:6px;font-size:13px}
+.rv-who .ed{margin-left:auto;background:none;border:0;color:var(--sub);cursor:pointer}
+.rv-com{font-size:14px;margin-top:2px}
+.wish-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.wish{display:flex;gap:14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.wish.top{border-color:#7cc4a8}
+.wish-rank{font-size:22px;font-weight:800;color:var(--sub);width:28px;text-align:center}
+.wish.top .wish-rank{color:#7cc4a8}
+.wish-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.wish-place{font-size:17px;font-weight:800;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.wish-note{font-size:14px;color:var(--sub)}
+.wish-bar{height:6px;border-radius:99px;background:var(--chip);overflow:hidden;margin-top:4px}
+.wish-bar span{display:block;height:100%;background:#7cc4a8}
+.wish-by{font-size:12px;color:var(--sub)}
+.wish-act{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.vote{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 12px;font-weight:800;cursor:pointer;white-space:nowrap}
+.vote.on{background:#7cc4a8;border-color:#7cc4a8;color:#0b1a14}
+.flabel{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px}
 .tabcount{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:18px;text-align:center;margin-left:2px;vertical-align:1px}
 .sec small{font-weight:600;letter-spacing:0;margin-left:4px}
 .todo-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
@@ -411,6 +519,7 @@ async function loadAll(){
   ]);
   const bad = res.find(x => x.error); if (bad) throw bad.error;
   [S.rounds, S.movies, S.ratings, S.legacy, S.ballots, S.awards, S.aposters] = res.map(x => x.data);
+  await loadTravel();
   const years = yearsList();
   if (!years.includes(S.year)) S.year = years[0] ?? new Date().getFullYear();
 }
@@ -439,7 +548,7 @@ function renderLogin(sel){
 
 // 계정이 바뀔 때 이전 사람의 화면 기록(작성 중인 아카데미 투표 등)을 모두 비움
 function resetUserState(){
-  S.adraft = {}; S.pickResult = null; S.tab = 'records';
+  S.adraft = {}; S.pickResult = null; S.tab = 'records'; S.cat = 'home'; S.lastTab = {}; S.tripId = null;
   S.ballots = []; S.awards = [];
 }
 
@@ -449,25 +558,89 @@ async function logout(silent){
 }
 
 // ---------- 메인 ----------
+// ---------- 카테고리 ----------
+const CATS = [
+  { k:'movie',  icon:'🎬', label:'방구석 평론가', short:'평론가', first:'records' },
+  { k:'travel', icon:'🧳', label:'방구석 여행가', short:'여행가', first:'trips' },
+];
+const TABS = {
+  movie: () => [
+    ['records', '기록'], ['stats', '통계'], ['pick', '🎲 랜덤 추천'],
+    ['todo', '📝 밀린 평가' + (() => { const n = unratedOf(S.me).length; return n ? ` <span class="tabcount">${n}</span>` : ''; })()],
+    ['academy', '🏆 방구석 아카데미'],
+  ],
+  travel: () => [['trips', '🗺 여행 기록'], ['wish', '📍 가고 싶은 곳']],
+};
+function goCat(k){
+  S.lastTab ??= {};
+  if (S.cat && S.cat !== 'home') S.lastTab[S.cat] = S.tab;
+  S.cat = k;
+  if (k !== 'home') S.tab = S.lastTab[k] || CATS.find(c => c.k === k).first;
+  if (k === 'travel') S.tripId = null;
+  render(); scrollTo({ top:0 });
+}
+
 function render(){
+  S.cat ??= 'home';
+  const home = S.cat === 'home';
   $('#app').innerHTML = `
   <header class="top"><div class="top-in">
-    <div class="brand">${esc(SITE_TITLE)}</div>
+    <button class="brand" data-nav="home" title="홈으로"><span class="b-full">${esc(SITE_TITLE)}</span><span class="b-short">COR</span></button>
+    ${home ? '<span class="sp"></span>' : `<span class="catsw">${CATS.map(c => `<button data-nav="${c.k}" class="${S.cat === c.k ? 'on' : ''}">${c.icon}<span class="cl"> ${c.label}</span><span class="cs"> ${c.short}</span></button>`).join('')}</span>`}
     <div class="me"><button class="link" id="pwbtn">${esc(memName(S.me))}님${isAdmin() ? '<span class="admin-tag">관리자</span>' : ''}</button>${S.canInstall ? '<button class="link" id="instbtn">📲 앱 설치</button>' : ''}<button class="link" id="out">로그아웃</button></div>
   </div>
-  <nav class="tabs">
-    <button data-t="records" class="${S.tab === 'records' ? 'on' : ''}">기록</button>
-    <button data-t="stats" class="${S.tab === 'stats' ? 'on' : ''}">통계</button>
-    <button data-t="pick" class="${S.tab === 'pick' ? 'on' : ''}">🎲 랜덤 추천</button>
-    <button data-t="todo" class="${S.tab === 'todo' ? 'on' : ''}">📝 밀린 평가${(() => { const n = unratedOf(S.me).length; return n ? ` <span class="tabcount">${n}</span>` : ''; })()}</button>
-    <button data-t="academy" class="${S.tab === 'academy' ? 'on' : ''}">🏆 방구석 아카데미</button>
-  </nav></header>
+  ${home ? '' : `<nav class="tabs">${TABS[S.cat]().map(([k, l]) => `<button data-t="${k}" class="${S.tab === k ? 'on' : ''}">${l}</button>`).join('')}</nav>`}
+  </header>
   <main class="wrap" id="main"></main>`;
   $('#out').onclick = () => logout();
   $('#pwbtn').onclick = openPassword;
-  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; render(); });
+  document.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => goCat(b.dataset.nav));
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; if (S.tab === 'trips') S.tripId = null; render(); });
   $('#main').onclick = onMainClick;
-  ({ records:renderRecords, stats:renderStats, pick:renderPick, academy:renderAcademy, todo:renderTodo })[S.tab]();
+  if (home) return renderHome();
+  ({ records:renderRecords, stats:renderStats, pick:renderPick, academy:renderAcademy, todo:renderTodo,
+     trips:renderTrips, wish:renderWish })[S.tab]();
+}
+
+// ---------- 홈 ----------
+function renderHome(){
+  const todo = unratedOf(S.me).length;
+  const groups = S.movies.filter(m => m.kind === 'group' && m.schedule).sort(movieOrder);
+  const nextGroup = groups.find(m => /예정/.test(m.schedule)) || groups[0];
+  const trips = S.trips || [];
+  const today = todayStr();
+  const upcoming = trips.filter(t => t.start_date && (t.end_date || t.start_date) >= today).sort((a, b) => a.start_date.localeCompare(b.start_date))[0];
+  const topWish = [...(S.wishes || [])].sort((a, b) => wishVotes(b.id).length - wishVotes(a.id).length)[0];
+  $('#main').innerHTML = `
+    <div class="home">
+      <div class="home-hi">안녕하세요, <b>${esc(memName(S.me))}</b>님</div>
+      <div class="home-sub">오늘은 어느 방으로 갈까요?</div>
+      <div class="home-grid">
+        <button class="home-card hc-movie" data-act="goCat" data-k="movie">
+          <div class="hc-icon">🎬</div>
+          <div class="hc-title">방구석 평론가</div>
+          <div class="hc-desc">함께 고른 영화, 별점과 한줄평, 연말 방구석 아카데미</div>
+          <ul class="hc-facts">
+            <li><span>기록된 영화</span><b>${S.movies.length}편</b></li>
+            <li><span>내 밀린 평가</span><b class="${todo ? 'hot' : ''}">${todo ? todo + '편' : '없음 🎉'}</b></li>
+            ${nextGroup ? `<li><span>단체관람</span><b>${esc(nextGroup.title)}</b></li>` : ''}
+          </ul>
+          <span class="hc-go">들어가기 →</span>
+        </button>
+        <button class="home-card hc-travel" data-act="goCat" data-k="travel">
+          <div class="hc-icon">🧳</div>
+          <div class="hc-title">방구석 여행가</div>
+          <div class="hc-desc">함께 다녀온 여행, 일정과 정산, 다음 여행지 투표</div>
+          <ul class="hc-facts">
+            ${S.travelErr ? '<li><span>준비 중</span><b>5_travel.sql 실행 필요</b></li>' : `
+            <li><span>다녀온 여행</span><b>${trips.filter(t => tripStatus(t).k === 'done').length}번</b></li>
+            <li><span>다음 여행</span><b class="${upcoming ? 'hot' : ''}">${upcoming ? `${esc(upcoming.title)} · ${tripStatus(upcoming).label}` : '아직 없음'}</b></li>
+            ${topWish ? `<li><span>가고 싶은 곳 1위</span><b>${esc(topWish.place)}</b></li>` : ''}`}
+          </ul>
+          <span class="hc-go">들어가기 →</span>
+        </button>
+      </div>
+    </div>`;
 }
 
 function onMainClick(e){
@@ -483,6 +656,19 @@ function onMainClick(e){
     case 'roll': roll(); break;
     case 'goto': gotoMovie(id); break;
     case 'statMore': S.statOpen[b.dataset.k] = !S.statOpen[b.dataset.k]; renderStats(); break;
+    case 'goCat': goCat(b.dataset.k); break;
+    case 'tvNewTrip': openTrip(null); break;
+    case 'tvOpen': S.tripId = id; S.tripTab = 'plan'; renderTrips(); scrollTo({ top:0 }); break;
+    case 'tvBack': S.tripId = null; renderTrips(); break;
+    case 'tvEditTrip': openTrip(id); break;
+    case 'tvTab': S.tripTab = b.dataset.k; renderTrips(); break;
+    case 'tvPlan': openPlan(b.dataset.id ? id : null); break;
+    case 'tvExp': openExpense(b.dataset.id ? id : null); break;
+    case 'tvRev': openReview(b.dataset.id ? id : null); break;
+    case 'rvKind': S.rvKind = b.dataset.k; renderTrips(); break;
+    case 'tvWish': openWish(b.dataset.id ? id : null); break;
+    case 'tvVote': call('tv_toggle_vote', { p_wish_id:id }).then(loadTravel).then(renderWish).catch(e => alert(errMsg(e))); break;
+    case 'tvWishTrip': { const w = S.wishes.find(x => x.id === id); S.tab = 'trips'; render(); openTrip(null, { title:`${w.place} 여행`, place:w.place }); break; }
     case 'todoView': S.todoView = b.dataset.k; renderTodo(); break;
     case 'ayear': S.ayear = id; renderAcademy(); break;
     case 'ayearGo': S.ayear = id; S.acView = 'year'; renderAcademy(); scrollTo({ top:0, behavior:'smooth' }); break;
@@ -1334,6 +1520,385 @@ async function acPublish(on){
 function toast(msg){
   const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
+}
+
+// ================= 방구석 여행가 =================
+const TV_KINDS = ['숙소', '맛집', '카페', '관광', '쇼핑', '기타'];
+const TV_ICON = { 숙소:'🏨', 맛집:'🍜', 카페:'☕', 관광:'📸', 쇼핑:'🛍', 기타:'📌' };
+const won = n => (Math.round(n) || 0).toLocaleString('ko-KR') + '원';
+const todayStr = () => { const t = new Date(); return new Date(t.getTime() - t.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+const dDiff = (a, b) => Math.round((new Date(a + 'T00:00:00') - new Date(b + 'T00:00:00')) / 86400000);
+const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+const fmtDay = d => { const x = new Date(d + 'T00:00:00'); return `${x.getMonth() + 1}.${x.getDate()} (${WEEK[x.getDay()]})`; };
+const fmtRange = t => !t.start_date ? '날짜 미정'
+  : t.end_date && t.end_date !== t.start_date ? `${t.start_date.replaceAll('-', '.')} – ${t.end_date.slice(5).replace('-', '.')}` : t.start_date.replaceAll('-', '.');
+const mapLink = q => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
+function tripStatus(t){
+  const today = todayStr();
+  if (!t.start_date) return { k:'plan', label:'날짜 미정' };
+  const end = t.end_date || t.start_date;
+  if (t.start_date > today) return { k:'soon', label:`D-${dDiff(t.start_date, today)}` };
+  if (end >= today) return { k:'now', label:'여행 중 ✈️' };
+  return { k:'done', label:'다녀옴' };
+}
+const nights = t => t.start_date && t.end_date ? dDiff(t.end_date, t.start_date) : null;
+const tripMembers = t => S.members.filter(m => (t.member_ids?.length ? t.member_ids : S.members.map(x => x.id)).includes(m.id));
+const wishVotes = id => (S.wishVotes || []).filter(v => v.wish_id === id);
+function hueOf(s){ let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; }
+function coverStyle(t){
+  if (t.cover_url) return `background-image:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.65)),url('${encodeURI(t.cover_url)}')`;
+  const h = hueOf(t.place || t.title);
+  return `background-image:linear-gradient(135deg,hsl(${h} 55% 42%),hsl(${(h + 40) % 360} 60% 26%))`;
+}
+
+async function loadTravel(){
+  const res = await Promise.all([
+    sb.from('tv_trips').select('*'), sb.from('tv_plans').select('*'), sb.from('tv_expenses').select('*'),
+    sb.from('tv_reviews').select('*'), sb.from('tv_wishes').select('*'), sb.from('tv_wish_votes').select('*'),
+  ]);
+  const bad = res.find(x => x.error);
+  if (bad){ S.travelErr = bad.error.message; [S.trips, S.plans, S.expenses, S.reviews, S.wishes, S.wishVotes] = [[], [], [], [], [], []]; return; }
+  S.travelErr = null;
+  [S.trips, S.plans, S.expenses, S.reviews, S.wishes, S.wishVotes] = res.map(x => x.data);
+}
+const travelGuard = () => S.travelErr
+  ? `<div class="panel ac-locked">🧳<br>여행 기능을 쓰려면 Supabase에서 <b>5_travel.sql</b>을 먼저 실행해주세요<br><small>${esc(S.travelErr)}</small></div>` : '';
+
+// ----- 여행 목록 -----
+function renderTrips(){
+  if (S.travelErr) return $('#main').innerHTML = travelGuard();
+  if (S.tripId && S.trips.some(t => t.id === S.tripId)) return renderTrip();
+  S.tripId = null;
+  const list = [...S.trips];
+  const upcoming = list.filter(t => tripStatus(t).k !== 'done')
+    .sort((a, b) => (a.start_date || '9999').localeCompare(b.start_date || '9999'));
+  const done = list.filter(t => tripStatus(t).k === 'done').sort((a, b) => b.start_date.localeCompare(a.start_date));
+  const byYear = {};
+  done.forEach(t => (byYear[t.start_date.slice(0, 4)] ||= []).push(t));
+  const totalNights = done.reduce((s, t) => s + (nights(t) || 0), 0);
+  $('#main').innerHTML = `
+    <div class="tv-hero">
+      <div><div class="ac-kicker" style="color:#7cc4a8">CORNER OF THE ROOM</div>
+        <div class="ac-title">방구석 여행가</div>
+        <p>함께 다녀온 곳, 함께 갈 곳</p></div>
+      <div class="tv-stats"><div><b>${done.length}</b><small>다녀온 여행</small></div><div><b>${totalNights}</b><small>함께한 밤</small></div><div><b>${upcoming.length}</b><small>계획 중</small></div></div>
+    </div>
+    <div class="toolbar"><span class="sp" style="flex:1"></span><button class="btn small primary" data-act="tvNewTrip">+ 새 여행</button></div>
+    ${!list.length ? '<div class="panel ac-locked">🧳<br>아직 기록된 여행이 없어요<br><small>"+ 새 여행"으로 첫 여행을 만들어보세요</small></div>' : ''}
+    ${upcoming.length ? `<h2 class="sec">다가오는 여행</h2><div class="trip-grid">${upcoming.map(tripCard).join('')}</div>` : ''}
+    ${Object.keys(byYear).sort((a, b) => b - a).map(y => `<h2 class="sec">${y} <small>${byYear[y].length}번</small></h2><div class="trip-grid">${byYear[y].map(tripCard).join('')}</div>`).join('')}`;
+}
+function tripCard(t){
+  const st = tripStatus(t);
+  const exp = S.expenses.filter(e => e.trip_id === t.id).reduce((s, e) => s + Number(e.amount), 0);
+  const nP = S.plans.filter(p => p.trip_id === t.id).length, nR = S.reviews.filter(r => r.trip_id === t.id).length;
+  const n = nights(t);
+  return `<button class="trip-card" data-act="tvOpen" data-id="${t.id}">
+    <div class="trip-cover" style="${coverStyle(t)}">
+      <span class="trip-st ${st.k}">${st.label}</span>
+      <div class="trip-cv-txt"><b>${esc(t.title)}</b><span>${esc(t.place || '')}</span></div>
+    </div>
+    <div class="trip-body">
+      <div class="trip-date">${fmtRange(t)}${n != null ? ` · ${n ? `${n}박 ${n + 1}일` : '당일'}` : ''}</div>
+      <div class="aw-who">${tripMembers(t).map(m => `<i>${esc(shortName(m.name))}</i>`).join('')}</div>
+      <div class="trip-meta">🗓 일정 ${nP} · 💸 ${won(exp)} · ⭐ 후기 ${nR}</div>
+    </div></button>`;
+}
+
+// ----- 여행 상세 -----
+function renderTrip(){
+  const t = S.trips.find(x => x.id === S.tripId);
+  S.tripTab ??= 'plan';
+  const st = tripStatus(t), n = nights(t);
+  const body = { plan:planHTML, money:moneyHTML, review:reviewHTML }[S.tripTab](t);
+  $('#main').innerHTML = `
+    <button class="link" data-act="tvBack" style="margin-top:16px">← 여행 기록</button>
+    <div class="trip-head" style="${coverStyle(t)}">
+      <span class="trip-st ${st.k}">${st.label}</span>
+      <button class="icon trip-edit" data-act="tvEditTrip" data-id="${t.id}" title="여행 정보 수정">✎</button>
+      <div class="trip-head-txt">
+        <div class="trip-place">${esc(t.place || '')}</div>
+        <div class="trip-title">${esc(t.title)}</div>
+        <div class="trip-date">${fmtRange(t)}${n != null ? ` · ${n ? `${n}박 ${n + 1}일` : '당일'}` : ''}</div>
+        <div class="aw-who">${tripMembers(t).map(m => `<i>${esc(m.name)}</i>`).join('')}</div>
+      </div>
+    </div>
+    ${t.memo ? `<p class="trip-memo">${esc(t.memo)}</p>` : ''}
+    <div class="viewbar"><div class="seg">
+      <button class="${S.tripTab === 'plan' ? 'on' : ''}" data-act="tvTab" data-k="plan">🗓 일정</button>
+      <button class="${S.tripTab === 'money' ? 'on' : ''}" data-act="tvTab" data-k="money">💸 정산</button>
+      <button class="${S.tripTab === 'review' ? 'on' : ''}" data-act="tvTab" data-k="review">⭐ 후기</button>
+    </div></div>
+    ${body}`;
+}
+
+// 일정
+function planHTML(t){
+  const plans = S.plans.filter(p => p.trip_id === t.id)
+    .sort((a, b) => (a.day || '9999').localeCompare(b.day || '9999') || (a.time || '99').localeCompare(b.time || '99') || a.id - b.id);
+  const days = {};
+  plans.forEach(p => (days[p.day || ''] ||= []).push(p));
+  const head = d => {
+    if (!d) return '날짜 미정';
+    const idx = t.start_date ? dDiff(d, t.start_date) + 1 : null;
+    return `${idx && idx > 0 ? `<b>${idx}일차</b> · ` : ''}${fmtDay(d)}`;
+  };
+  return `<div class="toolbar"><span style="flex:1"></span><button class="btn small primary" data-act="tvPlan">+ 일정 추가</button></div>
+    ${!plans.length ? '<div class="panel ac-locked">🗓<br>아직 일정이 없어요</div>' : Object.keys(days).sort((a, b) => (a || '9999').localeCompare(b || '9999')).map(d => `
+      <div class="day"><div class="day-h">${head(d)}</div>
+        <div class="tl">${days[d].map(p => `
+          <div class="tl-item">
+            <div class="tl-time">${esc(p.time || '')}</div>
+            <div class="tl-dot"></div>
+            <div class="tl-body">
+              <div class="tl-title">${esc(p.title)}</div>
+              ${p.place ? `<a class="tl-place" href="${mapLink(p.place)}" target="_blank" rel="noopener">📍 ${esc(p.place)}</a>` : ''}
+              ${p.memo ? `<div class="tl-memo">${esc(p.memo)}</div>` : ''}
+            </div>
+            <button class="icon" data-act="tvPlan" data-id="${p.id}" title="수정">✎</button>
+          </div>`).join('')}</div></div>`).join('')}`;
+}
+
+// 정산
+function settle(t){
+  const mem = tripMembers(t);
+  const exps = S.expenses.filter(e => e.trip_id === t.id);
+  const paid = {}, owe = {};
+  S.members.forEach(m => { paid[m.id] = 0; owe[m.id] = 0; });
+  exps.forEach(e => {
+    const amt = Number(e.amount), split = e.split_ids?.length ? e.split_ids : mem.map(m => m.id);
+    paid[e.paid_by] = (paid[e.paid_by] || 0) + amt;
+    split.forEach(id => { owe[id] = (owe[id] || 0) + amt / split.length; });
+  });
+  const people = S.members.filter(m => mem.includes(m) || paid[m.id] || owe[m.id]);
+  const bal = people.map(m => ({ m, paid:paid[m.id], owe:owe[m.id], diff:paid[m.id] - owe[m.id] }));
+  const cred = bal.filter(b => b.diff > 0.5).map(b => ({ ...b, left:b.diff })).sort((a, b) => b.left - a.left);
+  const debt = bal.filter(b => b.diff < -0.5).map(b => ({ ...b, left:-b.diff })).sort((a, b) => b.left - a.left);
+  const transfers = [];
+  let i = 0, j = 0;
+  while (i < debt.length && j < cred.length){
+    const x = Math.min(debt[i].left, cred[j].left);
+    if (Math.round(x) > 0) transfers.push({ from:debt[i].m, to:cred[j].m, amount:Math.round(x) });
+    debt[i].left -= x; cred[j].left -= x;
+    if (debt[i].left < 0.5) i++;
+    if (cred[j].left < 0.5) j++;
+  }
+  return { exps, bal, transfers, total:exps.reduce((s, e) => s + Number(e.amount), 0) };
+}
+function moneyHTML(t){
+  const { exps, bal, transfers, total } = settle(t);
+  const me = bal.find(b => b.m.id === S.me);
+  const list = [...exps].sort((a, b) => (b.spent_on || '').localeCompare(a.spent_on || '') || b.id - a.id);
+  return `<div class="money-sum">
+      <div><small>총 지출</small><b>${won(total)}</b></div>
+      <div><small>1인 평균</small><b>${won(total / Math.max(1, tripMembers(t).length))}</b></div>
+      <div><small>내 부담</small><b>${me ? won(me.owe) : '–'}</b></div>
+    </div>
+    <div class="money-grid">
+      <div class="panel"><h3>💸 이렇게 보내면 끝</h3><p class="d">최소한의 송금으로 정리했어요</p>
+        ${transfers.length ? transfers.map(x => `<div class="xfer ${x.from.id === S.me || x.to.id === S.me ? 'mine' : ''}">
+            <b>${esc(x.from.name)}</b><span class="arrow">→</span><b>${esc(x.to.name)}</b><span class="amt">${won(x.amount)}</span></div>`).join('')
+          : `<p class="d">${exps.length ? '정산할 게 없어요 👏' : '지출을 추가하면 자동으로 계산돼요'}</p>`}
+      </div>
+      <div class="panel"><h3>👥 사람별</h3><p class="d">낸 돈 − 부담할 돈</p>
+        ${bal.map(b => `<div class="pbal"><span>${esc(b.m.name)}</span><small>낸 돈 ${won(b.paid)} · 부담 ${won(b.owe)}</small>
+          <b class="${b.diff > 0.5 ? 'plus' : b.diff < -0.5 ? 'minus' : ''}">${b.diff > 0.5 ? '+' : ''}${won(b.diff)}</b></div>`).join('')}
+      </div>
+    </div>
+    <div class="toolbar"><h2 class="sec" style="margin:0;flex:1">지출 내역 <small>${exps.length}건</small></h2><button class="btn small primary" data-act="tvExp">+ 지출 추가</button></div>
+    <div class="todo-list">${list.map(e => {
+      const split = e.split_ids?.length ? e.split_ids : tripMembers(t).map(m => m.id);
+      const all = tripMembers(t).every(m => split.includes(m.id)) && split.length === tripMembers(t).length;
+      return `<div class="todo-row">
+        <div class="todo-main"><div class="todo-meta">${e.spent_on ? fmtDay(e.spent_on) + ' · ' : ''}${esc(memName(e.paid_by))} 결제</div>
+          <div class="todo-title">${esc(e.title)}</div>
+          <div class="todo-theme">${all ? '모두' : split.map(memName).map(esc).join(', ')} · 1인 ${won(Number(e.amount) / split.length)}</div></div>
+        <div class="todo-side"><span class="exp-amt">${won(e.amount)}</span><button class="icon" data-act="tvExp" data-id="${e.id}" title="수정">✎</button></div>
+      </div>`; }).join('') || '<div class="panel ac-locked">💸<br>아직 지출이 없어요</div>'}</div>`;
+}
+
+// 후기
+function reviewHTML(t){
+  S.rvKind ??= '전체';
+  const all = S.reviews.filter(r => r.trip_id === t.id);
+  const list = all.filter(r => S.rvKind === '전체' || r.kind === S.rvKind);
+  const groups = [];
+  list.forEach(r => {
+    const k = r.kind + '|' + acNorm(r.name);
+    let g = groups.find(x => x.k === k);
+    if (!g){ g = { k, kind:r.kind, name:r.name, items:[] }; groups.push(g); }
+    g.items.push(r);
+  });
+  groups.forEach(g => { const v = g.items.map(r => r.stars).filter(x => x != null).map(Number); g.avg = mean(v); });
+  groups.sort((a, b) => (b.avg ?? -1) - (a.avg ?? -1));
+  const kinds = ['전체', ...TV_KINDS.filter(k => all.some(r => r.kind === k))];
+  return `<div class="toolbar"><div class="chips">${kinds.map(k => `<button class="chip ${S.rvKind === k ? 'on' : ''}" data-act="rvKind" data-k="${k}">${k === '전체' ? '전체' : TV_ICON[k] + ' ' + k}</button>`).join('')}</div>
+      <button class="btn small primary" data-act="tvRev">+ 후기 쓰기</button></div>
+    <div class="rv-grid">${groups.map(g => `
+      <div class="rv-card">
+        <div class="rv-top"><span class="rv-kind">${TV_ICON[g.kind] || '📌'} ${esc(g.kind)}</span>
+          ${g.avg != null ? `<span class="rv-avg">★ ${g.avg.toFixed(1)}</span>` : ''}</div>
+        <div class="rv-name">${esc(g.name)} <a class="jw" href="${mapLink((t.place ? t.place + ' ' : '') + g.name)}" target="_blank" rel="noopener">지도 ↗</a></div>
+        ${g.items.map(r => `<div class="rv-line">
+          <div class="rv-who"><b>${esc(memName(r.member_id))}</b>${stars(r.stars)}${r.member_id === S.me || isAdmin() ? `<button class="ed" data-act="tvRev" data-id="${r.id}" title="수정">✎</button>` : ''}</div>
+          ${r.comment ? `<div class="rv-com">${esc(r.comment)}</div>` : ''}</div>`).join('')}
+      </div>`).join('') || '<div class="panel ac-locked">⭐<br>아직 후기가 없어요<br><small>숙소, 맛집, 카페 후기를 남겨보세요</small></div>'}</div>`;
+}
+
+// ----- 가고 싶은 곳 -----
+function renderWish(){
+  if (S.travelErr) return $('#main').innerHTML = travelGuard();
+  const list = [...S.wishes].sort((a, b) => wishVotes(b.id).length - wishVotes(a.id).length || b.id - a.id);
+  const max = Math.max(1, ...list.map(w => wishVotes(w.id).length));
+  $('#main').innerHTML = `
+    <div class="toolbar" style="margin-top:20px"><div style="flex:1"><h2 class="sec" style="margin:0">📍 가고 싶은 곳</h2>
+      <p class="note" style="margin:4px 0 0">👍 를 눌러 투표하면 다음 여행지를 정하기 쉬워요</p></div>
+      <button class="btn small primary" data-act="tvWish">+ 추가</button></div>
+    <div class="wish-list">${list.map((w, i) => {
+      const votes = wishVotes(w.id), mine = votes.some(v => v.member_id === S.me);
+      return `<div class="wish ${i === 0 && votes.length ? 'top' : ''}">
+        <div class="wish-rank">${i + 1}</div>
+        <div class="wish-main">
+          <div class="wish-place">${esc(w.place)} <a class="jw" href="${mapLink(w.place)}" target="_blank" rel="noopener">지도 ↗</a></div>
+          ${w.note ? `<div class="wish-note">${esc(w.note)}</div>` : ''}
+          <div class="wish-bar"><span style="width:${votes.length / max * 100}%"></span></div>
+          <div class="wish-by">${votes.length ? votes.map(v => esc(memName(v.member_id))).join(', ') : '아직 투표 없음'} · ${esc(memName(w.created_by))}님이 올림</div>
+        </div>
+        <div class="wish-act">
+          <button class="vote ${mine ? 'on' : ''}" data-act="tvVote" data-id="${w.id}">👍 ${votes.length}</button>
+          <button class="link" data-act="tvWishTrip" data-id="${w.id}">여행 만들기</button>
+          ${w.created_by === S.me || isAdmin() ? `<button class="link" data-act="tvWish" data-id="${w.id}">수정</button>` : ''}
+        </div></div>`; }).join('') || '<div class="panel ac-locked">📍<br>가고 싶은 곳을 올려보세요</div>'}</div>`;
+}
+
+// ----- 편집 창 -----
+async function tvCall(fn, args){ const r = await call(fn, args); await loadTravel(); return r; }
+async function tvDone(){ closeModal(); render(); }
+const memChecks = (sel, name) => `<div class="pchk">${S.members.map(m => `<label><input type="checkbox" name="${name}" value="${m.id}" ${sel.includes(m.id) ? 'checked' : ''}>${esc(m.name)}</label>`).join('')}</div>`;
+const checked = name => [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x => +x.value);
+
+function openTrip(id, preset = {}){
+  const t = id ? S.trips.find(x => x.id === id) : { member_ids:S.members.map(m => m.id), ...preset };
+  openModal(`<h3>${id ? '여행 정보 수정' : '새 여행'}</h3>
+    <div class="form">
+      <label class="full">여행 이름<input id="ft1" value="${esc(t.title || '')}" placeholder="예) 2026 홍콩 먹방 여행"></label>
+      <label class="full">어디로<input id="ft2" value="${esc(t.place || '')}" placeholder="예) 홍콩"></label>
+      <label>출발<input id="ft3" type="date" value="${t.start_date || ''}"></label>
+      <label>도착<input id="ft4" type="date" value="${t.end_date || ''}"></label>
+      <div class="full"><div class="flabel">함께 가는 사람</div>${memChecks(t.member_ids || [], 'tm')}</div>
+      <label class="full">대표 사진 주소 (선택)<input id="ft5" value="${esc(t.cover_url || '')}" placeholder="https://… 이미지 링크, 비우면 색으로 표시"></label>
+      <label class="full">메모 (선택)<textarea id="ft6" rows="2">${esc(t.memo || '')}</textarea></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">여행 삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    try {
+      const nid = await tvCall('tv_save_trip', { p_id:id ?? null, p_d:{ title:$('#ft1').value, place:$('#ft2').value,
+        start_date:$('#ft3').value, end_date:$('#ft4').value || $('#ft3').value, member_ids:checked('tm'), cover_url:$('#ft5').value, memo:$('#ft6').value } });
+      S.tripId = nid; S.tripTab = S.tripTab || 'plan'; tvDone();
+    } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (id) $('#del').onclick = async () => {
+    if (!confirm('이 여행의 일정, 정산, 후기가 모두 지워져요. 삭제할까요?')) return;
+    try { await tvCall('tv_delete_trip', { p_id:id }); S.tripId = null; tvDone(); } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+}
+
+function openPlan(id){
+  const t = S.trips.find(x => x.id === S.tripId);
+  const last = S.plans.filter(p => p.trip_id === t.id && p.day).map(p => p.day).sort().pop();
+  const p = id ? S.plans.find(x => x.id === id) : { day:last || t.start_date || '' };
+  openModal(`<h3>${id ? '일정 수정' : '일정 추가'}</h3>
+    <div class="form">
+      <label>날짜<input id="fp1" type="date" value="${p.day || ''}" ${t.start_date ? `min="${t.start_date}"` : ''} ${t.end_date ? `max="${t.end_date}"` : ''}></label>
+      <label>시간<input id="fp2" type="time" value="${esc(p.time || '')}"></label>
+      <label class="full">할 일<input id="fp3" value="${esc(p.title || '')}" placeholder="예) 침차이키에서 완탕면"></label>
+      <label class="full">장소 (지도 링크로 연결돼요)<input id="fp4" value="${esc(p.place || '')}" placeholder="예) 침차이키 센트럴"></label>
+      <label class="full">메모<input id="fp5" value="${esc(p.memo || '')}"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    try { await tvCall('tv_save_plan', { p_id:id ?? null, p_trip_id:t.id, p_d:{ day:$('#fp1').value, time:$('#fp2').value, title:$('#fp3').value, place:$('#fp4').value, memo:$('#fp5').value } }); tvDone(); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (id) $('#del').onclick = async () => { try { await tvCall('tv_delete_plan', { p_id:id }); tvDone(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+function openExpense(id){
+  const t = S.trips.find(x => x.id === S.tripId);
+  const mem = tripMembers(t).map(m => m.id);
+  const e = id ? S.expenses.find(x => x.id === id) : { paid_by:S.me, split_ids:mem, spent_on:todayStr() >= (t.start_date || '') && todayStr() <= (t.end_date || '') ? todayStr() : (t.start_date || '') };
+  openModal(`<h3>${id ? '지출 수정' : '지출 추가'}</h3>
+    <div class="form">
+      <label class="full">어디에 썼나요<input id="fe1" value="${esc(e.title || '')}" placeholder="예) 숙소, 저녁, 택시"></label>
+      <label>금액 (원)<input id="fe2" type="number" inputmode="numeric" min="0" value="${e.amount ?? ''}" placeholder="0"></label>
+      <label>날짜<input id="fe3" type="date" value="${e.spent_on || ''}"></label>
+      <label class="full">누가 냈나요<select id="fe4">${S.members.map(m => `<option value="${m.id}" ${m.id === e.paid_by ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
+      <div class="full"><div class="flabel">누구랑 나누나요</div>${memChecks(e.split_ids?.length ? e.split_ids : mem, 'sp')}</div>
+    </div>
+    <p class="note" id="fe5"></p>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  const hint = () => { const a = +$('#fe2').value || 0, n = checked('sp').length; $('#fe5').textContent = n ? `1인당 ${won(a / n)}` : ''; };
+  $('#fe2').oninput = hint; document.querySelectorAll('input[name="sp"]').forEach(x => x.onchange = hint); hint();
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    try { await tvCall('tv_save_expense', { p_id:id ?? null, p_trip_id:t.id, p_d:{ title:$('#fe1').value, amount:$('#fe2').value, spent_on:$('#fe3').value, paid_by:+$('#fe4').value, split_ids:checked('sp') } }); tvDone(); }
+    catch(err){ $('#merr').textContent = errMsg(err); }
+  };
+  if (id) $('#del').onclick = async () => { try { await tvCall('tv_delete_expense', { p_id:id }); tvDone(); } catch(err){ $('#merr').textContent = errMsg(err); } };
+}
+
+function openReview(id){
+  const t = S.trips.find(x => x.id === S.tripId);
+  const r = id ? S.reviews.find(x => x.id === id) : { kind:'맛집' };
+  let val = r.stars != null ? Number(r.stars) : null;
+  openModal(`<h3>${id ? '후기 수정' : '후기 쓰기'}</h3>
+    <div class="form">
+      <label>종류<select id="fr1">${TV_KINDS.map(k => `<option ${k === r.kind ? 'selected' : ''}>${k}</option>`).join('')}</select></label>
+      <label>장소 이름<input id="fr2" value="${esc(r.name || '')}" placeholder="예) 침차이키"></label>
+    </div>
+    <div class="picker" id="pk"></div><div class="pv" id="pv"></div>
+    <textarea id="fr3" rows="3" placeholder="한줄평">${esc(r.comment || '')}</textarea>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  const draw = () => {
+    $('#pk').innerHTML = [1, 2, 3, 4, 5].map(i => `<span class="pstar st ${val >= i ? 'on' : val >= i - .5 ? 'half' : ''}">★<button class="hl" data-v="${i - .5}"></button><button class="hr" data-v="${i}"></button></span>`).join('');
+    $('#pv').innerHTML = val != null ? `<strong>${val}점</strong>` : '별점을 눌러주세요';
+  };
+  draw();
+  $('#pk').onclick = e => { const b = e.target.closest('button[data-v]'); if (b){ val = +b.dataset.v; draw(); } };
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    try { await tvCall('tv_save_review', { p_id:id ?? null, p_trip_id:t.id, p_d:{ kind:$('#fr1').value, name:$('#fr2').value, stars:val, comment:$('#fr3').value } }); tvDone(); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (id) $('#del').onclick = async () => { if (!confirm('후기를 삭제할까요?')) return; try { await tvCall('tv_delete_review', { p_id:id }); tvDone(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+function openWish(id){
+  const w = id ? S.wishes.find(x => x.id === id) : {};
+  openModal(`<h3>${id ? '가고 싶은 곳 수정' : '가고 싶은 곳 추가'}</h3>
+    <div class="form">
+      <label class="full">어디<input id="fw1" value="${esc(w.place || '')}" placeholder="예) 교토, 제주 우도"></label>
+      <label class="full">이유 / 메모<input id="fw2" value="${esc(w.note || '')}" placeholder="예) 11월 단풍 시즌에"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    try { await tvCall('tv_save_wish', { p_id:id ?? null, p_d:{ place:$('#fw1').value, note:$('#fw2').value } }); tvDone(); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (id) $('#del').onclick = async () => { if (!confirm('삭제할까요?')) return; try { await tvCall('tv_delete_wish', { p_id:id }); tvDone(); } catch(e){ $('#merr').textContent = errMsg(e); } };
 }
 
 // ---------- 통계 ----------
