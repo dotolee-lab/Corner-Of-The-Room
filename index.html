@@ -211,7 +211,7 @@ button{font:inherit;color:inherit}
 .aw-who{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .aw-who i{font-style:normal;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--chip);color:var(--sub)}
 .aw-who em{font-style:normal;font-size:11px;font-weight:800;color:#d4a017}
-.pp{width:40px;flex-shrink:0;aspect-ratio:2/3;border-radius:6px;overflow:hidden;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:16px}
+.pp{width:40px;flex-shrink:0;aspect-ratio:2/3;align-self:flex-start;border-radius:6px;overflow:hidden;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:16px}
 .pp img{width:100%;height:100%;object-fit:cover;display:block}
 .pp.lg{width:64px;font-size:22px}
 .pp.edit{cursor:pointer;position:relative}
@@ -220,10 +220,11 @@ button{font:inherit;color:inherit}
 @media (min-width:760px){.hall-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .hall-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;cursor:pointer;transition:border-color .2s,transform .2s}
 .hall-card:hover{border-color:#d4a017;transform:translateY(-2px)}
-.hall-top{display:flex;gap:14px}
-.hall-posters{display:flex;gap:4px;flex-shrink:0}
-.pp.hall{width:84px;font-size:28px;border-radius:10px}
-.hall-posters .pp.hall:not(:first-child){width:56px}
+.hall-top{display:flex;gap:14px;align-items:flex-start}
+.hall-posters{display:flex;gap:6px;flex-shrink:0;align-items:flex-start}
+.pp.hall{width:84px;height:auto;aspect-ratio:2/3;font-size:28px;border-radius:10px;align-self:flex-start}
+.hall-posters:has(.pp.hall + .pp.hall) .pp.hall{width:72px}
+.hall-posters:has(.pp.hall + .pp.hall + .pp.hall) .pp.hall{width:60px}
 .hall-head{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
 .hall-best small{display:block;font-size:11px;font-weight:700;color:var(--sub)}
 .hall-best b{font-size:19px;letter-spacing:-.02em;line-height:1.3;color:#d4a017}
