@@ -194,6 +194,23 @@ button{font:inherit;color:inherit}
 .ioshint .share{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-weight:700}
 .ioshint button{background:none;border:0;color:var(--sub);font-size:16px;cursor:pointer;padding:4px}
 .wrap{padding-bottom:calc(48px + env(safe-area-inset-bottom))}
+.statmore{display:block;margin:10px auto 0}
+.rk{display:inline-block;min-width:22px;color:var(--sub);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.tabcount{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:18px;text-align:center;margin-left:2px;vertical-align:1px}
+.sec small{font-weight:600;letter-spacing:0;margin-left:4px}
+.todo-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.todo-row{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.panel .todo-row{background:var(--bg)}
+.todo-main{flex:1;min-width:0}
+.todo-meta{font-size:12px;color:var(--accent);font-weight:700}
+.todo-title{font-size:16px;font-weight:700;letter-spacing:-.02em;word-break:keep-all}
+.todo-theme{font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.todo-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.todo-avg{font-size:13px;font-weight:700;color:var(--star)}
+.todo-avg small{color:var(--sub);font-weight:500}
+.todo-avg.dim{color:var(--sub);font-weight:500;font-size:12px}
+.todo-bar .bv{width:auto;white-space:nowrap}
+.panel .todo-bar{grid-template-columns:minmax(0,1fr) 2fr 72px}
 .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;z-index:30;box-shadow:0 4px 16px rgba(0,0,0,.25)}
 @media (max-width:600px){.pick-in{flex-direction:column;text-align:center}.pick-in .plats,.provrow{justify-content:center}.poster{width:150px}}
 .movie.flash{box-shadow:0 0 0 3px var(--accent);transition:box-shadow .3s}
@@ -369,6 +386,7 @@ function render(){
     <button data-t="records" class="${S.tab === 'records' ? 'on' : ''}">기록</button>
     <button data-t="stats" class="${S.tab === 'stats' ? 'on' : ''}">통계</button>
     <button data-t="pick" class="${S.tab === 'pick' ? 'on' : ''}">🎲 랜덤 추천</button>
+    <button data-t="todo" class="${S.tab === 'todo' ? 'on' : ''}">📝 밀린 평가${(() => { const n = unratedOf(S.me).length; return n ? ` <span class="tabcount">${n}</span>` : ''; })()}</button>
     <button data-t="academy" class="${S.tab === 'academy' ? 'on' : ''}">🏆 방구석 아카데미</button>
   </nav></header>
   <main class="wrap" id="main"></main>`;
@@ -376,7 +394,7 @@ function render(){
   $('#pwbtn').onclick = openPassword;
   document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; render(); });
   $('#main').onclick = onMainClick;
-  ({ records:renderRecords, stats:renderStats, pick:renderPick, academy:renderAcademy })[S.tab]();
+  ({ records:renderRecords, stats:renderStats, pick:renderPick, academy:renderAcademy, todo:renderTodo })[S.tab]();
 }
 
 function onMainClick(e){
@@ -391,6 +409,8 @@ function onMainClick(e){
     case 'pgenre': S.pickGenre = b.dataset.k; S.pickResult = null; renderPick(); break;
     case 'roll': roll(); break;
     case 'goto': gotoMovie(id); break;
+    case 'statMore': S.statOpen[b.dataset.k] = !S.statOpen[b.dataset.k]; renderStats(); break;
+    case 'todoView': S.todoView = b.dataset.k; renderTodo(); break;
     case 'ayear': S.ayear = id; renderAcademy(); break;
     case 'acAdd': S.adraft[S.ayear].push({ category:'', pick:'' }); renderAcademy().then(() => { const c = document.querySelectorAll('.ac-cat'); c[c.length - 1]?.focus(); }); break;
     case 'acDel': S.adraft[S.ayear].splice(id, 1); renderAcademy(); break;
@@ -739,6 +759,69 @@ function gotoMovie(id){
   if (el){ el.scrollIntoView({ behavior:'smooth', block:'center' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1600); }
 }
 
+// ---------- 밀린 평가 ----------
+const ratedBy = (mid, memId) => S.ratings.some(x => x.movie_id === mid && x.member_id === memId && x.stars != null);
+function movieOrder(a, b){
+  const ra = S.rounds.find(r => r.id === a.round_id), rb = S.rounds.find(r => r.id === b.round_id);
+  const key = (r, m) => [r?.year ?? 0, r?.period_type === 'quarter' ? 1 : 0, r?.period ?? 0, m.kind === 'group' ? 9 : -m.slot];
+  const ka = key(ra, a), kb = key(rb, b);
+  for (let i = 0; i < ka.length; i++) if (ka[i] !== kb[i]) return kb[i] - ka[i];
+  return 0;
+}
+const unratedOf = memId => S.movies.filter(m => !ratedBy(m.id, memId)).sort(movieOrder);
+
+function renderTodo(){
+  S.todoView ??= 'mine';
+  const mine = S.todoView === 'mine';
+  const list = unratedOf(S.me);
+  const total = S.movies.length;
+  let body;
+  if (mine){
+    if (!list.length) body = '<div class="ac-locked">🎉<br>밀린 평가가 하나도 없어요!</div>';
+    else {
+      const byYear = {};
+      list.forEach(m => { const y = S.rounds.find(r => r.id === m.round_id)?.year ?? '기타'; (byYear[y] ||= []).push(m); });
+      body = Object.keys(byYear).sort((a, b) => b - a).map(y => `
+        <h2 class="sec">${y} <small>${byYear[y].length}편</small></h2>
+        <div class="todo-list">${byYear[y].map(todoRow).join('')}</div>`).join('');
+    }
+  } else {
+    body = `<div class="panel">${S.members.map(mb => {
+      const left = unratedOf(mb.id).length, done = total - left;
+      return `<div class="bar-row todo-bar"><span class="bl">${esc(mb.name)}${mb.id === S.me ? ' <small>(나)</small>' : ''}</span>
+        <span class="bt"><span style="width:${total ? done / total * 100 : 0}%"></span></span>
+        <span class="bv">${left ? `${left}편 남음` : '완료 🎉'}</span></div>`;
+    }).join('')}
+      <p class="note">전체 ${total}편 중 별점을 남긴 비율이에요. 한줄평만 쓰고 별점이 없으면 아직 안 한 걸로 쳐요.</p></div>
+      <div class="panel"><h3>아무도 평가 안 한 영화</h3><p class="d">다 같이 밀린 숙제</p>
+      ${(() => { const none = S.movies.filter(m => !S.members.some(mb => ratedBy(m.id, mb.id))).sort(movieOrder);
+        return none.length ? `<div class="todo-list">${none.map(todoRow).join('')}</div>` : '<p class="d">없어요 👏</p>'; })()}</div>`;
+  }
+  $('#main').innerHTML = `
+    <div class="viewbar" style="margin-top:18px"><div class="seg">
+      <button class="${mine ? 'on' : ''}" data-act="todoView" data-k="mine">내 밀린 평가 <small>${list.length}</small></button>
+      <button class="${mine ? '' : 'on'}" data-act="todoView" data-k="all">멤버별 현황</button>
+    </div></div>
+    ${body}`;
+}
+
+function todoRow(m){
+  const r = S.rounds.find(x => x.id === m.round_id);
+  const vals = starVals(ratingsOf(m.id)), avg = mean(vals);
+  const label = m.kind === 'group' ? '단체관람' : r?.period_type === 'quarter' ? `추천작 ${m.slot}` : '월 추천';
+  return `<div class="todo-row">
+    <div class="todo-main">
+      <div class="todo-meta">${r ? `${periodLabel(r)} · ${label}${r.recommender_id ? ` · ${esc(memName(r.recommender_id))} 추천` : ''}` : ''}</div>
+      <div class="todo-title">${esc(m.title)}</div>
+      ${r?.theme ? `<div class="todo-theme">${esc(r.theme)}</div>` : ''}
+    </div>
+    <div class="todo-side">
+      ${avg != null ? `<span class="todo-avg">★ ${avg.toFixed(1)} <small>${vals.length}명</small></span>` : '<span class="todo-avg dim">평가 없음</span>'}
+      <button class="btn small primary" data-act="rate" data-id="${m.id}">평가하기</button>
+    </div>
+  </div>`;
+}
+
 // ---------- 방구석 아카데미 ----------
 const AC_CATS = ['작품상','감독상','각본상','촬영상','음악상','미술상','남우주연상','여우주연상','조연상'];
 const acNorm = t => String(t || '').replace(/\(.*?\)/g, '').replace(/[\s:·.,!?~\-]/g, '').toLowerCase();
@@ -887,9 +970,15 @@ function renderStats(){
     return { mv, r:roundOf(mv), n:v.length, avg:a, sd, lo:Math.min(...v), hi:Math.max(...v) };
   }).filter(x => x.n >= 2);
 
-  const top = [...mvs].sort((a, b) => b.avg - a.avg).slice(0, 5);
-  const low = [...mvs].sort((a, b) => a.avg - b.avg).slice(0, 5);
-  const split = [...mvs].filter(x => x.sd > 0).sort((a, b) => b.sd - a.sd).slice(0, 5);
+  S.statOpen ??= {};
+  const topAll = [...mvs].sort((a, b) => b.avg - a.avg);
+  const lowAll = [...mvs].sort((a, b) => a.avg - b.avg);
+  const splitAll = [...mvs].filter(x => x.sd > 0).sort((a, b) => b.sd - a.sd);
+  const cut = (arr, k) => S.statOpen[k] ? arr : arr.slice(0, 5);
+  const top = cut(topAll, 'top'), low = cut(lowAll, 'low'), split = cut(splitAll, 'split');
+  const more = (arr, k) => arr.length > 5
+    ? `<button class="btn ghost small statmore" data-act="statMore" data-k="${k}">${S.statOpen[k] ? '접기 ▲' : `전체 보기 (${arr.length}편) ▼`}</button>` : '';
+  const rank = (i, label) => `<span class="rk">${i + 1}</span>${label}`;
 
   const bar = (label, v, meta = '') =>
     `<div class="bar-row"><span class="bl">${label}${meta ? `<small>${meta}</small>` : ''}</span>
@@ -908,12 +997,12 @@ function renderStats(){
       <div class="panel"><h3>추천 성적표</h3><p class="d">내 추천작에 다른 멤버들이 준 평균</p>
         ${rec.map(x => bar(esc(x.m.name), x.avg, `${x.picks}편`)).join('')}</div>
       <div class="panel"><h3>역대 최고 평점</h3><p class="d">2명 이상 평가한 영화</p>
-        ${top.map(x => bar(esc(x.mv.title), x.avg, where(x))).join('') || '<p class="d">아직 없어요</p>'}</div>
+        ${top.map((x, i) => bar(rank(i, esc(x.mv.title)), x.avg, where(x))).join('') || '<p class="d">아직 없어요</p>'}${more(topAll, 'top')}</div>
       <div class="panel"><h3>역대 최저 평점</h3><p class="d">2명 이상 평가한 영화</p>
-        ${low.map(x => bar(esc(x.mv.title), x.avg, where(x))).join('') || '<p class="d">아직 없어요</p>'}</div>
+        ${low.map((x, i) => bar(rank(i, esc(x.mv.title)), x.avg, where(x))).join('') || '<p class="d">아직 없어요</p>'}${more(lowAll, 'low')}</div>
     </div>
     <div class="panel"><h3>의견이 가장 갈린 영화</h3><p class="d">별점 편차가 큰 순서</p>
-      ${split.map(x => bar(esc(x.mv.title), x.avg, `최저 ${x.lo} · 최고 ${x.hi}`)).join('') || '<p class="d">아직 없어요</p>'}</div>`;
+      ${split.map((x, i) => bar(rank(i, esc(x.mv.title)), x.avg, `최저 ${x.lo} · 최고 ${x.hi}`)).join('') || '<p class="d">아직 없어요</p>'}${more(splitAll, 'split')}</div>`;
 }
 
 // ---------- 모달 ----------
