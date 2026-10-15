@@ -127,6 +127,34 @@ button{font:inherit;color:inherit}
 .sec+.round{border-top:0;margin-top:8px}
 .admin-tag{font-size:11px;font-weight:700;background:var(--accent);color:var(--accent-ink);padding:1px 7px;border-radius:999px;margin-left:4px;text-decoration:none}
 .note{font-size:12px;color:var(--sub);margin:6px 0 0}
+.pickbox{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:34px 20px;text-align:center;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pickbox.rolling .pick-title{opacity:.55;filter:blur(.5px)}
+.pick-empty{color:var(--sub);font-size:15px;line-height:2}
+.pick-empty{font-size:15px}
+.pick-meta{font-size:13px;font-weight:700;color:var(--accent)}
+.pick-title{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.25;margin:6px 0 4px;word-break:keep-all}
+.pick-sub{color:var(--sub);font-size:14px}
+.pick-score{margin:10px 0 2px;font-size:14px}
+.pick-score .stars{font-size:18px}
+.bigbtn{font-size:16px;padding:12px 28px}
+.pick-in{display:flex;gap:24px;align-items:center;width:100%;max-width:760px;text-align:left}
+.pick-body{flex:1;min-width:0}
+.poster{width:170px;flex-shrink:0;aspect-ratio:2/3;border-radius:12px;overflow:hidden;background:var(--chip)}
+.poster img{width:100%;height:100%;object-fit:cover;display:block}
+.poster.none{display:none}
+.pick-in .pick-title{font-size:26px}
+.overview{font-size:14px;line-height:1.6;color:var(--sub);margin:10px 0 0;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.provs{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+.provrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.provrow small{font-size:11px;color:var(--sub);font-weight:700;margin-right:2px}
+.prov{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:2px 9px 2px 3px}
+.prov img{width:20px;height:20px;border-radius:5px}
+.chip-sep{width:1px;background:var(--line);margin:0 4px;align-self:stretch}
+.credit{font-size:11px;color:var(--sub);text-align:center;margin-top:24px;line-height:1.6}
+.credit a{color:var(--sub)}
+@media (max-width:600px){.pick-in{flex-direction:column;text-align:center}.pick-in .plats,.provrow{justify-content:center}.poster{width:150px}}
+.movie.flash{box-shadow:0 0 0 3px var(--accent);transition:box-shadow .3s}
+.tabs{overflow-x:auto}
 .m-act{display:flex;align-items:center;gap:6px;margin-top:auto}
 .m-act .icon{margin-left:auto}
 
@@ -177,6 +205,7 @@ textarea{resize:vertical}
 const SITE_TITLE   = '우리들의 영화 평론';
 const SUPABASE_URL = 'https://gudwubeutvkhjrsardtc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DD4LX04ysEDt7T0ELcdo8Q_Cl1hSPPE';
+const TMDB_KEY     = '645b1fc12706b3545394daf79af67c7d';   // ← TMDB API 키(32자리)를 따옴표 안에 붙여넣기. 비워두면 기본 명작 목록 사용
 // =================
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -287,13 +316,14 @@ function render(){
   <nav class="tabs">
     <button data-t="records" class="${S.tab === 'records' ? 'on' : ''}">기록</button>
     <button data-t="stats" class="${S.tab === 'stats' ? 'on' : ''}">통계</button>
+    <button data-t="pick" class="${S.tab === 'pick' ? 'on' : ''}">🎲 랜덤 추천</button>
   </nav></header>
   <main class="wrap" id="main"></main>`;
   $('#out').onclick = () => logout();
   $('#pwbtn').onclick = openPassword;
   document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; render(); });
   $('#main').onclick = onMainClick;
-  S.tab === 'records' ? renderRecords() : renderStats();
+  S.tab === 'records' ? renderRecords() : S.tab === 'stats' ? renderStats() : renderPick();
 }
 
 function onMainClick(e){
@@ -301,6 +331,13 @@ function onMainClick(e){
   const id = +b.dataset.id;
   switch (b.dataset.act){
     case 'year': S.year = id; S.kind = 'quarter'; renderRecords(); break;
+    case 'pmode': S.pickMode = b.dataset.k; S.pickResult = null; renderPick(); break;
+    case 'pfilter': S.pickFilter = b.dataset.k; S.pickResult = null; renderPick(); break;
+    case 'tmode': S.tMode = b.dataset.k; S.pickResult = null; renderPick(); break;
+    case 'tgenre': S.tGenre = b.dataset.k ? +b.dataset.k : null; S.pickResult = null; renderPick(); break;
+    case 'pgenre': S.pickGenre = b.dataset.k; S.pickResult = null; renderPick(); break;
+    case 'roll': roll(); break;
+    case 'goto': gotoMovie(id); break;
     case 'kind': S.kind = b.dataset.k; renderRecords(); break;
     case 'order': S.order = S.order === 'asc' ? 'desc' : 'asc'; try{ localStorage.setItem('mvclub_order', S.order) }catch(e){} renderRecords(); break;
     case 'addRound': openRound(null); break;
@@ -384,7 +421,7 @@ function movieHTML(m){
     }).join('')
     + S.legacy.filter(l => l.movie_id === m.id).map(l =>
       `<li class="anon">${admin ? `<button class="ed" data-act="editLegacy" data-id="${l.id}" title="수정">✎</button>` : ''}<b>작성자 미상</b>${esc(l.body)}</li>`).join('');
-  return `<article class="movie ${m.kind}">
+  return `<article class="movie ${m.kind}" id="mv-${m.id}">
     <div class="m-top">
       <div><div class="slot">${label}</div><h3>${esc(m.title)}</h3>
         <div class="plats">${(m.platforms || []).map(n => `<span class="plat"><i style="background:${platColor(n)}"></i>${esc(n)}</span>`).join('')}
@@ -401,6 +438,246 @@ function movieHTML(m){
       <button class="icon" data-act="editMovie" data-id="${m.id}" title="영화 정보 수정">✎</button>
     </div>
   </article>`;
+}
+
+// ---------- 랜덤 추천 ----------
+// 새 영화 후보 [제목, 연도, 감독, 장르] — 우리 기록에 있는 영화는 자동으로 빠져요
+const POOL = [
+  ['기생충',2019,'봉준호','스릴러'],['살인의 추억',2003,'봉준호','스릴러'],['마더',2009,'봉준호','스릴러'],
+  ['올드보이',2003,'박찬욱','스릴러'],['아가씨',2016,'박찬욱','스릴러'],['헤어질 결심',2022,'박찬욱','로맨스'],
+  ['버닝',2018,'이창동','드라마'],['시',2010,'이창동','드라마'],['추격자',2008,'나홍진','스릴러'],
+  ['곡성',2016,'나홍진','공포'],['타짜',2006,'최동훈','범죄'],['지구를 지켜라!',2003,'장준환','코미디'],
+  ['8월의 크리스마스',1998,'허진호','로맨스'],['봄날은 간다',2001,'허진호','로맨스'],['벌새',2019,'김보라','드라마'],
+  ['우리들',2016,'윤가은','드라마'],['남매의 여름밤',2020,'윤단비','드라마'],['리틀 포레스트',2018,'임순례','드라마'],
+  ['써니',2011,'강형철','코미디'],['극한직업',2019,'이병헌','코미디'],['미나리',2020,'정이삭','드라마'],
+  ['패스트 라이브즈',2023,'셀린 송','로맨스'],['화양연화',2000,'왕가위','로맨스'],['중경삼림',1994,'왕가위','로맨스'],
+  ['무간도',2002,'유위강·맥조휘','범죄'],['어느 가족',2018,'고레에다 히로카즈','드라마'],['괴물',2023,'고레에다 히로카즈','드라마'],
+  ['드라이브 마이 카',2021,'하마구치 류스케','드라마'],['동경 이야기',1953,'오즈 야스지로','드라마'],['7인의 사무라이',1954,'구로사와 아키라','액션'],
+  ['이웃집 토토로',1988,'미야자키 하야오','애니'],['센과 치히로의 행방불명',2001,'미야자키 하야오','애니'],['너의 이름은.',2016,'신카이 마코토','애니'],
+  ['퍼펙트 블루',1997,'곤 사토시','애니'],['인사이드 아웃',2015,'피트 닥터','애니'],['코코',2017,'리 언크리치','애니'],
+  ['스파이더맨: 뉴 유니버스',2018,'밥 퍼시케티 외','애니'],['와일드 로봇',2024,'크리스 샌더스','애니'],
+  ['이터널 선샤인',2004,'미셸 공드리','로맨스'],['비포 선라이즈',1995,'리처드 링클레이터','로맨스'],['그녀',2013,'스파이크 존즈','로맨스'],
+  ['어바웃 타임',2013,'리차드 커티스','로맨스'],['카사블랑카',1942,'마이클 커티즈','로맨스'],['라라랜드',2016,'데이미언 셔젤','뮤지컬'],
+  ['싱 스트리트',2016,'존 카니','뮤지컬'],['위플래쉬',2014,'데이미언 셔젤','드라마'],['그랜드 부다페스트 호텔',2014,'웨스 앤더슨','코미디'],
+  ['문라이즈 킹덤',2012,'웨스 앤더슨','코미디'],['프란시스 하',2012,'노아 바움백','코미디'],['레이디 버드',2017,'그레타 거윅','드라마'],
+  ['작은 아씨들',2019,'그레타 거윅','드라마'],['애프터썬',2022,'샬롯 웰스','드라마'],['노매드랜드',2020,'클로이 자오','드라마'],
+  ['아노라',2024,'션 베이커','드라마'],['존 오브 인터레스트',2023,'조너선 글레이저','드라마'],['쇼생크 탈출',1994,'프랭크 다라본트','드라마'],
+  ['시네마 천국',1988,'주세페 토르나토레','드라마'],['인생은 아름다워',1997,'로베르토 베니니','드라마'],['12인의 성난 사람들',1957,'시드니 루멧','드라마'],
+  ['택시 드라이버',1976,'마틴 스코세이지','드라마'],['좋은 친구들',1990,'마틴 스코세이지','범죄'],['대부',1972,'프랜시스 포드 코폴라','범죄'],
+  ['펄프 픽션',1994,'쿠엔틴 타란티노','범죄'],['파고',1996,'코엔 형제','범죄'],['노인을 위한 나라는 없다',2007,'코엔 형제','스릴러'],
+  ['양들의 침묵',1991,'조너선 드미','스릴러'],['세븐',1995,'데이비드 핀처','스릴러'],['파이트 클럽',1999,'데이비드 핀처','드라마'],
+  ['소셜 네트워크',2010,'데이비드 핀처','드라마'],['메멘토',2000,'크리스토퍼 놀란','스릴러'],['인터스텔라',2014,'크리스토퍼 놀란','SF'],
+  ['컨택트',2016,'드니 빌뇌브','SF'],['블레이드 러너',1982,'리들리 스콧','SF'],['2001 스페이스 오디세이',1968,'스탠리 큐브릭','SF'],
+  ['시계태엽 오렌지',1971,'스탠리 큐브릭','SF'],['에브리씽 에브리웨어 올 앳 원스',2022,'다니엘스','SF'],['샤이닝',1980,'스탠리 큐브릭','공포'],
+  ['겟 아웃',2017,'조던 필','공포'],['유전',2018,'아리 애스터','공포'],['미드소마',2019,'아리 애스터','공포'],
+  ['매드맥스: 분노의 도로',2015,'조지 밀러','액션'],['존 윅',2014,'채드 스타헬스키','액션'],['레옹',1994,'뤽 베송','액션'],
+];
+const normT = t => searchTitle(String(t)).replace(/[\s:·.,!?~\-]/g, '').toLowerCase();
+const CLUB_FILTERS = [['all','전체'],['unseen','내가 아직 평가 안 한'],['high','평균 4점 이상'],['split','의견 갈린']];
+const T_MODES = [['top','명작 (평점 높은 순)'],['popular','요즘 인기작'],['ott','지금 OTT에서 볼 수 있는']];
+
+// ----- TMDB -----
+const TMDB_API = 'https://api.themoviedb.org/3';
+const TMDB_IMG = 'https://image.tmdb.org/t/p/';
+const useTMDB = () => !!TMDB_KEY;
+async function tmdb(path, params = {}){
+  const u = new URL(TMDB_API + path);
+  u.search = new URLSearchParams({ api_key:TMDB_KEY, language:'ko-KR', ...params });
+  const r = await fetch(u);
+  if (!r.ok) throw new Error(r.status === 401 ? 'TMDB 키가 올바르지 않아요' : 'TMDB 오류 ' + r.status);
+  return r.json();
+}
+let T_GENRES = null;
+async function tmdbGenres(){ if (!T_GENRES) T_GENRES = (await tmdb('/genre/movie/list')).genres; return T_GENRES; }
+const provCache = {};
+async function tmdbProviders(id){
+  if (provCache[id]) return provCache[id];
+  const kr = (await tmdb(`/movie/${id}/watch/providers`)).results?.KR || {};
+  const uniq = a => [...new Map(a.map(p => [p.provider_id, p])).values()];
+  return provCache[id] = { flat:uniq(kr.flatrate || []), other:uniq([...(kr.rent || []), ...(kr.buy || [])]) };
+}
+function discoverParams(){
+  const p = { include_adult:'false' };
+  if (S.tMode === 'top') Object.assign(p, { sort_by:'vote_average.desc', 'vote_count.gte':'1500' });
+  if (S.tMode === 'popular') Object.assign(p, { sort_by:'popularity.desc', 'vote_count.gte':'200',
+    'primary_release_date.gte':`${new Date().getFullYear() - 3}-01-01` });
+  if (S.tMode === 'ott') Object.assign(p, { sort_by:'vote_average.desc', 'vote_count.gte':'500',
+    watch_region:'KR', with_watch_monetization_types:'flatrate' });
+  if (S.tGenre) p.with_genres = String(S.tGenre);
+  return p;
+}
+const pageInfo = {};
+async function tmdbRandomMovie(){
+  const params = discoverParams(), key = JSON.stringify(params);
+  if (!pageInfo[key]) pageInfo[key] = (await tmdb('/discover/movie', { ...params, page:'1' })).total_pages || 1;
+  const seen = new Set(S.movies.map(m => normT(m.title)));
+  const maxPage = Math.min(pageInfo[key], S.tMode === 'popular' ? 15 : 25);
+  for (let tries = 0; tries < 4; tries++){
+    const page = 1 + Math.floor(Math.random() * maxPage);
+    const res = (await tmdb('/discover/movie', { ...params, page:String(page) })).results || [];
+    const ok = res.filter(m => !seen.has(normT(m.title)) && !seen.has(normT(m.original_title)) && m.id !== S.pickResult?.tmdb?.id);
+    if (ok.length) return ok[Math.floor(Math.random() * ok.length)];
+  }
+  return null;
+}
+async function tmdbFind(title){
+  const y = String(title).match(/\((\d{4})\)/)?.[1];
+  const d = await tmdb('/search/movie', { query:searchTitle(title), ...(y ? { year:y } : {}) });
+  return d.results?.[0] || null;
+}
+
+function clubCandidates(){
+  return S.movies.filter(mv => {
+    const v = starVals(ratingsOf(mv.id));
+    const a = mean(v);
+    switch (S.pickFilter){
+      case 'unseen': return !ratingsOf(mv.id).some(x => x.member_id === S.me && x.stars != null);
+      case 'high': return a != null && a >= 4;
+      case 'split': return v.length >= 2 && Math.max(...v) - Math.min(...v) >= 2;
+      default: return true;
+    }
+  });
+}
+function newCandidates(){
+  const seen = new Set(S.movies.map(m => normT(m.title)));
+  return POOL.filter(p => !seen.has(normT(p[0])) && (S.pickGenre === '전체' || p[3] === S.pickGenre));
+}
+
+function renderPick(){
+  S.pickMode ??= 'club'; S.pickFilter ??= 'all'; S.pickGenre ??= '전체'; S.tMode ??= 'top';
+  const club = S.pickMode === 'club', live = !club && useTMDB();
+  if (live && !T_GENRES) tmdbGenres().then(() => { if (S.tab === 'pick') renderPick(); }).catch(() => {});
+  let chips, note;
+  if (club){
+    chips = CLUB_FILTERS.map(([k, l]) => `<button class="chip ${S.pickFilter === k ? 'on' : ''}" data-act="pfilter" data-k="${k}">${l}</button>`).join('');
+    note = `후보 ${clubCandidates().length}편 중에서 뽑아요`;
+  } else if (live){
+    chips = T_MODES.map(([k, l]) => `<button class="chip ${S.tMode === k ? 'on' : ''}" data-act="tmode" data-k="${k}">${l}</button>`).join('')
+      + `<span class="chip-sep"></span><button class="chip ${!S.tGenre ? 'on' : ''}" data-act="tgenre" data-k="">모든 장르</button>`
+      + (T_GENRES || []).map(g => `<button class="chip ${S.tGenre === g.id ? 'on' : ''}" data-act="tgenre" data-k="${g.id}">${esc(g.name)}</button>`).join('');
+    note = 'TMDB 영화 데이터베이스에서 실시간으로 찾아요 · 우리가 본 영화는 빠져요';
+  } else {
+    const genres = ['전체', ...new Set(POOL.map(p => p[3]))];
+    chips = genres.map(g => `<button class="chip ${S.pickGenre === g ? 'on' : ''}" data-act="pgenre" data-k="${g}">${g}</button>`).join('');
+    note = `기본 명작 목록 ${newCandidates().length}편 중에서 뽑아요 (TMDB 키를 넣으면 실시간 검색으로 바뀌어요)`;
+  }
+  const can = club ? clubCandidates().length : live ? true : newCandidates().length;
+  $('#main').innerHTML = `
+    <div class="viewbar" style="margin-top:18px"><div class="seg">
+      <button class="${club ? 'on' : ''}" data-act="pmode" data-k="club">우리 기록에서</button>
+      <button class="${club ? '' : 'on'}" data-act="pmode" data-k="new">새 영화 찾기</button>
+    </div></div>
+    <div class="chips" style="margin-top:14px">${chips}</div>
+    <p class="note">${note}</p>
+    <div class="pickbox" id="pickbox">${S.pickResult ? pickCard(S.pickResult) : '<div class="pick-empty">🎲<br>버튼을 눌러 오늘의 영화를 뽑아보세요</div>'}</div>
+    <div style="text-align:center;margin-top:16px"><button class="btn primary bigbtn" data-act="roll" ${can ? '' : 'disabled'}>🎲 ${S.pickResult ? '다시 뽑기' : '뽑기'}</button></div>
+    ${useTMDB() ? `<p class="credit">영화 정보: <a href="https://www.themoviedb.org" target="_blank" rel="noopener">TMDB</a> · OTT 정보: <a href="https://www.justwatch.com/kr" target="_blank" rel="noopener">JustWatch</a><br>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>` : ''}`;
+  if (S.pickResult?.type === 'club' && useTMDB()) enrichClub(S.pickResult.id);
+  if (S.pickResult?.type === 'tmdb') loadProviders(S.pickResult.tmdb.id);
+}
+
+const jwLink = t => `<a class="jw" href="https://www.justwatch.com/kr/%EA%B2%80%EC%83%89?q=${encodeURIComponent(searchTitle(t))}" target="_blank" rel="noopener">어디서 볼까? ↗</a>`;
+const provHTML = pv => {
+  const logo = p => `<span class="prov" title="${esc(p.provider_name)}"><img src="${TMDB_IMG}w92${p.logo_path}" alt="">${esc(p.provider_name)}</span>`;
+  if (!pv.flat.length && !pv.other.length) return '<span class="pick-sub">국내 OTT 정보가 없어요</span>';
+  return (pv.flat.length ? `<div class="provrow"><small>구독으로 보기</small>${pv.flat.map(logo).join('')}</div>` : '')
+       + (pv.other.length ? `<div class="provrow"><small>대여·구매</small>${pv.other.slice(0, 6).map(logo).join('')}</div>` : '');
+};
+async function loadProviders(id){
+  const el = $('#provs'); if (!el) return;
+  try { const pv = await tmdbProviders(id); if ($('#provs')) $('#provs').innerHTML = provHTML(pv); }
+  catch(e){ if ($('#provs')) $('#provs').innerHTML = ''; }
+}
+async function enrichClub(movieId){
+  const mv = S.movies.find(x => x.id === movieId); if (!mv) return;
+  try {
+    mv._tmdb ??= await tmdbFind(mv.title);
+    const t = mv._tmdb; if (!t || S.pickResult?.id !== movieId) return;
+    if (t.poster_path && $('#pkposter')) $('#pkposter').innerHTML = `<img src="${TMDB_IMG}w342${t.poster_path}" alt="">`;
+    if ($('#pkposter')) $('#pkposter').classList.toggle('none', !t.poster_path);
+    const pv = await tmdbProviders(t.id);
+    if ($('#provs') && S.pickResult?.id === movieId) $('#provs').innerHTML = provHTML(pv);
+  } catch(e){}
+}
+
+function pickCard(res){
+  if (res.type === 'club'){
+    const mv = S.movies.find(x => x.id === res.id); if (!mv) return '';
+    const r = S.rounds.find(x => x.id === mv.round_id);
+    const v = starVals(ratingsOf(mv.id)), a = mean(v);
+    return `<div class="pick-in">
+      ${useTMDB() ? `<div class="poster ${mv._tmdb?.poster_path ? '' : 'none'}" id="pkposter">${mv._tmdb?.poster_path ? `<img src="${TMDB_IMG}w342${mv._tmdb.poster_path}" alt="">` : ''}</div>` : ''}
+      <div class="pick-body">
+      <div class="pick-meta">${r ? `${r.year} · ${periodLabel(r)}${r.recommender_id ? ` · ${esc(memName(r.recommender_id))} 추천` : ''}` : ''}${mv.kind === 'group' ? ' · 단체관람' : ''}</div>
+      <div class="pick-title">${esc(mv.title)}</div>
+      ${r?.theme ? `<div class="pick-sub">${esc(r.theme)}</div>` : ''}
+      <div class="pick-score">${a != null ? `${stars(Math.round(a * 2) / 2)} <b>${a.toFixed(1)}</b> <small>(${v.length}명)</small>` : '<small>아직 평가 없음</small>'}</div>
+      <div class="plats">${(mv.platforms || []).map(n => `<span class="plat"><i style="background:${platColor(n)}"></i>${esc(n)}</span>`).join('')}${jwLink(mv.title)}</div>
+      ${useTMDB() ? '<div id="provs" class="provs"><span class="pick-sub">OTT 확인 중…</span></div>' : ''}
+      <button class="link" style="margin-top:12px" data-act="goto" data-id="${mv.id}">기록에서 보기 →</button>
+      </div></div>`;
+  }
+  if (res.type === 'tmdb'){
+    const t = res.tmdb, y = (t.release_date || '').slice(0, 4);
+    const gn = (t.genre_ids || []).map(id => (T_GENRES || []).find(g => g.id === id)?.name).filter(Boolean).join(' · ');
+    return `<div class="pick-in">
+      <div class="poster ${t.poster_path ? '' : 'none'}">${t.poster_path ? `<img src="${TMDB_IMG}w342${t.poster_path}" alt="">` : ''}</div>
+      <div class="pick-body">
+        <div class="pick-meta">${[gn, y].filter(Boolean).join(' · ')}</div>
+        <div class="pick-title">${esc(t.title)}</div>
+        ${t.original_title && t.original_title !== t.title ? `<div class="pick-sub">${esc(t.original_title)}</div>` : ''}
+        <div class="pick-score">⭐ <b>${(t.vote_average ?? 0).toFixed(1)}</b><small> / 10 · TMDB ${Number(t.vote_count || 0).toLocaleString()}명</small></div>
+        ${t.overview ? `<p class="overview">${esc(t.overview)}</p>` : ''}
+        <div id="provs" class="provs"><span class="pick-sub">OTT 확인 중…</span></div>
+        <div class="plats">${jwLink(t.title)}<a class="jw" href="https://www.themoviedb.org/movie/${t.id}?language=ko" target="_blank" rel="noopener">TMDB 상세 ↗</a></div>
+      </div></div>`;
+  }
+  const [t, y, d, g] = res.item;
+  return `<div class="pick-meta">${g} · ${y}</div>
+    <div class="pick-title">${esc(t)}</div>
+    <div class="pick-sub">감독 ${esc(d)}</div>
+    <div class="plats" style="justify-content:center;margin-top:10px">${jwLink(t)}</div>`;
+}
+
+async function roll(){
+  const club = S.pickMode === 'club';
+  const box = $('#pickbox'); box.classList.add('rolling');
+  if (!club && useTMDB()){
+    box.innerHTML = '<div class="pick-title">🎲</div><div class="pick-sub">TMDB에서 찾는 중…</div>';
+    try {
+      const m = await tmdbRandomMovie();
+      if (!m){ box.innerHTML = '<div class="pick-sub">조건에 맞는 영화를 못 찾았어요. 다른 장르를 골라보세요.</div>'; return; }
+      S.pickResult = { type:'tmdb', tmdb:m };
+      renderPick();
+    } catch(e){ box.innerHTML = `<div class="pick-sub">${esc(e.message)}</div>`; }
+    return;
+  }
+  const list = club ? clubCandidates() : newCandidates();
+  if (!list.length) return;
+  const name = x => club ? x.title : x[0];
+  let i = 0;
+  const t = setInterval(() => {
+    const x = list[Math.floor(Math.random() * list.length)];
+    box.innerHTML = `<div class="pick-title">${esc(name(x))}</div>`;
+    if (++i >= 12){
+      clearInterval(t);
+      let pick = list[Math.floor(Math.random() * list.length)];
+      const prev = S.pickResult;
+      if (list.length > 1 && prev && (club ? prev.id === pick.id : prev.item?.[0] === pick[0]))
+        pick = list.filter(x => club ? x.id !== prev.id : x[0] !== prev.item?.[0])[Math.floor(Math.random() * (list.length - 1))];
+      S.pickResult = club ? { type:'club', id:pick.id } : { type:'new', item:pick };
+      box.classList.remove('rolling');
+      renderPick();
+    }
+  }, 70);
+}
+
+function gotoMovie(id){
+  const mv = S.movies.find(x => x.id === id); const r = mv && S.rounds.find(x => x.id === mv.round_id);
+  if (!r) return;
+  S.tab = 'records'; S.year = r.year; S.kind = r.period_type; render();
+  const el = document.getElementById('mv-' + id);
+  if (el){ el.scrollIntoView({ behavior:'smooth', block:'center' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1600); }
 }
 
 // ---------- 통계 ----------
