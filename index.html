@@ -1004,7 +1004,7 @@ const AC_ALIAS = { '에에올':'에브리씽 에브리웨어 올 앳 원스' };
 function pickTitle(cat, pick){
   const m = String(pick).match(/^(.*?)\s*\((.*)\)\s*$/);
   const main = (m ? m[1] : pick).trim();
-  const paren = m ? m[2].split(',').pop().trim() : '';
+  const paren = m ? m[2].split(/,\s+/).pop().trim() : '';   // '틱,틱..붐!'처럼 붙은 쉼표는 제목으로 둠
   const t = (/감독|주연|조연|각본/.test(cat) && paren) ? paren : main;
   return AC_ALIAS[t] || t;
 }
@@ -1039,8 +1039,12 @@ async function hydratePosters(){
     while (todo.length){
       const k = todo.shift(); const [y, ...rest] = k.split('|'); const q = rest.join('|');
       try {
-        const res = (await tmdb('/search/movie', { query:q })).results || [];
-        PCACHE[k] = bestForYear(res, q, +y)?.poster_path || null;
+        let res = [], used = q;
+        for (const qq of [...new Set([q, q.replace(/[:·]/g, ' ').replace(/\s+/g, ' ').trim(), q.replace(/\s+/g, ''), q.split(':')[0].trim()])].filter(Boolean)){
+          res = (await tmdb('/search/movie', { query:qq })).results || [];
+          if (res.length){ used = qq; break; }
+        }
+        PCACHE[k] = bestForYear(res, used, +y)?.poster_path || null;
       } catch(e){ continue; }
       document.querySelectorAll('.pp[data-pq]:not(.done)').forEach(el => { if (keyOf(el) === k) fill(el, PCACHE[k]); });
     }
