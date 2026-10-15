@@ -161,34 +161,88 @@ button{font:inherit;color:inherit}
 .chip-sep{width:1px;background:var(--line);margin:0 4px;align-self:stretch}
 .credit{font-size:11px;color:var(--sub);text-align:center;margin-top:24px;line-height:1.6}
 .credit a{color:var(--sub)}
-.ac-hero{margin-top:18px;padding:22px 20px;border-radius:20px;background:linear-gradient(135deg,color-mix(in srgb,#d4a017 22%,var(--card)),var(--card));border:1px solid color-mix(in srgb,#d4a017 35%,var(--line))}
-.ac-title{font-size:24px;font-weight:800;letter-spacing:-.03em}
+.ac-hero{position:relative;overflow:hidden;margin-top:16px;padding:26px 22px 20px;border-radius:22px;background:radial-gradient(120% 140% at 100% 0%,color-mix(in srgb,#d4a017 30%,transparent),transparent 60%),linear-gradient(160deg,#211b10,#15130f);border:1px solid color-mix(in srgb,#d4a017 40%,var(--line));color:#f4efe2}
+.ac-hero::after{content:"🏆";position:absolute;right:14px;bottom:-14px;font-size:96px;opacity:.13;transform:rotate(-12deg)}
+.ac-kicker{font-size:12px;font-weight:800;letter-spacing:.12em;color:#d4a017}
+.ac-title{font-size:28px;font-weight:800;letter-spacing:-.03em;line-height:1.2;margin-top:2px}
 .ac-title span{color:#d4a017}
-.ac-hero p{margin:4px 0 12px;color:var(--sub);font-size:14px}
+.ac-hero p{margin:6px 0 14px;color:#c9c0ad;font-size:14px}
 .ac-status{display:flex;flex-wrap:wrap;gap:6px}
-.ac-st{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
-.ac-st b{margin-left:2px}
-.ac-st.pub b{color:#d4a017}.ac-st.draft b{color:var(--accent)}.ac-st.none b{color:var(--sub);font-weight:600}
-.ac-grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
-@media (min-width:900px){.ac-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:start}.ac-grid .panel{margin-top:14px}}
-.ac-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ac-st{font-size:12px;padding:4px 10px 4px 8px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:inline-flex;align-items:center;gap:5px}
+.ac-st i{width:7px;height:7px;border-radius:50%;background:#6b655b}
+.ac-st.pub i{background:#d4a017}.ac-st.draft i{background:var(--accent)}
+.ac-st b{font-weight:600;color:#a9a091}.ac-st.pub b{color:#d4a017}
+.ac-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1}
 .ac-head h3{margin:0;flex:1}
 .ac-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--sub)}
-.ac-badge.pub{background:#d4a017;color:#1a1408}
 .ac-badge.draft{background:var(--soft);color:var(--accent)}
+.ac-editor summary{list-style:none;cursor:pointer;display:flex;align-items:center}
+.ac-editor summary::-webkit-details-marker{display:none}
+.ac-editor summary::after{content:"▾";color:var(--sub);margin-left:8px;transition:transform .2s}
+.ac-editor[open] summary::after{transform:rotate(180deg)}
+.ac-mybar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-top:14px;padding:10px 14px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:14px}
 .ac-rows{display:flex;flex-direction:column;gap:6px;margin-top:12px}
-.ac-row{display:grid;grid-template-columns:96px minmax(0,1fr) 28px;gap:6px;align-items:center}
+.ac-row{display:grid;grid-template-columns:104px minmax(0,1fr) 28px;gap:6px;align-items:center}
 .ac-row input{padding:8px 10px;font-size:15px}
 .ac-row .ac-cat{font-weight:700;font-size:14px}
 .ac-locked{text-align:center;color:var(--sub);padding:40px 0;line-height:2;font-size:15px}
-.ac-tablewrap{overflow-x:auto;margin-top:10px}
-.ac-table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
-.ac-table th,.ac-table td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-.ac-table thead th{font-size:12px;color:var(--sub)}
-.ac-table tbody th{font-size:13px;white-space:nowrap;color:var(--sub);font-weight:700}
-.ac-table td.match{background:color-mix(in srgb,#d4a017 14%,transparent)}
-.ac-table .dim{color:var(--sub)}
-.crown{font-size:11px;white-space:nowrap}
+.ac-reshead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:26px 0 12px}
+.ac-reshead h2{margin:0;font-size:20px;letter-spacing:-.02em;flex:1}
+.btn.gold{background:#d4a017;border-color:#d4a017;color:#1a1408}
+.aw-grid{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:640px){.aw-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:980px){.aw-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.aw-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.aw-card.gold{border-color:#d4a017;box-shadow:0 0 0 1px color-mix(in srgb,#d4a017 40%,transparent) inset;background:linear-gradient(180deg,color-mix(in srgb,#d4a017 10%,var(--card)),var(--card) 60%)}
+.aw-cat{font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--sub);display:flex;align-items:center;gap:6px}
+.aw-pick{display:flex;gap:12px;align-items:center;min-height:60px}
+.aw-pick.win .aw-txt b{color:#d4a017}
+.aw-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.aw-txt b{font-size:16px;line-height:1.35;word-break:keep-all;letter-spacing:-.01em}
+.aw-who{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.aw-who i{font-style:normal;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--chip);color:var(--sub)}
+.aw-who em{font-style:normal;font-size:11px;font-weight:800;color:#d4a017}
+.pp{width:40px;flex-shrink:0;aspect-ratio:2/3;border-radius:6px;overflow:hidden;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:16px}
+.pp img{width:100%;height:100%;object-fit:cover;display:block}
+.pp.lg{width:64px;font-size:22px}
+.hall-grid{display:grid;gap:14px;margin-top:12px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:760px){.hall-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.hall-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;cursor:pointer;transition:border-color .2s,transform .2s}
+.hall-card:hover{border-color:#d4a017;transform:translateY(-2px)}
+.hall-top{display:flex;gap:14px}
+.hall-posters{display:flex;gap:4px;flex-shrink:0}
+.pp.hall{width:84px;font-size:28px;border-radius:10px}
+.hall-posters .pp.hall:not(:first-child){width:56px}
+.hall-head{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.hall-best small{display:block;font-size:11px;font-weight:700;color:var(--sub)}
+.hall-best b{font-size:19px;letter-spacing:-.02em;line-height:1.3;color:#d4a017}
+.hall-by{font-size:12px;color:var(--sub);margin-top:auto}
+.hall-list{list-style:none;margin:14px 0 0;padding:12px 0 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.hall-list li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;font-size:13px;line-height:1.4}
+.hall-list li span{color:var(--sub);white-space:nowrap}
+.hall-list li b{font-weight:600}
+.hall-list small{color:var(--sub);font-weight:500}
+.cer{position:fixed;inset:0;z-index:40;background:radial-gradient(90% 70% at 50% 0%,#3a2c0c,#0d0b08 70%);color:#f4efe2;display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}
+.cer-x{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;background:none;border:0;color:#a9a091;font-size:20px;cursor:pointer}
+.cer-in{text-align:center;max-width:560px;width:100%;animation:cerIn .5s ease}
+@keyframes cerIn{from{opacity:0;transform:translateY(12px)}}
+.cer-kicker{font-size:13px;font-weight:800;letter-spacing:.2em;color:#d4a017}
+.cer-title{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1.2;margin:10px 0}
+.cer-title span{color:#d4a017}
+.cer-sub{color:#a9a091;font-size:15px;margin-top:10px}
+.cer-trophy{font-size:72px}
+.cer-cat{font-size:34px;font-weight:800;letter-spacing:-.02em;margin:12px 0 22px}
+.cer-env{display:inline-flex;flex-direction:column;align-items:center;gap:6px;font-size:80px;cursor:pointer;animation:float 2s ease-in-out infinite;user-select:none}
+.cer-env small{font-size:13px;color:#d4a017;font-weight:700}
+@keyframes float{50%{transform:translateY(-8px)}}
+.cer-picks{display:flex;flex-direction:column;gap:12px;text-align:left;margin-bottom:22px}
+.cer-pick{display:flex;gap:16px;align-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px;opacity:0;transform:translateY(12px);animation:cerPick .6s ease forwards}
+@keyframes cerPick{to{opacity:1;transform:none}}
+.cer-pick.win{border-color:#d4a017;background:rgba(212,160,23,.12)}
+.cer-pick b{display:block;font-size:20px;line-height:1.3}
+.cer-pick span{font-size:13px;color:#c9c0ad}
+.pp.cerpp{width:72px;font-size:26px;border-radius:10px}
+.cer-btn{margin-top:18px;font-size:16px;padding:12px 26px}
 .ioshint{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:25;display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;font-size:13px;line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 .ioshint>div{flex:1}
 .ioshint .share{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-weight:700}
@@ -427,6 +481,9 @@ function onMainClick(e){
     case 'statMore': S.statOpen[b.dataset.k] = !S.statOpen[b.dataset.k]; renderStats(); break;
     case 'todoView': S.todoView = b.dataset.k; renderTodo(); break;
     case 'ayear': S.ayear = id; renderAcademy(); break;
+    case 'ayearGo': S.ayear = id; S.acView = 'year'; renderAcademy(); scrollTo({ top:0, behavior:'smooth' }); break;
+    case 'acView': S.acView = b.dataset.k; renderAcademy(); break;
+    case 'acShow': openCeremony(); break;
     case 'acAdd': S.adraft[S.ayear].push({ category:'', pick:'' }); renderAcademy().then(() => { const c = document.querySelectorAll('.ac-cat'); c[c.length - 1]?.focus(); }); break;
     case 'acDel': S.adraft[S.ayear].splice(id, 1); renderAcademy(); break;
     case 'acSave': acSave(); break;
@@ -913,16 +970,74 @@ function todoRow(m){
 
 // ---------- 방구석 아카데미 ----------
 const AC_CATS = ['작품상','감독상','각본상','촬영상','음악상','미술상','남우주연상','여우주연상','조연상'];
+const AC_ICON = { 작품상:'🎬', 감독상:'🎥', 각본상:'✍️', 촬영상:'📷', 음악상:'🎵', 미술상:'🎨', 남우주연상:'🤵', 여우주연상:'👗', 조연상:'🌟' };
 const acNorm = t => String(t || '').replace(/\(.*?\)/g, '').replace(/[\s:·.,!?~\-]/g, '').toLowerCase();
 const acYears = () => [...new Set([new Date().getFullYear(), ...S.rounds.map(r => r.year), ...S.ballots.map(b => b.year)])].sort((a, b) => b - a);
 const ballotOf = (y, m) => S.ballots.find(b => b.year === y && b.member_id === m);
+const acRound = y => y >= 2020 ? `제 ${y - 2019}회` : '';
+const shortName = n => n.length >= 3 ? n.slice(1) : n;      // 김선엽 → 선엽
 
+// 부문 순서: 기본 부문 → 그 외
+function acCats(items){
+  const set = new Set(items.map(a => a.category));
+  return [...AC_CATS.filter(c => set.has(c)), ...[...set].filter(c => !AC_CATS.includes(c))];
+}
+// 같은 작품/인물을 고른 사람끼리 묶기 (많이 겹친 순)
+function acGroups(y, cat, members){
+  const g = new Map();
+  members.forEach(m => {
+    const a = S.awards.find(x => x.year === y && x.member_id === m.id && x.category === cat);
+    if (!a?.pick) return;
+    const k = acNorm(a.pick);
+    if (!g.has(k)) g.set(k, { pick:a.pick, who:[] });
+    g.get(k).who.push(m);
+  });
+  return [...g.values()].sort((a, b) => b.who.length - a.who.length);
+}
+
+// ----- 포스터 (TMDB) -----
+const AC_ALIAS = { '에에올':'에브리씽 에브리웨어 올 앳 원스' };
+function pickTitle(cat, pick){
+  const m = String(pick).match(/^(.*?)\s*\((.*)\)\s*$/);
+  const main = (m ? m[1] : pick).trim();
+  const paren = m ? m[2].split(',').pop().trim() : '';
+  const t = (/감독|주연|조연|각본/.test(cat) && paren) ? paren : main;
+  return AC_ALIAS[t] || t;
+}
+let PCACHE = {}; try { PCACHE = JSON.parse(localStorage.getItem('mvclub_posters') || '{}'); } catch(e){}
+const pcSave = () => { try { localStorage.setItem('mvclub_posters', JSON.stringify(PCACHE)); } catch(e){} };
+const pposter = (cat, pick, cls = '') => useTMDB()
+  ? `<div class="pp ${cls}" data-pq="${esc(pickTitle(cat, pick))}"><span>${AC_ICON[cat] || '🏆'}</span></div>` : '';
+async function hydratePosters(){
+  if (!useTMDB()) return;
+  const els = [...document.querySelectorAll('.pp[data-pq]:not(.done)')];
+  const fill = (el, path) => { el.classList.add('done'); if (path) el.innerHTML = `<img src="${TMDB_IMG}w185${path}" alt="" loading="lazy">`; };
+  const want = [...new Set(els.map(e => e.dataset.pq))];
+  els.forEach(el => { if (el.dataset.pq in PCACHE) fill(el, PCACHE[el.dataset.pq]); });
+  const todo = want.filter(q => !(q in PCACHE));
+  const worker = async () => {
+    while (todo.length){
+      const q = todo.shift();
+      try {
+        const res = (await tmdb('/search/movie', { query:q })).results || [];
+        const nq = normT(q);
+        const hit = res.find(x => normT(x.title) === nq || normT(x.original_title) === nq) || res[0];
+        PCACHE[q] = hit?.poster_path || null;
+      } catch(e){ continue; }
+      document.querySelectorAll(`.pp[data-pq="${CSS.escape(q)}"]`).forEach(el => fill(el, PCACHE[q]));
+    }
+  };
+  await Promise.all([worker(), worker(), worker()]);
+  pcSave();
+}
+
+// ----- 화면 -----
 async function renderAcademy(){
   S.ayear ??= new Date().getFullYear();
   S.adraft ??= {};
+  S.acView ??= 'year';
   const y = S.ayear;
-  const mine = ballotOf(y, S.me);
-  if (!S.adraft[y]){
+  if (S.acView === 'year' && !S.adraft[y]){
     $('#main').innerHTML = '<div class="loading">불러오는 중…</div>';
     try {
       const rows = await call('mv_my_awards', { p_year:y });
@@ -930,78 +1045,172 @@ async function renderAcademy(){
     } catch(e){ $('#main').innerHTML = `<div class="loading">${esc(errMsg(e))}</div>`; return; }
     if (S.tab !== 'academy' || S.ayear !== y) return;
   }
-  const draft = S.adraft[y];
-  const pub = S.members.filter(m => ballotOf(y, m.id)?.is_public);
-  const allPub = pub.length === S.members.length;
-
-  const status = S.members.map(m => {
-    const b = ballotOf(y, m.id);
-    const [cls, txt] = b?.is_public ? ['pub', '공개 완료'] : b ? ['draft', '작성 중'] : ['none', '아직'];
-    return `<span class="ac-st ${cls}">${esc(m.name)} <b>${txt}</b></span>`;
-  }).join('');
-
-  const myPanel = mine?.is_public
-    ? `<div class="ac-head"><h3>내 투표</h3><span class="ac-badge pub">공개됨</span></div>
-       <p class="note">공개된 투표는 모두가 보고 있어요. 고치려면 공개를 취소해야 해요.</p>
-       <div class="row"><span class="sp"></span><button class="btn small" data-act="acUnpub">공개 취소하고 수정</button></div>`
-    : `<div class="ac-head"><h3>내 투표</h3><span class="ac-badge ${mine ? 'draft' : 'none'}">${mine ? '🔒 나만 보는 중' : '새로 작성'}</span></div>
-       <p class="note">공개 버튼을 누르기 전까지는 나만 볼 수 있어요.</p>
-       <div class="ac-rows" id="acrows">${draft.map((d, i) => `
-         <div class="ac-row" data-i="${i}">
-           <input class="ac-cat" value="${esc(d.category)}" placeholder="부문">
-           <input class="ac-pick" value="${esc(d.pick)}" placeholder="수상작 / 수상자 (작품명)" autocomplete="off">
-           <button class="icon" data-act="acDel" data-id="${i}" title="부문 삭제">✕</button>
-         </div>`).join('')}</div>
-       <button class="btn ghost small" data-act="acAdd" style="margin-top:8px">+ 부문 추가</button>
-       <p class="err" id="acerr"></p>
-       <div class="row"><span class="sp"></span>
-         <button class="btn" data-act="acSave">저장</button>
-         <button class="btn primary" data-act="acPub">🏆 공개하기</button></div>`;
-
-  $('#main').innerHTML = `
-    <div class="toolbar">
-      <div class="chips">${acYears().map(yy => `<button class="chip ${yy === y ? 'on' : ''}" data-act="ayear" data-id="${yy}">${yy}</button>`).join('')}</div>
-    </div>
-    <div class="ac-hero">
-      <div class="ac-title">🏆 ${y >= 2020 ? `제 ${y - 2019}회 ` : ''}방구석 아카데미 <span>${y}</span></div>
-      <p>각자 투표를 만들고, 연말에 <b>공개</b>를 누르면 그때부터 다른 사람도 볼 수 있어요.</p>
-      <div class="ac-status">${status}</div>
-    </div>
-    <div class="ac-grid">
-      <section class="panel ac-mine">${myPanel}</section>
-      <section class="panel ac-result">${resultHTML(y, pub, allPub)}</section>
-    </div>`;
-
+  const seg = `<div class="viewbar" style="margin-top:18px"><div class="seg">
+      <button class="${S.acView === 'year' ? 'on' : ''}" data-act="acView" data-k="year">🏆 연도별 시상식</button>
+      <button class="${S.acView === 'hall' ? 'on' : ''}" data-act="acView" data-k="hall">🏛 명예의 전당</button>
+    </div></div>`;
+  $('#main').innerHTML = seg + (S.acView === 'hall' ? hallHTML() : yearHTML(y));
   const rows = $('#acrows');
   if (rows) rows.oninput = e => {
     const r = e.target.closest('.ac-row'); if (!r) return;
-    const d = draft[+r.dataset.i];
+    const d = S.adraft[y][+r.dataset.i];
     if (e.target.classList.contains('ac-cat')) d.category = e.target.value; else d.pick = e.target.value;
   };
+  hydratePosters();
 }
 
-function resultHTML(y, pub, allPub){
-  if (!pub.length) return `<div class="ac-head"><h3>공개된 투표</h3></div>
-    <div class="ac-locked">🔒<br>아직 아무도 공개하지 않았어요</div>`;
-  const items = S.awards.filter(a => a.year === y);
-  const cats = [...AC_CATS.filter(c => items.some(a => a.category === c)),
-                ...[...new Set(items.map(a => a.category))].filter(c => !AC_CATS.includes(c))];
-  const hidden = S.members.filter(m => !pub.includes(m));
-  const body = cats.map(c => {
-    const picks = pub.map(m => items.find(a => a.member_id === m.id && a.category === c)?.pick || '');
-    const cnt = {}; picks.forEach(p => { const k = acNorm(p); if (k) cnt[k] = (cnt[k] || 0) + 1; });
-    const top = Math.max(0, ...Object.values(cnt));
-    return `<tr><th>${esc(c)}</th>${picks.map(p => {
-      const n = cnt[acNorm(p)] || 0;
-      return `<td class="${n >= 2 ? 'match' : ''}">${p ? esc(p) : '<span class="dim">—</span>'}${n >= 2 && n === top ? ` <span class="crown" title="${n}명 일치">👑${n}</span>` : ''}</td>`;
-    }).join('')}</tr>`;
+function yearHTML(y){
+  const mine = ballotOf(y, S.me);
+  const pub = S.members.filter(m => ballotOf(y, m.id)?.is_public);
+  const allPub = pub.length === S.members.length;
+  const status = S.members.map(m => {
+    const b = ballotOf(y, m.id);
+    const [cls, txt] = b?.is_public ? ['pub', '공개'] : b ? ['draft', '작성 중'] : ['none', '아직'];
+    return `<span class="ac-st ${cls}"><i></i>${esc(m.name)} <b>${txt}</b></span>`;
   }).join('');
-  return `<div class="ac-head"><h3>${allPub ? '🎉 최종 결과' : '공개된 투표'}</h3>
-      ${hidden.length ? `<span class="note" style="margin:0">🔒 ${hidden.map(m => esc(m.name)).join(', ')} 아직 비공개</span>` : ''}</div>
-    <div class="ac-tablewrap"><table class="ac-table">
-      <thead><tr><th></th>${pub.map(m => `<th>${esc(m.name)}</th>`).join('')}</tr></thead>
-      <tbody>${body}</tbody></table></div>
-    ${pub.length >= 2 ? '<p class="note">👑 같은 작품·인물을 고른 사람이 2명 이상인 부문이에요.</p>' : ''}`;
+
+  const draft = S.adraft[y];
+  const editor = mine?.is_public
+    ? `<div class="ac-mybar"><span>✅ 내 투표는 <b>공개</b>됐어요</span><button class="btn small" data-act="acUnpub">공개 취소하고 수정</button></div>`
+    : `<details class="panel ac-editor" ${mine || !pub.length ? 'open' : ''}>
+        <summary><span class="ac-head"><h3>✏️ 내 투표</h3><span class="ac-badge ${mine ? 'draft' : 'none'}">${mine ? '🔒 나만 보는 중' : '아직 작성 안 함'}</span></span></summary>
+        <p class="note">공개 버튼을 누르기 전까지는 나만 볼 수 있어요.</p>
+        <div class="ac-rows" id="acrows">${draft.map((d, i) => `
+          <div class="ac-row" data-i="${i}">
+            <input class="ac-cat" value="${esc(d.category)}" placeholder="부문">
+            <input class="ac-pick" value="${esc(d.pick)}" placeholder="수상작 / 수상자 (작품명)" autocomplete="off">
+            <button class="icon" data-act="acDel" data-id="${i}" title="부문 삭제">✕</button>
+          </div>`).join('')}</div>
+        <button class="btn ghost small" data-act="acAdd" style="margin-top:8px">+ 부문 추가</button>
+        <p class="err" id="acerr"></p>
+        <div class="row"><span class="sp"></span>
+          <button class="btn" data-act="acSave">저장</button>
+          <button class="btn primary" data-act="acPub">🏆 공개하기</button></div>
+      </details>`;
+
+  const items = S.awards.filter(a => a.year === y && pub.some(m => m.id === a.member_id));
+  const cats = acCats(items);
+  const cards = cats.map(c => awardCard(y, c, pub)).join('');
+  const results = !pub.length
+    ? `<div class="panel ac-locked">🔒<br>아직 아무도 공개하지 않았어요<br><small>각자 공개하면 여기에 수상 결과가 나타나요</small></div>`
+    : `<div class="ac-reshead"><h2>${allPub ? '🎉 최종 결과' : '공개된 투표'}</h2>
+         ${pub.length < S.members.length ? `<span class="note" style="margin:0">🔒 ${S.members.filter(m => !pub.includes(m)).map(m => esc(m.name)).join(', ')} 비공개</span>` : ''}
+         <button class="btn small gold" data-act="acShow">🎬 시상식 진행</button></div>
+       <div class="aw-grid">${cards}</div>
+       ${pub.length >= 2 ? '<p class="note">👑 표시는 2명 이상이 같은 작품·인물을 고른 부문이에요.</p>' : ''}`;
+
+  return `
+    <div class="chips" style="margin-top:14px">${acYears().map(yy => `<button class="chip ${yy === y ? 'on' : ''}" data-act="ayear" data-id="${yy}">${yy}</button>`).join('')}</div>
+    <div class="ac-hero">
+      <div class="ac-kicker">${acRound(y)}</div>
+      <div class="ac-title">방구석 아카데미 <span>${y}</span></div>
+      <p>각자 투표를 만들고, 연말에 <b>공개</b>를 누르면 그때부터 모두가 볼 수 있어요.</p>
+      <div class="ac-status">${status}</div>
+    </div>
+    ${editor}
+    ${results}`;
+}
+
+function awardCard(y, cat, members){
+  const groups = acGroups(y, cat, members);
+  if (!groups.length) return '';
+  const top = groups[0], crown = top.who.length >= 2;
+  const solo = members.length === 1;
+  const rowsH = groups.map((g, i) => `
+    <div class="aw-pick ${crown && i === 0 ? 'win' : ''}">
+      ${pposter(cat, g.pick, solo ? 'lg' : '')}
+      <div class="aw-txt"><b>${esc(g.pick)}</b>
+        <span class="aw-who">${g.who.map(m => `<i>${esc(solo ? m.name : shortName(m.name))}</i>`).join('')}${crown && i === 0 ? ` <em>👑 ${g.who.length}명</em>` : ''}</span></div>
+    </div>`).join('');
+  return `<div class="aw-card ${crown ? 'gold' : ''}">
+    <div class="aw-cat"><span>${AC_ICON[cat] || '🏆'}</span>${esc(cat)}</div>${rowsH}</div>`;
+}
+
+function hallHTML(){
+  const years = [...new Set(S.ballots.filter(b => b.is_public).map(b => b.year))].sort((a, b) => b - a);
+  if (!years.length) return '<div class="panel ac-locked">🏛<br>아직 공개된 시상식이 없어요</div>';
+  const cards = years.map(y => {
+    const pub = S.members.filter(m => ballotOf(y, m.id)?.is_public);
+    const items = S.awards.filter(a => a.year === y && pub.some(m => m.id === a.member_id));
+    const best = acGroups(y, '작품상', pub);
+    const rest = acCats(items).filter(c => c !== '작품상');
+    return `<div class="hall-card" data-act="ayearGo" data-id="${y}">
+      <div class="hall-top">
+        <div class="hall-posters">${best.slice(0, 3).map(g => pposter('작품상', g.pick, 'hall')).join('') || pposter('작품상', '', 'hall')}</div>
+        <div class="hall-head"><div class="ac-kicker">${acRound(y)} · ${y}</div>
+          <div class="hall-best"><small>🎬 작품상</small>${best.map(g => `<b>${esc(g.pick)}</b>${pub.length > 1 ? `<span class="aw-who">${g.who.map(m => `<i>${esc(shortName(m.name))}</i>`).join('')}</span>` : ''}`).join('<br>') || '—'}</div>
+          <div class="hall-by">투표: ${pub.map(m => esc(m.name)).join(', ')}</div></div>
+      </div>
+      <ul class="hall-list">${rest.map(c => {
+        const gs = acGroups(y, c, pub);
+        return `<li><span>${AC_ICON[c] || '🏆'} ${esc(c)}</span><b>${gs.map(g => esc(g.pick) + (pub.length > 1 ? ` <small>(${g.who.map(m => esc(shortName(m.name))).join('·')})</small>` : '')).join(' / ')}</b></li>`;
+      }).join('')}</ul>
+    </div>`;
+  }).join('');
+  return `<p class="note" style="margin-top:14px">역대 방구석 아카데미 수상 기록이에요. 카드를 누르면 그해 시상식으로 이동해요.</p>
+    <div class="hall-grid">${cards}</div>${tasteHTML()}`;
+}
+
+// 멤버끼리 같은 걸 고른 비율
+function tasteHTML(){
+  const pairs = [];
+  for (let i = 0; i < S.members.length; i++) for (let j = i + 1; j < S.members.length; j++){
+    const a = S.members[i], b = S.members[j]; let same = 0, n = 0;
+    S.awards.filter(x => x.member_id === a.id && x.pick && ballotOf(x.year, a.id)?.is_public).forEach(x => {
+      const o = S.awards.find(z => z.member_id === b.id && z.year === x.year && z.category === x.category && z.pick && ballotOf(z.year, b.id)?.is_public);
+      if (o){ n++; if (acNorm(o.pick) === acNorm(x.pick)) same++; }
+    });
+    if (n) pairs.push({ a, b, same, n, r:same / n });
+  }
+  if (!pairs.length) return '';
+  pairs.sort((x, y) => y.r - x.r);
+  return `<div class="panel"><h3>💞 취향 일치도</h3><p class="d">같은 해·같은 부문에서 똑같이 고른 비율</p>
+    ${pairs.map(p => `<div class="bar-row"><span class="bl">${esc(p.a.name)} · ${esc(p.b.name)}</span>
+      <span class="bt"><span style="width:${p.r * 100}%"></span></span><span class="bv">${Math.round(p.r * 100)}%</span></div>`).join('')}</div>`;
+}
+
+// ----- 시상식 진행 모드 -----
+function openCeremony(){
+  const y = S.ayear;
+  const pub = S.members.filter(m => ballotOf(y, m.id)?.is_public);
+  const cats = acCats(S.awards.filter(a => a.year === y && pub.some(m => m.id === a.member_id)));
+  if (!cats.length) return;
+  let i = -1, opened = false;
+  const ov = document.createElement('div'); ov.className = 'cer';
+  document.body.appendChild(ov);
+  const close = () => { ov.remove(); document.removeEventListener('keydown', key); };
+  const draw = () => {
+    let inner;
+    if (i < 0) inner = `<div class="cer-kicker">${acRound(y)}</div><div class="cer-title">방구석 아카데미<br><span>${y}</span></div>
+        <div class="cer-sub">${pub.map(m => esc(m.name)).join(' · ')}</div>
+        <button class="btn primary cer-btn" data-c="next">시상식 시작 →</button>`;
+    else if (i >= cats.length) inner = `<div class="cer-trophy">🏆</div><div class="cer-title">모든 시상이<br>끝났습니다</div>
+        <div class="cer-sub">수고하셨습니다 👏</div><button class="btn primary cer-btn" data-c="close">닫기</button>`;
+    else {
+      const c = cats[i], groups = acGroups(y, c, pub);
+      inner = `<div class="cer-kicker">${i + 1} / ${cats.length}</div>
+        <div class="cer-cat">${AC_ICON[c] || '🏆'} ${esc(c)}</div>
+        ${opened ? `<div class="cer-picks">${groups.map((g, k) => `<div class="cer-pick ${k === 0 && g.who.length >= 2 ? 'win' : ''}" style="animation-delay:${k * 0.25}s">
+              ${pposter(c, g.pick, 'cerpp')}<div><b>${esc(g.pick)}</b><span>${g.who.map(m => esc(m.name)).join(' · ')}${k === 0 && g.who.length >= 2 ? ' 👑' : ''}</span></div></div>`).join('')}</div>
+            <button class="btn primary cer-btn" data-c="next">${i === cats.length - 1 ? '마치기' : '다음 부문 →'}</button>`
+          : `<div class="cer-env" data-c="open">✉️<small>눌러서 공개</small></div>
+            <div class="cer-sub">The winner is…</div>`}`;
+    }
+    ov.innerHTML = `<button class="cer-x" data-c="close" aria-label="닫기">✕</button><div class="cer-in">${inner}</div>`;
+    hydratePosters();
+  };
+  ov.onclick = e => {
+    const c = e.target.closest('[data-c]')?.dataset.c;
+    if (c === 'close') close();
+    else if (c === 'open'){ opened = true; draw(); }
+    else if (c === 'next'){ i++; opened = false; draw(); }
+  };
+  const key = e => {
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); if (i >= 0 && i < cats.length && !opened){ opened = true; } else if (i < cats.length){ i++; opened = false; } else return close(); draw(); }
+  };
+  document.addEventListener('keydown', key);
+  draw();
 }
 
 function acCollect(){
