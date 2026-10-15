@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>우리들의 영화 평론</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --bg:#f4f1ea;--card:#fff;--ink:#1e1b17;--sub:#746d62;--line:#e6e0d4;
+  --accent:#b4441b;--accent-ink:#fff;--soft:#f8ece4;
+  --star:#e3a21a;--star-off:#dcd6ca;--chip:#ece7dd;
+  --group:#2f6b58;--group-soft:#e2efe9;--danger:#b42318;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#13120f;--card:#1d1b18;--ink:#eeeae2;--sub:#9d968a;--line:#312d28;
+  --accent:#ee7a45;--accent-ink:#1a0f08;--soft:#3a2418;
+  --star:#f0b23a;--star-off:#4a453d;--chip:#2a2622;
+  --group:#7cc4a8;--group-soft:#1c2e27;--danger:#f97066;
+}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px 48px}
+.loading,.empty{padding:60px 0;text-align:center;color:var(--sub)}
+
+/* buttons */
+.btn{border:1px solid var(--line);background:var(--card);padding:9px 16px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px}
+.btn.small{padding:6px 12px;font-size:13px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent;border-style:dashed;color:var(--sub)}
+.btn.danger{color:var(--danger);border-color:transparent;background:transparent}
+.btn:disabled{opacity:.45;cursor:default}
+.link{background:none;border:0;padding:0;color:var(--sub);cursor:pointer;font-size:13px;text-decoration:underline;text-underline-offset:3px}
+.icon{background:none;border:0;color:var(--sub);cursor:pointer;font-size:16px;padding:4px 6px;border-radius:8px}
+.icon:hover{background:var(--chip)}
+
+/* login */
+.login{max-width:380px;margin:0 auto;padding:12vh 16px 40px;text-align:center}
+.login .logo{font-size:44px}
+.login h1{margin:8px 0 2px;font-size:24px;letter-spacing:-.02em}
+.sub{color:var(--sub);font-size:14px;margin:0 0 18px}
+.who{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.who-btn{padding:16px;border-radius:14px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-weight:700;font-size:16px}
+.who-btn.on{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+#lf{display:flex;gap:8px}
+#lf input{flex:1}
+.err{color:var(--danger);font-size:13px;min-height:20px;margin:8px 0 0}
+
+/* header */
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:980px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.brand{font-weight:800;font-size:17px;letter-spacing:-.02em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.me{display:flex;gap:12px;align-items:center}
+.tabs{max-width:980px;margin:0 auto;padding:0 16px;display:flex;gap:4px}
+.tabs button{background:none;border:0;padding:8px 12px 10px;cursor:pointer;font-weight:700;color:var(--sub);border-bottom:2px solid transparent}
+.tabs button.on{color:var(--ink);border-color:var(--accent)}
+
+/* records */
+.toolbar{display:flex;align-items:center;gap:10px;margin:18px 0 6px;flex-wrap:wrap}
+.chips{display:flex;gap:6px;flex:1;flex-wrap:wrap}
+.chip{border:0;background:var(--chip);padding:6px 14px;border-radius:999px;cursor:pointer;font-weight:700;font-size:14px}
+.chip.on{background:var(--ink);color:var(--bg)}
+.round{margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+.r-head{display:flex;align-items:center;gap:8px}
+.period{font-weight:800;font-size:13px;color:var(--accent);letter-spacing:.02em}
+.badge{font-size:12px;font-weight:700;background:var(--soft);color:var(--accent);padding:2px 10px;border-radius:999px}
+.r-head .icon{margin-left:auto}
+.theme{margin:6px 0 2px;font-size:22px;letter-spacing:-.03em;line-height:1.3}
+.reason{margin:0 0 14px;color:var(--sub);font-size:14px}
+.movies{display:grid;gap:12px;margin-bottom:12px}
+@media (min-width:760px){.movies{grid-template-columns:1fr 1fr}}
+.movie{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.movie.group{border-color:color-mix(in srgb,var(--group) 45%,var(--line))}
+.m-top{display:flex;gap:12px;align-items:flex-start}
+.m-top>div:first-child{flex:1;min-width:0}
+.slot{font-size:12px;font-weight:700;color:var(--sub)}
+.movie.group .slot{color:var(--group)}
+.movie h3{margin:2px 0 0;font-size:18px;letter-spacing:-.02em;line-height:1.3;word-break:keep-all}
+.avg{text-align:right;flex-shrink:0}
+.avg strong{display:block;font-size:24px;line-height:1;color:var(--accent)}
+.avg small{font-size:12px;color:var(--sub)}
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+@media (min-width:480px){.movie .scores{grid-template-columns:repeat(4,1fr)}}
+@media (min-width:760px){.movie .scores{grid-template-columns:1fr 1fr}}
+.sc{display:flex;flex-direction:column;font-size:12px;padding:6px 8px;border-radius:10px;background:var(--bg)}
+.sc.me{outline:1.5px solid var(--accent)}
+.sc .nm{color:var(--sub);font-weight:600}
+.stars{font-size:15px;letter-spacing:1px;white-space:nowrap}
+.stars.none{color:var(--sub)}
+.st{color:var(--star-off)}
+.st.on{color:var(--star)}
+.st.half{background:linear-gradient(90deg,var(--star) 50%,var(--star-off) 50%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.coms{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.coms li{font-size:14px;line-height:1.45;padding-left:10px;border-left:2px solid var(--line)}
+.coms li b{display:block;font-size:11px;color:var(--accent)}
+.coms li.anon b{color:var(--sub);font-weight:600}
+.m-act{display:flex;align-items:center;gap:6px;margin-top:auto}
+.m-act .icon{margin-left:auto}
+
+/* stats */
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.hero div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.hero small{color:var(--sub);font-size:12px;font-weight:600}
+.hero b{display:block;font-size:20px;letter-spacing:-.02em}
+.hero span{font-size:13px;color:var(--sub)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+.panel h3{margin:0 0 2px;font-size:16px}
+.panel p.d{margin:0 0 12px;font-size:13px;color:var(--sub)}
+.bar-row{display:grid;grid-template-columns:minmax(0,1.4fr) 2fr 44px;gap:10px;align-items:center;padding:5px 0;font-size:14px}
+.bar-row .bl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-row .bl small{color:var(--sub);margin-left:4px}
+.bt{height:8px;background:var(--chip);border-radius:99px;overflow:hidden}
+.bt span{display:block;height:100%;background:var(--accent);border-radius:99px}
+.bv{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+@media (min-width:760px){.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}.cols .panel{margin-top:14px}}
+
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+#modal.open{display:flex}
+.sheet{background:var(--card);width:100%;max-width:460px;border-radius:20px 20px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+@media (min-width:600px){#modal{align-items:center}.sheet{border-radius:20px}}
+.sheet h3{margin:0 0 4px;font-size:19px;letter-spacing:-.02em}
+.picker{display:flex;justify-content:center;gap:2px;margin:10px 0 4px}
+.pstar{position:relative;font-size:44px;line-height:1;user-select:none}
+.pstar button{position:absolute;top:0;bottom:0;width:50%;background:none;border:0;padding:0;cursor:pointer}
+.pstar .hl{left:0}.pstar .hr{right:0}
+.pv{text-align:center;font-size:14px;color:var(--sub);min-height:22px;margin-bottom:12px}
+.pv strong{color:var(--ink)}
+input,select,textarea{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);width:100%}
+textarea{resize:vertical}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--sub)}
+.form .full{grid-column:1/-1}
+.row{display:flex;gap:8px;align-items:center;margin-top:14px}
+.row .sp{flex:1}
+</style>
+</head>
+<body>
+<div id="app"><div class="loading">불러오는 중…</div></div>
+<div id="modal"></div>
+
+<script>
+// ===== 설정 =====
+const SITE_TITLE   = '우리들의 영화 평론';
+const SUPABASE_URL = 'https://gudwubeutvkhjrsardtc.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_DD4LX04ysEDt7T0ELcdo8Q_Cl1hSPPE';
+// =================
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const S = { members:[], rounds:[], movies:[], ratings:[], legacy:[], me:null, token:null, year:null, tab:'records' };
+const LS = 'mvclub_session';
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const memName = id => S.members.find(m => m.id === id)?.name ?? '?';
+const periodLabel = r => r.period_type === 'month' ? `${r.period}월` : `${r.period}분기`;
+const ratingsOf = mid => S.ratings.filter(x => x.movie_id === mid);
+const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+const starVals = list => list.map(x => x.stars).filter(v => v != null).map(Number);
+
+function stars(v){
+  if (v == null) return '<span class="stars none">—</span>';
+  v = Number(v); let h = '';
+  for (let i = 1; i <= 5; i++) h += `<span class="st ${v >= i ? 'on' : v >= i - .5 ? 'half' : ''}">★</span>`;
+  return `<span class="stars" title="${v}점">${h}</span>`;
+}
+
+function saveSess(){ try{ localStorage.setItem(LS, JSON.stringify({ token:S.token })) }catch(e){} }
+function loadSess(){ try{ return JSON.parse(localStorage.getItem(LS) || 'null') }catch(e){ return null } }
+function clearSess(){ try{ localStorage.removeItem(LS) }catch(e){} }
+
+async function call(fn, args){
+  const { data, error } = await sb.rpc(fn, { p_token:S.token, ...args });
+  if (error){
+    if (/로그인이 필요/.test(error.message)){ alert('다시 로그인해주세요.'); logout(true); }
+    throw error;
+  }
+  return data;
+}
+function errMsg(e){
+  const m = e?.message || String(e);
+  if (/duplicate key|unique/i.test(m)) return '같은 기간의 회차가 이미 있어요.';
+  return m;
+}
+
+// ---------- 시작 ----------
+async function init(){
+  const { data, error } = await sb.from('mv_members').select('*').order('sort');
+  if (error){ $('#app').innerHTML = `<div class="loading">연결 오류: ${esc(error.message)}</div>`; return; }
+  S.members = data;
+  const ss = loadSess();
+  if (ss?.token){
+    const { data:me } = await sb.rpc('mv_whoami', { p_token:ss.token });
+    if (me){ S.token = ss.token; S.me = me; } else clearSess();
+  }
+  if (!S.me) return renderLogin();
+  await loadAll(); render();
+}
+
+async function loadAll(){
+  const res = await Promise.all([
+    sb.from('mv_rounds').select('*'),
+    sb.from('mv_movies').select('*'),
+    sb.from('mv_ratings').select('*'),
+    sb.from('mv_legacy_comments').select('*').order('sort'),
+  ]);
+  const bad = res.find(x => x.error); if (bad) throw bad.error;
+  [S.rounds, S.movies, S.ratings, S.legacy] = res.map(x => x.data);
+  const years = yearsList();
+  if (!years.includes(S.year)) S.year = years[0] ?? new Date().getFullYear();
+}
+const yearsList = () => [...new Set(S.rounds.map(x => x.year))].sort((a, b) => b - a);
+
+// ---------- 로그인 ----------
+function renderLogin(sel){
+  $('#app').innerHTML = `<div class="login">
+    <div class="logo">🎬</div><h1>${esc(SITE_TITLE)}</h1>
+    <p class="sub">누구신가요?</p>
+    <div class="who">${S.members.map(m => `<button class="who-btn${m.id === sel ? ' on' : ''}" data-id="${m.id}">${esc(m.name)}</button>`).join('')}</div>
+    <form id="lf"><input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" ${sel ? '' : 'disabled'}>
+    <button class="btn primary" ${sel ? '' : 'disabled'}>입장</button></form>
+    <p class="err" id="lerr"></p></div>`;
+  document.querySelectorAll('.who-btn').forEach(b => b.onclick = () => { renderLogin(+b.dataset.id); $('#pw').focus(); });
+  $('#lf').onsubmit = async e => {
+    e.preventDefault();
+    const pw = $('#pw').value; if (!pw) return;
+    $('#lerr').textContent = '확인 중…';
+    const { data, error } = await sb.rpc('mv_login', { p_member_id:sel, p_password:pw });
+    if (error || !data){ $('#lerr').textContent = '비밀번호가 맞지 않아요.'; return; }
+    S.token = data; S.me = sel; saveSess();
+    try { await loadAll(); render(); } catch(err){ $('#lerr').textContent = errMsg(err); }
+  };
+}
+
+async function logout(silent){
+  if (!silent && S.token) await sb.rpc('mv_logout', { p_token:S.token });
+  clearSess(); S.token = null; S.me = null; closeModal(); renderLogin();
+}
+
+// ---------- 메인 ----------
+function render(){
+  $('#app').innerHTML = `
+  <header class="top"><div class="top-in">
+    <div class="brand">🎬 ${esc(SITE_TITLE)}</div>
+    <div class="me"><button class="link" id="pwbtn">${esc(memName(S.me))}님</button><button class="link" id="out">로그아웃</button></div>
+  </div>
+  <nav class="tabs">
+    <button data-t="records" class="${S.tab === 'records' ? 'on' : ''}">기록</button>
+    <button data-t="stats" class="${S.tab === 'stats' ? 'on' : ''}">통계</button>
+  </nav></header>
+  <main class="wrap" id="main"></main>`;
+  $('#out').onclick = () => logout();
+  $('#pwbtn').onclick = openPassword;
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; render(); });
+  $('#main').onclick = onMainClick;
+  S.tab === 'records' ? renderRecords() : renderStats();
+}
+
+function onMainClick(e){
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const id = +b.dataset.id;
+  switch (b.dataset.act){
+    case 'year': S.year = id; renderRecords(); break;
+    case 'addRound': openRound(null); break;
+    case 'editRound': openRound(id); break;
+    case 'addMovie': openMovie(id, null); break;
+    case 'editMovie': openMovie(null, id); break;
+    case 'rate': openRate(id); break;
+  }
+}
+
+function renderRecords(){
+  const rounds = S.rounds.filter(r => r.year === S.year).sort((a, b) => b.period - a.period);
+  $('#main').innerHTML = `
+    <div class="toolbar">
+      <div class="chips">${yearsList().map(y => `<button class="chip ${y === S.year ? 'on' : ''}" data-act="year" data-id="${y}">${y}</button>`).join('')}</div>
+      <button class="btn small" data-act="addRound">+ 회차 추가</button>
+    </div>
+    ${rounds.length ? rounds.map(roundHTML).join('') : '<p class="empty">아직 기록이 없어요.</p>'}`;
+}
+
+function sortedMovies(rid){
+  return S.movies.filter(m => m.round_id === rid)
+    .sort((a, b) => a.kind === b.kind ? a.slot - b.slot : (a.kind === 'pick' ? -1 : 1));
+}
+
+function roundHTML(r){
+  return `<section class="round">
+    <div class="r-head">
+      <span class="period">${r.year} · ${periodLabel(r)}</span>
+      ${r.recommender_id ? `<span class="badge">추천 ${esc(memName(r.recommender_id))}</span>` : ''}
+      <button class="icon" data-act="editRound" data-id="${r.id}" title="회차 수정">✎</button>
+    </div>
+    ${r.theme ? `<h2 class="theme">${esc(r.theme)}</h2>` : ''}
+    ${r.reason ? `<p class="reason">${esc(r.reason)}</p>` : ''}
+    <div class="movies">${sortedMovies(r.id).map(movieHTML).join('')}</div>
+    <button class="btn ghost small" data-act="addMovie" data-id="${r.id}">+ 영화 추가</button>
+  </section>`;
+}
+
+function movieHTML(m){
+  const rs = ratingsOf(m.id), vals = starVals(rs), avg = mean(vals);
+  const mine = rs.find(x => x.member_id === S.me);
+  const label = m.kind === 'group' ? `단체관람${m.schedule ? ' · ' + esc(m.schedule) : ''}` : `추천작 ${m.slot}`;
+  const coms = S.members.map(mb => {
+      const x = rs.find(y => y.member_id === mb.id);
+      return x?.comment ? `<li><b>${esc(mb.name)}</b>${esc(x.comment)}</li>` : '';
+    }).join('')
+    + S.legacy.filter(l => l.movie_id === m.id).map(l => `<li class="anon"><b>작성자 미상</b>${esc(l.body)}</li>`).join('');
+  return `<article class="movie ${m.kind}">
+    <div class="m-top">
+      <div><div class="slot">${label}</div><h3>${esc(m.title)}</h3></div>
+      <div class="avg">${avg != null ? `<strong>${avg.toFixed(1)}</strong><small>${vals.length}명 평균</small>` : '<small>평가 없음</small>'}</div>
+    </div>
+    <div class="scores">${S.members.map(mb => {
+      const x = rs.find(y => y.member_id === mb.id);
+      return `<div class="sc${mb.id === S.me ? ' me' : ''}"><span class="nm">${esc(mb.name)}</span>${stars(x?.stars)}</div>`;
+    }).join('')}</div>
+    ${coms ? `<ul class="coms">${coms}</ul>` : ''}
+    <div class="m-act">
+      <button class="btn small ${mine ? '' : 'primary'}" data-act="rate" data-id="${m.id}">${mine ? '내 평가 수정' : '내 평가 남기기'}</button>
+      <button class="icon" data-act="editMovie" data-id="${m.id}" title="영화 정보 수정">✎</button>
+    </div>
+  </article>`;
+}
+
+// ---------- 통계 ----------
+function renderStats(){
+  const rated = S.ratings.filter(x => x.stars != null);
+  const roundOf = mv => S.rounds.find(r => r.id === mv.round_id);
+
+  const mem = S.members.map(m => {
+    const v = rated.filter(x => x.member_id === m.id).map(x => +x.stars);
+    return { m, n:v.length, avg:mean(v) };
+  });
+  const memRated = mem.filter(x => x.n);
+  const kind = memRated.length ? memRated.reduce((a, b) => b.avg > a.avg ? b : a) : null;
+  const harsh = memRated.length ? memRated.reduce((a, b) => b.avg < a.avg ? b : a) : null;
+
+  const rec = S.members.map(m => {
+    const ids = new Set(S.movies.filter(mv => mv.kind === 'pick' && roundOf(mv)?.recommender_id === m.id).map(mv => mv.id));
+    const v = rated.filter(x => ids.has(x.movie_id) && x.member_id !== m.id).map(x => +x.stars);
+    return { m, picks:ids.size, avg:mean(v) };
+  });
+
+  const mvs = S.movies.map(mv => {
+    const v = rated.filter(x => x.movie_id === mv.id).map(x => +x.stars);
+    const a = mean(v);
+    const sd = v.length > 1 ? Math.sqrt(v.reduce((s, x) => s + (x - a) ** 2, 0) / v.length) : 0;
+    return { mv, r:roundOf(mv), n:v.length, avg:a, sd, lo:Math.min(...v), hi:Math.max(...v) };
+  }).filter(x => x.n >= 2);
+
+  const top = [...mvs].sort((a, b) => b.avg - a.avg).slice(0, 5);
+  const low = [...mvs].sort((a, b) => a.avg - b.avg).slice(0, 5);
+  const split = [...mvs].filter(x => x.sd > 0).sort((a, b) => b.sd - a.sd).slice(0, 5);
+
+  const bar = (label, v, meta = '') =>
+    `<div class="bar-row"><span class="bl">${label}${meta ? `<small>${meta}</small>` : ''}</span>
+     <span class="bt"><span style="width:${v == null ? 0 : v / 5 * 100}%"></span></span>
+     <span class="bv">${v == null ? '—' : v.toFixed(2)}</span></div>`;
+  const where = x => x.r ? `${String(x.r.year).slice(2)}' ${periodLabel(x.r)}` : '';
+
+  $('#main').innerHTML = `
+    <div class="hero">
+      <div><small>가장 후한 평론가</small><b>${kind ? esc(kind.m.name) : '—'}</b><span>${kind ? `평균 ${kind.avg.toFixed(2)}점` : ''}</span></div>
+      <div><small>가장 짠 평론가</small><b>${harsh ? esc(harsh.m.name) : '—'}</b><span>${harsh ? `평균 ${harsh.avg.toFixed(2)}점` : ''}</span></div>
+    </div>
+    <div class="cols">
+      <div class="panel"><h3>평론가별 평균 별점</h3><p class="d">각자 준 별점의 평균</p>
+        ${mem.map(x => bar(esc(x.m.name), x.avg, `${x.n}편`)).join('')}</div>
+      <div class="panel"><h3>추천 성적표</h3><p class="d">내 추천작에 다른 멤버들이 준 평균</p>
+        ${rec.map(x => bar(esc(x.m.name), x.avg, `${x.picks}편`)).join('')}</div>
+      <div class="panel"><h3>역대 최고 평점</h3><p class="d">2명 이상 평가한 영화</p>
+        ${top.map(x => bar(esc(x.mv.title), x.avg, where(x))).join('') || '<p class="d">아직 없어요</p>'}</div>
+      <div class="panel"><h3>역대 최저 평점</h3><p class="d">2명 이상 평가한 영화</p>
+        ${low.map(x => bar(esc(x.mv.title), x.avg, where(x))).join('') || '<p class="d">아직 없어요</p>'}</div>
+    </div>
+    <div class="panel"><h3>의견이 가장 갈린 영화</h3><p class="d">별점 편차가 큰 순서</p>
+      ${split.map(x => bar(esc(x.mv.title), x.avg, `최저 ${x.lo} · 최고 ${x.hi}`)).join('') || '<p class="d">아직 없어요</p>'}</div>`;
+}
+
+// ---------- 모달 ----------
+function openModal(html){
+  const d = $('#modal');
+  d.innerHTML = `<div class="sheet">${html}</div>`;
+  d.classList.add('open');
+  d.onclick = e => { if (e.target === d) closeModal(); };
+}
+function closeModal(){ const d = $('#modal'); d.classList.remove('open'); d.innerHTML = ''; }
+
+async function afterSave(){ await loadAll(); closeModal(); render(); }
+
+// 내 평가
+function openRate(mid){
+  const m = S.movies.find(x => x.id === mid);
+  const mine = ratingsOf(mid).find(x => x.member_id === S.me);
+  let val = mine?.stars != null ? Number(mine.stars) : null;
+  openModal(`<h3>${esc(m.title)}</h3><p class="sub" style="margin:0">별 왼쪽을 누르면 반 개, 오른쪽을 누르면 한 개</p>
+    <div class="picker" id="pk"></div><div class="pv" id="pv"></div>
+    <textarea id="cm" rows="3" maxlength="300" placeholder="한줄평">${esc(mine?.comment ?? '')}</textarea>
+    <p class="err" id="merr"></p>
+    <div class="row">${mine ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  const draw = () => {
+    $('#pk').innerHTML = [1,2,3,4,5].map(i =>
+      `<span class="pstar st ${val >= i ? 'on' : val >= i - .5 ? 'half' : ''}">★<button class="hl" data-v="${i - .5}" aria-label="${i - .5}점"></button><button class="hr" data-v="${i}" aria-label="${i}점"></button></span>`).join('');
+    $('#pv').innerHTML = val != null ? `<strong>${val}점</strong> · <button class="link" id="clr">별점 지우기</button>` : '별점 없음';
+  };
+  draw();
+  $('#pk').onclick = e => { const b = e.target.closest('button[data-v]'); if (b){ val = +b.dataset.v; draw(); } };
+  $('#pv').onclick = e => { if (e.target.id === 'clr'){ val = null; draw(); } };
+  $('#cancel').onclick = closeModal;
+  const save = async (stars, comment) => {
+    try { await call('mv_save_rating', { p_movie_id:mid, p_stars:stars, p_comment:comment }); await afterSave(); }
+    catch(e){ if ($('#merr')) $('#merr').textContent = errMsg(e); }
+  };
+  $('#save').onclick = () => save(val, $('#cm').value);
+  if (mine) $('#del').onclick = () => { if (confirm('내 평가를 삭제할까요?')) save(null, ''); };
+}
+
+// 회차 추가/수정
+function openRound(id){
+  const r = id ? S.rounds.find(x => x.id === id) : null;
+  const yr = r?.year ?? S.year;
+  const pt = r?.period_type ?? 'quarter';
+  let per = r?.period;
+  if (!r){
+    const same = S.rounds.filter(x => x.year === yr && x.period_type === pt).map(x => x.period);
+    per = Math.min(Math.max(0, ...same) + 1, pt === 'month' ? 12 : 4);
+  }
+  openModal(`<h3>${r ? '회차 수정' : '새 회차'}</h3>
+    <div class="form">
+      <label>연도<input id="fy" type="number" value="${yr}"></label>
+      <label>방식<select id="ft"><option value="quarter" ${pt === 'quarter' ? 'selected' : ''}>분기</option><option value="month" ${pt === 'month' ? 'selected' : ''}>월</option></select></label>
+      <label>기간 (몇 분기 / 몇 월)<input id="fp" type="number" min="1" max="12" value="${per}"></label>
+      <label>추천자<select id="fr"><option value="">없음</option>${S.members.map(m => `<option value="${m.id}" ${r?.recommender_id === m.id ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
+      <label class="full">테마명<input id="fth" value="${esc(r?.theme ?? '')}" placeholder="예) 애니메이션 특별전"></label>
+      <label class="full">추천 이유<input id="frs" value="${esc(r?.reason ?? '')}"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${r ? '<button class="btn danger" id="del">회차 삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    const year = +$('#fy').value;
+    try {
+      await call('mv_save_round', {
+        p_id:r?.id ?? null, p_year:year, p_period_type:$('#ft').value, p_period:+$('#fp').value,
+        p_recommender_id:$('#fr').value ? +$('#fr').value : null,
+        p_theme:$('#fth').value, p_reason:$('#frs').value });
+      S.year = year; await afterSave();
+    } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (r) $('#del').onclick = async () => {
+    if (!confirm('이 회차의 영화와 평가가 모두 지워져요. 삭제할까요?')) return;
+    try { await call('mv_delete_round', { p_id:r.id }); await afterSave(); } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+}
+
+// 영화 추가/수정
+function openMovie(roundId, movieId){
+  const m = movieId ? S.movies.find(x => x.id === movieId) : null;
+  const rid = m?.round_id ?? roundId;
+  const kind = m?.kind ?? 'pick';
+  const nextSlot = Math.max(0, ...S.movies.filter(x => x.round_id === rid && x.kind === 'pick').map(x => x.slot)) + 1;
+  openModal(`<h3>${m ? '영화 정보 수정' : '영화 추가'}</h3>
+    <div class="form">
+      <label>구분<select id="fk"><option value="pick" ${kind === 'pick' ? 'selected' : ''}>추천작</option><option value="group" ${kind === 'group' ? 'selected' : ''}>단체관람</option></select></label>
+      <label id="slotL">순서<input id="fs" type="number" min="1" max="9" value="${m?.kind === 'pick' ? m.slot : nextSlot}"></label>
+      <label class="full">제목<input id="fti" value="${esc(m?.title ?? '')}"></label>
+      <label class="full" id="schL">일정 · 장소<input id="fsc" value="${esc(m?.schedule ?? '')}" placeholder="예) 10월 18일 대전 명보시네마"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${m ? '<button class="btn danger" id="del">영화 삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  const toggle = () => {
+    const g = $('#fk').value === 'group';
+    $('#slotL').style.display = g ? 'none' : '';
+    $('#schL').style.display = g ? '' : 'none';
+  };
+  toggle(); $('#fk').onchange = toggle;
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    const g = $('#fk').value === 'group';
+    try {
+      await call('mv_save_movie', {
+        p_id:m?.id ?? null, p_round_id:rid, p_kind:$('#fk').value,
+        p_slot:g ? 9 : +$('#fs').value, p_title:$('#fti').value, p_schedule:g ? $('#fsc').value : '' });
+      await afterSave();
+    } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (m) $('#del').onclick = async () => {
+    if (!confirm(`'${m.title}'과 평가가 모두 지워져요. 삭제할까요?`)) return;
+    try { await call('mv_delete_movie', { p_id:m.id }); await afterSave(); } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+}
+
+// 비밀번호 변경
+function openPassword(){
+  openModal(`<h3>비밀번호 변경</h3>
+    <div class="form">
+      <label class="full">현재 비밀번호<input id="po" type="password" autocomplete="current-password"></label>
+      <label class="full">새 비밀번호 (4자 이상)<input id="pn" type="password" autocomplete="new-password"></label>
+      <label class="full">새 비밀번호 확인<input id="pn2" type="password" autocomplete="new-password"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row"><span class="sp"></span><button class="btn" id="cancel">취소</button><button class="btn primary" id="save">변경</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    if ($('#pn').value !== $('#pn2').value){ $('#merr').textContent = '새 비밀번호가 서로 달라요.'; return; }
+    try {
+      const ok = await call('mv_change_password', { p_old:$('#po').value, p_new:$('#pn').value });
+      if (!ok){ $('#merr').textContent = '현재 비밀번호가 맞지 않아요.'; return; }
+      closeModal(); alert('비밀번호를 바꿨어요.');
+    } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+}
+
+init().catch(e => { $('#app').innerHTML = `<div class="loading">오류: ${esc(errMsg(e))}</div>`; });
+</script>
+</body>
+</html>
