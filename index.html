@@ -376,6 +376,23 @@ button{font:inherit;color:inherit}
 .vote{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 12px;font-weight:800;cursor:pointer;white-space:nowrap}
 .vote.on{background:#7cc4a8;border-color:#7cc4a8;color:#0b1a14}
 .flabel{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px}
+.r-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tk-link{border:1px dashed color-mix(in srgb,var(--group) 60%,transparent);background:color-mix(in srgb,var(--group) 10%,transparent);color:var(--group);border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px;cursor:pointer}
+.tk-link small{font-weight:500;opacity:.8;margin-left:2px}
+.tickets{display:grid;gap:16px;margin-top:16px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:760px){.tickets{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ticket{position:relative;border-radius:20px;padding:16px;background:linear-gradient(160deg,color-mix(in srgb,var(--group) 16%,var(--card)),var(--card) 55%);border:1px solid color-mix(in srgb,var(--group) 45%,var(--line));display:flex;flex-direction:column;gap:6px}
+.ticket::before,.ticket::after{content:"";position:absolute;top:58px;width:18px;height:18px;border-radius:50%;background:var(--bg)}
+.ticket::before{left:-10px}.ticket::after{right:-10px}
+.tk-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:2px dashed color-mix(in srgb,var(--group) 35%,var(--line))}
+.tk-label{font-weight:800;color:var(--group);font-size:14px}
+.tk-when{margin-left:auto;font-size:13px;font-weight:700;background:var(--group);color:var(--bg);padding:3px 10px;border-radius:999px}
+.tk-theme{font-size:12px;color:var(--sub);margin-top:4px}
+.ticket .movie{background:transparent;border:0;padding:6px 0 0}
+.ticket .movie .slot{display:none}
+.ticket .movie .scores{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:480px){.ticket .movie .scores{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (min-width:760px){.ticket .movie .scores{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .tabcount{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:18px;text-align:center;margin-left:2px;vertical-align:1px}
 .sec small{font-weight:600;letter-spacing:0;margin-left:4px}
 .todo-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
@@ -697,25 +714,41 @@ function renderRecords(){
   const dir = S.order === 'asc' ? 1 : -1;
   const quarters = inYear.filter(r => r.period_type === 'quarter').sort((a, b) => (a.period - b.period) * dir);
   const months = inYear.filter(r => r.period_type === 'month').sort((a, b) => (a.period - b.period) * dir);
-  const both = quarters.length && months.length;
-  if (!both) S.kind = months.length ? 'month' : 'quarter';
-  const list = S.kind === 'month' ? months : quarters;
+  const groups = quarters.flatMap(r => S.movies.filter(m => m.round_id === r.id && m.kind === 'group').map(m => ({ r, m })));
+  const views = [
+    quarters.length && ['quarter', '분기 테마작', quarters.length],
+    groups.length && ['group', '🎟 단체관람', groups.length],
+    months.length && ['month', '월별 추천작', months.length],
+  ].filter(Boolean);
+  if (!views.some(v => v[0] === S.kind)) S.kind = views[0]?.[0] ?? 'quarter';
+  const asc = S.order === 'asc';
+  const body = S.kind === 'month'
+    ? (months.length ? `<div class="months">${months.map(monthHTML).join('')}</div>` : '')
+    : S.kind === 'group'
+      ? `<div class="tickets">${groups.map(groupHTML).join('')}</div>`
+      : quarters.map(roundHTML).join('');
   $('#main').innerHTML = `
     <div class="toolbar">
       <div class="chips">${yearsList().map(y => `<button class="chip ${y === S.year ? 'on' : ''}" data-act="year" data-id="${y}">${y}</button>`).join('')}</div>
       <button class="btn small" data-act="addRound">+ 회차 추가</button>
     </div>
     <div class="viewbar">
-    ${both ? `<div class="seg">
-      <button class="${S.kind === 'quarter' ? 'on' : ''}" data-act="kind" data-k="quarter">분기 테마작 <small>${quarters.length}</small></button>
-      <button class="${S.kind === 'month' ? 'on' : ''}" data-act="kind" data-k="month">월별 추천작 <small>${months.length}</small></button>
-    </div>` : '<span class="sp"></span>'}
-      <button class="btn small sortbtn" data-act="order">${S.order === 'asc'
-        ? (S.kind === 'month' ? '1월부터 ↑' : '1분기부터 ↑') : '최신순 ↓'}</button>
+    ${views.length > 1 ? `<div class="seg">${views.map(([k, l, n]) => `<button class="${S.kind === k ? 'on' : ''}" data-act="kind" data-k="${k}">${l} <small>${n}</small></button>`).join('')}</div>` : '<span class="sp"></span>'}
+      <button class="btn small sortbtn" data-act="order">${asc ? (S.kind === 'month' ? '1월부터 ↑' : '1분기부터 ↑') : '최신순 ↓'}</button>
     </div>
-    ${!list.length ? '<p class="empty">아직 기록이 없어요.</p>'
-      : S.kind === 'month' ? `<div class="months">${list.map(monthHTML).join('')}</div>`
-      : list.map(roundHTML).join('')}`;
+    ${body || '<p class="empty">아직 기록이 없어요.</p>'}`;
+}
+
+// 단체관람 티켓 카드
+function groupHTML({ r, m }){
+  return `<section class="ticket">
+    <div class="tk-head">
+      <span class="tk-label">🎟 ${periodLabel(r)} 단체관람</span>
+      ${m.schedule ? `<span class="tk-when">${esc(m.schedule)}</span>` : ''}
+    </div>
+    <div class="tk-theme">${esc(r.theme || '')}</div>
+    ${movieHTML(m)}
+  </section>`;
 }
 
 function sortedMovies(rid){
@@ -746,8 +779,11 @@ function roundHTML(r){
     </div>
     ${r.theme ? `<h2 class="theme">${esc(r.theme)}</h2>` : ''}
     ${r.reason ? `<p class="reason">${esc(r.reason)}</p>` : ''}
-    <div class="movies" style="--n:${Math.min(3, Math.max(1, sortedMovies(r.id).filter(m => m.kind === 'pick').length))}">${sortedMovies(r.id).map(movieHTML).join('')}</div>
-    <button class="btn ghost small" data-act="addMovie" data-id="${r.id}">+ 영화 추가</button>
+    <div class="movies" style="--n:${Math.min(3, Math.max(1, sortedMovies(r.id).filter(m => m.kind === 'pick').length))}">${sortedMovies(r.id).filter(m => m.kind === 'pick').map(movieHTML).join('')}</div>
+    <div class="r-foot">
+      <button class="btn ghost small" data-act="addMovie" data-id="${r.id}">+ 영화 추가</button>
+      ${sortedMovies(r.id).filter(m => m.kind === 'group').map(g => `<button class="tk-link" data-act="kind" data-k="group">🎟 단체관람 · ${esc(g.title)}${g.schedule ? ` <small>${esc(g.schedule)}</small>` : ''} →</button>`).join('')}
+    </div>
   </section>`;
 }
 
@@ -1091,7 +1127,7 @@ async function roll(){
 function gotoMovie(id){
   const mv = S.movies.find(x => x.id === id); const r = mv && S.rounds.find(x => x.id === mv.round_id);
   if (!r) return;
-  S.tab = 'records'; S.year = r.year; S.kind = r.period_type; render();
+  S.cat = 'movie'; S.tab = 'records'; S.year = r.year; S.kind = mv.kind === 'group' ? 'group' : r.period_type; render();
   const el = document.getElementById('mv-' + id);
   if (el){ el.scrollIntoView({ behavior:'smooth', block:'center' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1600); }
 }
@@ -2042,7 +2078,7 @@ function openLegacy(id){
 function openRound(id){
   const r = id ? S.rounds.find(x => x.id === id) : null;
   const yr = r?.year ?? S.year;
-  const pt = r?.period_type ?? S.kind ?? 'quarter';
+  const pt = r?.period_type ?? (S.kind === 'month' ? 'month' : 'quarter');
   let per = r?.period;
   if (!r){
     const same = S.rounds.filter(x => x.year === yr && x.period_type === pt).map(x => x.period);
