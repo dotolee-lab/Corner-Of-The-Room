@@ -394,6 +394,35 @@ button{font:inherit;color:inherit}
 .ticket .movie .scores{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (min-width:480px){.ticket .movie .scores{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (min-width:760px){.ticket .movie .scores{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.best-hero{background:radial-gradient(120% 140% at 100% 0%,rgba(159,195,255,.28),transparent 60%),linear-gradient(160deg,#141b26,#0f1217);border-color:rgba(159,195,255,.35)}
+.best-hero::after{content:"🏅"}
+.best-grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:760px){.best-grid{grid-template-columns:1fr 1fr}}
+.best-card{background:linear-gradient(180deg,color-mix(in srgb,#9fc3ff 9%,var(--card)),var(--card) 55%);border:1px solid color-mix(in srgb,#9fc3ff 40%,var(--line));border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.b-label{font-size:13px;font-weight:800;letter-spacing:.06em;color:#9fc3ff}
+.b-win{display:flex;gap:14px;align-items:flex-start}
+.b-win.col{flex-direction:column}
+.b-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.b-meta{font-size:12px;color:var(--sub);font-weight:600}
+.b-title{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.25}
+.b-com{font-size:13px;line-height:1.45;padding-left:8px;border-left:2px solid var(--line)}
+.b-com b{font-size:11px;color:var(--sub);margin-right:4px}
+.bp{width:56px;flex-shrink:0;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:20px;align-self:flex-start}
+.bp img{width:100%;height:100%;object-fit:cover;display:block}
+.bp.lg{width:110px;font-size:34px;border-radius:12px}
+.bp.cer2{width:84px;border-radius:10px}
+.b-posters{display:flex;gap:6px}
+.b-posters .bp{width:72px}
+.b-rest{list-style:none;margin:0;padding:10px 0 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px;font-size:13px}
+.b-rest li{display:flex;gap:8px;align-items:baseline}
+.b-rest li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b-rest small{color:var(--sub)}
+.b-data{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:760px){.b-data{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.b-data small{display:block;font-size:12px;color:var(--sub);font-weight:700;margin-bottom:6px}
+.b-row{display:flex;gap:6px;align-items:center;font-size:14px;padding:4px 0}
+.b-row b{margin-left:auto;color:var(--star);white-space:nowrap}
+.best-cer{background:radial-gradient(90% 70% at 50% 0%,#1b2a44,#0b0d12 70%)}
 .tabcount{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:18px;text-align:center;margin-left:2px;vertical-align:1px}
 .sec small{font-weight:600;letter-spacing:0;margin-left:4px}
 .todo-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
@@ -537,7 +566,7 @@ async function loadAll(){
   ]);
   const bad = res.find(x => x.error); if (bad) throw bad.error;
   [S.rounds, S.movies, S.ratings, S.legacy, S.ballots, S.awards, S.aposters] = res.map(x => x.data);
-  await loadTravel();
+  await Promise.all([loadTravel(), loadBest()]);
   const years = yearsList();
   if (!years.includes(S.year)) S.year = years[0] ?? new Date().getFullYear();
 }
@@ -566,7 +595,7 @@ function renderLogin(sel){
 
 // 계정이 바뀔 때 이전 사람의 화면 기록(작성 중인 아카데미 투표 등)을 모두 비움
 function resetUserState(){
-  S.adraft = {}; S.pickResult = null; S.tab = 'records'; S.cat = 'home'; S.lastTab = {}; S.tripId = null;
+  S.adraft = {}; S.bdraft = {}; S.bBallots = []; S.bVotes = []; S.pickResult = null; S.tab = 'records'; S.cat = 'home'; S.lastTab = {}; S.tripId = null;
   S.ballots = []; S.awards = [];
 }
 
@@ -585,6 +614,7 @@ const TABS = {
   movie: () => [
     ['records', '기록'], ['stats', '통계'], ['pick', '🎲 랜덤 추천'],
     ['todo', '📝 밀린 평가' + (() => { const n = unratedOf(S.me).length; return n ? ` <span class="tabcount">${n}</span>` : ''; })()],
+    ['best', '🏅 올해의 작품'],
     ['academy', '🏆 방구석 아카데미'],
   ],
   travel: () => [['trips', '🗺 여행 기록'], ['wish', '📍 가고 싶은 곳']],
@@ -617,7 +647,7 @@ function render(){
   $('#main').onclick = onMainClick;
   if (home) return renderHome();
   ({ records:renderRecords, stats:renderStats, pick:renderPick, academy:renderAcademy, todo:renderTodo,
-     trips:renderTrips, wish:renderWish })[S.tab]();
+     trips:renderTrips, wish:renderWish, best:renderBest })[S.tab]();
 }
 
 // ---------- 홈 ----------
@@ -675,6 +705,11 @@ function onMainClick(e){
     case 'goto': gotoMovie(id); break;
     case 'statMore': S.statOpen[b.dataset.k] = !S.statOpen[b.dataset.k]; renderStats(); break;
     case 'goCat': goCat(b.dataset.k); break;
+    case 'byear': S.byear = id; renderBest(); break;
+    case 'bSave': bestSave(); break;
+    case 'bPub': bestPublish(true); break;
+    case 'bUnpub': bestPublish(false); break;
+    case 'bShow': openBestShow(); break;
     case 'tvNewTrip': openTrip(null); break;
     case 'tvOpen': S.tripId = id; S.tripTab = 'plan'; renderTrips(); scrollTo({ top:0 }); break;
     case 'tvBack': S.tripId = null; renderTrips(); break;
@@ -1936,6 +1971,190 @@ function openWish(id){
     catch(e){ $('#merr').textContent = errMsg(e); }
   };
   if (id) $('#del').onclick = async () => { if (!confirm('삭제할까요?')) return; try { await tvCall('tv_delete_wish', { p_id:id }); tvDone(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+// ---------- 올해의 작품 (올해의 영화 / 올해의 테마) ----------
+async function loadBest(){
+  const res = await Promise.all([sb.from('mv_best_ballots').select('*'), sb.from('mv_best_votes').select('*')]);
+  const bad = res.find(x => x.error);
+  if (bad){ S.bestErr = bad.error.message; S.bBallots = []; S.bVotes = []; return; }
+  S.bestErr = null; [S.bBallots, S.bVotes] = res.map(x => x.data);
+}
+const bBallot = (y, m) => (S.bBallots || []).find(b => b.year === y && b.member_id === m);
+const roundOfMovie = mv => S.rounds.find(r => r.id === mv.round_id);
+const moviesOfYear = y => S.movies.filter(mv => roundOfMovie(mv)?.year === y).sort(movieOrder).reverse();
+const themesOfYear = y => S.rounds.filter(r => r.year === y && r.period_type === 'quarter' && r.theme).sort((a, b) => a.period - b.period);
+const movieLabel = mv => { const r = roundOfMovie(mv); return `${r ? periodLabel(r) + ' · ' : ''}${mv.title}${mv.kind === 'group' ? ' (단체관람)' : ''}`; };
+const posterImg = (mv, cls = '') => `<div class="bp ${cls}">${mv?.tmdb?.poster ? `<img src="${TMDB_IMG}w342${mv.tmdb.poster}" alt="">` : '<span>🎬</span>'}</div>`;
+const avgOfMovie = id => mean(starVals(ratingsOf(id)));
+function themeAvg(r){
+  const v = S.movies.filter(m => m.round_id === r.id && m.kind === 'pick').flatMap(m => starVals(ratingsOf(m.id)));
+  return { avg:mean(v), n:v.length };
+}
+function bestTally(y, cat){
+  const pub = S.members.filter(m => bBallot(y, m.id)?.is_public);
+  const map = new Map();
+  (S.bVotes || []).filter(v => v.year === y && v.category === cat && pub.some(m => m.id === v.member_id)).forEach(v => {
+    const k = cat === 'movie' ? v.movie_id : v.round_id;
+    if (!map.has(k)) map.set(k, []);
+    map.get(k).push({ m:S.members.find(x => x.id === v.member_id), comment:v.comment });
+  });
+  return [...map.entries()].map(([id, voters]) => ({ id, voters }))
+    .sort((a, b) => b.voters.length - a.voters.length || ((cat === 'movie' ? avgOfMovie(b.id) : themeAvg(S.rounds.find(r => r.id === b.id) || {}).avg) ?? 0) - ((cat === 'movie' ? avgOfMovie(a.id) : themeAvg(S.rounds.find(r => r.id === a.id) || {}).avg) ?? 0));
+}
+
+async function renderBest(){
+  if (S.bestErr) return $('#main').innerHTML = `<div class="panel ac-locked">🏅<br>이 기능을 쓰려면 Supabase에서 <b>6_best.sql</b>을 먼저 실행해주세요<br><small>${esc(S.bestErr)}</small></div>`;
+  const years = yearsList();
+  S.byear ??= years[0];
+  S.bdraft ??= {};
+  const y = S.byear;
+  if (!S.bdraft[y]){
+    $('#main').innerHTML = '<div class="loading">불러오는 중…</div>';
+    try {
+      const rows = await call('mv_my_best', { p_year:y }) || [];
+      const mv = rows.find(r => r.category === 'movie'), th = rows.find(r => r.category === 'theme');
+      S.bdraft[y] = { movie:mv?.movie_id ?? '', mcom:mv?.comment ?? '', round:th?.round_id ?? '', rcom:th?.comment ?? '' };
+    } catch(e){ $('#main').innerHTML = `<div class="loading">${esc(errMsg(e))}</div>`; return; }
+    if (S.tab !== 'best' || S.byear !== y) return;
+  }
+  const d = S.bdraft[y];
+  const mine = bBallot(y, S.me);
+  const pub = S.members.filter(m => bBallot(y, m.id)?.is_public);
+  const movies = moviesOfYear(y), themes = themesOfYear(y);
+  const status = S.members.map(m => {
+    const b = bBallot(y, m.id);
+    const [cls, txt] = b?.is_public ? ['pub', '공개'] : b ? ['draft', '작성 중'] : ['none', '아직'];
+    return `<span class="ac-st ${cls}"><i></i>${esc(m.name)} <b>${txt}</b></span>`;
+  }).join('');
+  const groupsOpt = [['월별 추천작', m => roundOfMovie(m)?.period_type === 'month'], ['분기 테마작', m => roundOfMovie(m)?.period_type === 'quarter' && m.kind === 'pick'], ['단체관람', m => m.kind === 'group']]
+    .map(([label, f]) => { const ms = movies.filter(f); return ms.length ? `<optgroup label="${label}">${ms.map(m => `<option value="${m.id}" ${+d.movie === m.id ? 'selected' : ''}>${esc(movieLabel(m))}</option>`).join('')}</optgroup>` : ''; }).join('');
+
+  const editor = mine?.is_public
+    ? `<div class="ac-mybar"><span>✅ 내 투표는 <b>공개</b>됐어요</span><button class="btn small" data-act="bUnpub">공개 취소하고 수정</button></div>`
+    : `<details class="panel ac-editor" ${mine || !pub.length ? 'open' : ''}>
+        <summary><span class="ac-head"><h3>✏️ 내 투표</h3><span class="ac-badge ${mine ? 'draft' : 'none'}">${mine ? '🔒 나만 보는 중' : '아직 투표 안 함'}</span></span></summary>
+        <p class="note">${y}년에 함께 본 영화와 테마 중에서 골라요. 공개 전까지는 나만 볼 수 있어요.</p>
+        <div class="form">
+          <label class="full">🎬 올해의 영화<select id="bm"><option value="">선택 안 함</option>${groupsOpt}</select></label>
+          <label class="full">이유 한마디<input id="bmc" value="${esc(d.mcom)}" placeholder="왜 이 영화인가요?"></label>
+          ${themes.length ? `<label class="full">🎨 올해의 테마<select id="bt"><option value="">선택 안 함</option>${themes.map(r => `<option value="${r.id}" ${+d.round === r.id ? 'selected' : ''}>${periodLabel(r)} · ${esc(r.theme)}${r.recommender_id ? ` (${esc(memName(r.recommender_id))})` : ''}</option>`).join('')}</select></label>
+          <label class="full">이유 한마디<input id="btc" value="${esc(d.rcom)}" placeholder="왜 이 테마인가요?"></label>` : '<p class="note full">이 해에는 분기 테마가 없어서 올해의 영화만 뽑아요.</p>'}
+        </div>
+        <p class="err" id="berr"></p>
+        <div class="row"><span class="sp"></span><button class="btn" data-act="bSave">저장</button><button class="btn primary" data-act="bPub">🏅 공개하기</button></div>
+      </details>`;
+
+  $('#main').innerHTML = `
+    <div class="chips" style="margin-top:18px">${years.map(yy => `<button class="chip ${yy === y ? 'on' : ''}" data-act="byear" data-id="${yy}">${yy}</button>`).join('')}</div>
+    <div class="ac-hero best-hero">
+      <div class="ac-kicker" style="color:#9fc3ff">BEST OF THE YEAR</div>
+      <div class="ac-title">올해의 작품 <span style="color:#9fc3ff">${y}</span></div>
+      <p>${y}년에 함께 본 ${movies.length}편과 ${themes.length}개의 테마 중 최고를 뽑아요.</p>
+      <div class="ac-status">${status}</div>
+    </div>
+    ${editor}
+    ${bestResultHTML(y, pub)}
+    ${bestDataHTML(y)}`;
+  const keep = () => { const g = id => $(id)?.value ?? ''; Object.assign(d, { movie:g('#bm'), mcom:g('#bmc'), round:g('#bt'), rcom:g('#btc') }); };
+  ['#bm', '#bmc', '#bt', '#btc'].forEach(id => { if ($(id)) $(id).oninput = $(id).onchange = keep; });
+}
+
+function bestResultHTML(y, pub){
+  if (!pub.length) return `<div class="panel ac-locked">🔒<br>아직 아무도 공개하지 않았어요<br><small>각자 공개하면 결과가 나타나요</small></div>`;
+  const mv = bestTally(y, 'movie'), th = bestTally(y, 'theme');
+  const hidden = S.members.filter(m => !pub.includes(m));
+  const voterLine = vs => `<div class="aw-who">${vs.map(v => `<i>${esc(shortName(v.m.name))}</i>`).join('')} <em>${vs.length}표</em></div>
+    ${vs.filter(v => v.comment).map(v => `<div class="b-com"><b>${esc(v.m.name)}</b> ${esc(v.comment)}</div>`).join('')}`;
+  const top = arr => arr.filter(x => x.voters.length === (arr[0]?.voters.length || 0));
+  const movieWin = top(mv).map(x => { const m = S.movies.find(z => z.id === x.id); if (!m) return ''; const a = avgOfMovie(m.id);
+    return `<div class="b-win">${posterImg(m, 'lg')}<div class="b-txt"><div class="b-meta">${esc(movieLabel(m).split(' · ')[0])}${a != null ? ` · ★ ${a.toFixed(1)}` : ''}</div>
+      <div class="b-title">${esc(m.title)}</div>${voterLine(x.voters)}</div></div>`; }).join('');
+  const themeWin = top(th).map(x => { const r = S.rounds.find(z => z.id === x.id); if (!r) return ''; const ms = S.movies.filter(m => m.round_id === r.id && m.kind === 'pick').sort((a, b) => a.slot - b.slot); const ta = themeAvg(r);
+    return `<div class="b-win col"><div class="b-posters">${ms.map(m => posterImg(m)).join('')}</div><div class="b-txt"><div class="b-meta">${periodLabel(r)}${r.recommender_id ? ` · ${esc(memName(r.recommender_id))} 추천` : ''}${ta.avg != null ? ` · 평균 ★ ${ta.avg.toFixed(1)}` : ''}</div>
+      <div class="b-title">${esc(r.theme)}</div>${voterLine(x.voters)}</div></div>`; }).join('');
+  const rest = (arr, cat) => arr.slice(top(arr).length).map(x => {
+    const name = cat === 'movie' ? S.movies.find(z => z.id === x.id)?.title : S.rounds.find(z => z.id === x.id)?.theme;
+    return `<li><span>${esc(name || '?')}</span><b>${x.voters.length}표</b> <small>${x.voters.map(v => esc(shortName(v.m.name))).join('·')}</small></li>`; }).join('');
+  return `<div class="ac-reshead"><h2>${hidden.length ? '공개된 투표' : '🎉 최종 결과'}</h2>
+      ${hidden.length ? `<span class="note" style="margin:0">🔒 ${hidden.map(m => esc(m.name)).join(', ')} 비공개</span>` : ''}
+      <button class="btn small gold" data-act="bShow">🎬 발표하기</button></div>
+    <div class="best-grid">
+      <div class="best-card"><div class="b-label">🎬 올해의 영화</div>${movieWin || '<p class="d">아직 표가 없어요</p>'}${rest(mv, 'movie') ? `<ul class="b-rest">${rest(mv, 'movie')}</ul>` : ''}</div>
+      ${themesOfYear(y).length ? `<div class="best-card"><div class="b-label">🎨 올해의 테마</div>${themeWin || '<p class="d">아직 표가 없어요</p>'}${rest(th, 'theme') ? `<ul class="b-rest">${rest(th, 'theme')}</ul>` : ''}</div>` : ''}
+    </div>`;
+}
+
+function bestDataHTML(y){
+  const ms = moviesOfYear(y).map(m => ({ m, v:starVals(ratingsOf(m.id)) })).filter(x => x.v.length >= 2).map(x => ({ ...x, a:mean(x.v) })).sort((a, b) => b.a - a.a).slice(0, 3);
+  const ts = themesOfYear(y).map(r => ({ r, ...themeAvg(r) })).filter(x => x.n).sort((a, b) => b.avg - a.avg);
+  const recs = S.members.map(m => {
+    const ids = new Set(S.movies.filter(mv => mv.kind === 'pick' && roundOfMovie(mv)?.year === y && roundOfMovie(mv)?.recommender_id === m.id).map(mv => mv.id));
+    const v = S.ratings.filter(x => ids.has(x.movie_id) && x.member_id !== m.id && x.stars != null).map(x => +x.stars);
+    return { m, avg:mean(v), n:v.length };
+  }).filter(x => x.n).sort((a, b) => b.avg - a.avg);
+  if (!ms.length && !ts.length) return '';
+  return `<div class="panel"><h3>📊 숫자로 본 ${y}</h3><p class="d">투표에 참고하세요 · 별점 기준 자동 계산</p>
+    <div class="b-data">
+      ${ms.length ? `<div><small>평점 높은 영화</small>${ms.map((x, i) => `<div class="b-row"><span class="rk">${i + 1}</span>${esc(x.m.title)}<b>★ ${x.a.toFixed(2)}</b></div>`).join('')}</div>` : ''}
+      ${ts.length ? `<div><small>평점 높은 테마</small>${ts.slice(0, 3).map((x, i) => `<div class="b-row"><span class="rk">${i + 1}</span>${esc(x.r.theme)}<b>★ ${x.avg.toFixed(2)}</b></div>`).join('')}</div>` : ''}
+      ${recs.length ? `<div><small>추천왕 (내 추천작에 남들이 준 평균)</small>${recs.slice(0, 3).map((x, i) => `<div class="b-row"><span class="rk">${i + 1}</span>${esc(x.m.name)}<b>★ ${x.avg.toFixed(2)}</b></div>`).join('')}</div>` : ''}
+    </div></div>`;
+}
+
+async function bestSave(silent){
+  const d = S.bdraft[S.byear];
+  try {
+    await call('mv_save_best', { p_year:S.byear, p_movie_id:d.movie ? +d.movie : null, p_movie_comment:d.mcom, p_round_id:d.round ? +d.round : null, p_round_comment:d.rcom });
+    await loadBest();
+    if (!silent){ renderBest(); toast('저장했어요 · 아직 나만 볼 수 있어요'); }
+    return true;
+  } catch(e){ if ($('#berr')) $('#berr').textContent = errMsg(e); return false; }
+}
+async function bestPublish(on){
+  const d = S.bdraft[S.byear];
+  if (on){
+    if (!d.movie && !d.round){ $('#berr').textContent = '하나 이상 골라주세요.'; return; }
+    if (!confirm(`${S.byear} 올해의 작품 투표를 공개할까요?\n공개하면 모든 멤버가 볼 수 있어요.`)) return;
+    if (!(await bestSave(true))) return;
+  } else if (!confirm('공개를 취소할까요?')) return;
+  try { await call('mv_publish_best', { p_year:S.byear, p_public:on }); await loadBest(); renderBest(); toast(on ? '🏅 공개했어요!' : '공개를 취소했어요'); }
+  catch(e){ if ($('#berr')) $('#berr').textContent = errMsg(e); else alert(errMsg(e)); }
+}
+
+// 발표 모드
+function openBestShow(){
+  const y = S.byear;
+  const steps = [];
+  if (themesOfYear(y).length) steps.push(['theme', '🎨 올해의 테마']);
+  steps.push(['movie', '🎬 올해의 영화']);
+  let i = -1, opened = false;
+  const ov = document.createElement('div'); ov.className = 'cer best-cer'; document.body.appendChild(ov);
+  const close = () => { ov.remove(); document.removeEventListener('keydown', key); };
+  const winnerHTML = cat => {
+    const t = bestTally(y, cat); const n = t[0]?.voters.length || 0;
+    const tops = t.filter(x => x.voters.length === n);
+    if (!tops.length) return '<div class="cer-sub">아직 표가 없어요</div>';
+    return tops.map((x, k) => {
+      if (cat === 'movie'){ const m = S.movies.find(z => z.id === x.id);
+        return `<div class="cer-pick win" style="animation-delay:${k * .25}s">${posterImg(m, 'cer2')}<div><b>${esc(m.title)}</b><span>${x.voters.length}표 · ${x.voters.map(v => esc(v.m.name)).join(' · ')}</span></div></div>`; }
+      const r = S.rounds.find(z => z.id === x.id);
+      return `<div class="cer-pick win" style="animation-delay:${k * .25}s"><div><b>${esc(r.theme)}</b><span>${periodLabel(r)} · ${r.recommender_id ? esc(memName(r.recommender_id)) + ' 추천 · ' : ''}${x.voters.length}표</span></div></div>`;
+    }).join('');
+  };
+  const draw = () => {
+    let inner;
+    if (i < 0) inner = `<div class="cer-kicker" style="color:#9fc3ff">BEST OF THE YEAR</div><div class="cer-title">올해의 작품<br><span style="color:#9fc3ff">${y}</span></div><button class="btn primary cer-btn" data-c="next">발표 시작 →</button>`;
+    else if (i >= steps.length) inner = `<div class="cer-trophy">🏅</div><div class="cer-title">축하합니다!</div><button class="btn primary cer-btn" data-c="close">닫기</button>`;
+    else inner = `<div class="cer-kicker">${i + 1} / ${steps.length}</div><div class="cer-cat">${steps[i][1]}</div>
+      ${opened ? `<div class="cer-picks">${winnerHTML(steps[i][0])}</div><button class="btn primary cer-btn" data-c="next">${i === steps.length - 1 ? '마치기' : '다음 →'}</button>`
+        : `<div class="cer-env" data-c="open">✉️<small>눌러서 공개</small></div>`}`;
+    ov.innerHTML = `<button class="cer-x" data-c="close" aria-label="닫기">✕</button><div class="cer-in">${inner}</div>`;
+  };
+  ov.onclick = e => { const c = e.target.closest('[data-c]')?.dataset.c; if (c === 'close') close(); else if (c === 'open'){ opened = true; draw(); } else if (c === 'next'){ i++; opened = false; draw(); } };
+  const key = e => { if (e.key === 'Escape') close(); };
+  document.addEventListener('keydown', key);
+  draw();
 }
 
 // ---------- 통계 ----------
