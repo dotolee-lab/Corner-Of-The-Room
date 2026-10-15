@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>우리들의 영화 평론</title>
+<title>Corner Of The Room</title>
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -335,7 +335,7 @@ textarea{resize:vertical}
 
 <script>
 // ===== 설정 =====
-const SITE_TITLE   = '우리들의 영화 평론';
+const SITE_TITLE   = 'Corner Of The Room';
 const SUPABASE_URL = 'https://gudwubeutvkhjrsardtc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DD4LX04ysEDt7T0ELcdo8Q_Cl1hSPPE';
 const TMDB_KEY     = '645b1fc12706b3545394daf79af67c7d';   // ← TMDB API 키(32자리)를 따옴표 안에 붙여넣기. 비워두면 기본 명작 목록 사용
@@ -419,7 +419,7 @@ const yearsList = () => [...new Set(S.rounds.map(x => x.year))].sort((a, b) => b
 // ---------- 로그인 ----------
 function renderLogin(sel){
   $('#app').innerHTML = `<div class="login">
-    <div class="logo">🎬</div><h1>${esc(SITE_TITLE)}</h1>
+    <h1>${esc(SITE_TITLE)}</h1>
     <p class="sub">누구신가요?</p>
     <div class="who">${S.members.map(m => `<button class="who-btn${m.id === sel ? ' on' : ''}" data-id="${m.id}">${esc(m.name)}</button>`).join('')}</div>
     <form id="lf"><input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" ${sel ? '' : 'disabled'}>
@@ -452,7 +452,7 @@ async function logout(silent){
 function render(){
   $('#app').innerHTML = `
   <header class="top"><div class="top-in">
-    <div class="brand">🎬 ${esc(SITE_TITLE)}</div>
+    <div class="brand">${esc(SITE_TITLE)}</div>
     <div class="me"><button class="link" id="pwbtn">${esc(memName(S.me))}님${isAdmin() ? '<span class="admin-tag">관리자</span>' : ''}</button>${S.canInstall ? '<button class="link" id="instbtn">📲 앱 설치</button>' : ''}<button class="link" id="out">로그아웃</button></div>
   </div>
   <nav class="tabs">
