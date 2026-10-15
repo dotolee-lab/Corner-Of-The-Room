@@ -155,9 +155,39 @@ button{font:inherit;color:inherit}
 .chip-sep{width:1px;background:var(--line);margin:0 4px;align-self:stretch}
 .credit{font-size:11px;color:var(--sub);text-align:center;margin-top:24px;line-height:1.6}
 .credit a{color:var(--sub)}
+.ac-hero{margin-top:18px;padding:22px 20px;border-radius:20px;background:linear-gradient(135deg,color-mix(in srgb,#d4a017 22%,var(--card)),var(--card));border:1px solid color-mix(in srgb,#d4a017 35%,var(--line))}
+.ac-title{font-size:24px;font-weight:800;letter-spacing:-.03em}
+.ac-title span{color:#d4a017}
+.ac-hero p{margin:4px 0 12px;color:var(--sub);font-size:14px}
+.ac-status{display:flex;flex-wrap:wrap;gap:6px}
+.ac-st{font-size:12px;padding:4px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.ac-st b{margin-left:2px}
+.ac-st.pub b{color:#d4a017}.ac-st.draft b{color:var(--accent)}.ac-st.none b{color:var(--sub);font-weight:600}
+.ac-grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:900px){.ac-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:start}.ac-grid .panel{margin-top:14px}}
+.ac-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ac-head h3{margin:0;flex:1}
+.ac-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--sub)}
+.ac-badge.pub{background:#d4a017;color:#1a1408}
+.ac-badge.draft{background:var(--soft);color:var(--accent)}
+.ac-rows{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.ac-row{display:grid;grid-template-columns:96px minmax(0,1fr) 28px;gap:6px;align-items:center}
+.ac-row input{padding:8px 10px;font-size:15px}
+.ac-row .ac-cat{font-weight:700;font-size:14px}
+.ac-locked{text-align:center;color:var(--sub);padding:40px 0;line-height:2;font-size:15px}
+.ac-tablewrap{overflow-x:auto;margin-top:10px}
+.ac-table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+.ac-table th,.ac-table td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.ac-table thead th{font-size:12px;color:var(--sub)}
+.ac-table tbody th{font-size:13px;white-space:nowrap;color:var(--sub);font-weight:700}
+.ac-table td.match{background:color-mix(in srgb,#d4a017 14%,transparent)}
+.ac-table .dim{color:var(--sub)}
+.crown{font-size:11px;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;z-index:30;box-shadow:0 4px 16px rgba(0,0,0,.25)}
 @media (max-width:600px){.pick-in{flex-direction:column;text-align:center}.pick-in .plats,.provrow{justify-content:center}.poster{width:150px}}
 .movie.flash{box-shadow:0 0 0 3px var(--accent);transition:box-shadow .3s}
-.tabs{overflow-x:auto}
+.tabs{overflow-x:auto;scrollbar-width:none}
+.tabs button{white-space:nowrap;flex-shrink:0}
 .m-act{display:flex;align-items:center;gap:6px;margin-top:auto}
 .m-act .icon{margin-left:auto}
 
@@ -212,7 +242,7 @@ const TMDB_KEY     = '645b1fc12706b3545394daf79af67c7d';   // ← TMDB API 키(3
 // =================
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const S = { members:[], rounds:[], movies:[], ratings:[], legacy:[], me:null, token:null, year:null, kind:'quarter', tab:'records', order:(()=>{try{return localStorage.getItem('mvclub_order')||'desc'}catch(e){return 'desc'}})() };
+const S = { members:[], rounds:[], movies:[], ratings:[], legacy:[], ballots:[], awards:[], me:null, token:null, year:null, kind:'quarter', tab:'records', order:(()=>{try{return localStorage.getItem('mvclub_order')||'desc'}catch(e){return 'desc'}})() };
 const PLATFORMS = [
   ['넷플릭스','#e50914'], ['티빙','#ff153c'], ['쿠팡플레이','#00a8e8'], ['웨이브','#1f6bff'],
   ['왓챠','#ff0558'], ['디즈니+','#1a3fd1'], ['애플TV+','#8e8e93'], ['극장','#f2b33d'],
@@ -275,9 +305,11 @@ async function loadAll(){
     sb.from('mv_movies').select('*'),
     sb.from('mv_ratings').select('*'),
     sb.from('mv_legacy_comments').select('*').order('sort'),
+    sb.from('mv_award_ballots').select('*'),
+    sb.from('mv_awards').select('*').order('sort'),
   ]);
   const bad = res.find(x => x.error); if (bad) throw bad.error;
-  [S.rounds, S.movies, S.ratings, S.legacy] = res.map(x => x.data);
+  [S.rounds, S.movies, S.ratings, S.legacy, S.ballots, S.awards] = res.map(x => x.data);
   const years = yearsList();
   if (!years.includes(S.year)) S.year = years[0] ?? new Date().getFullYear();
 }
@@ -320,13 +352,14 @@ function render(){
     <button data-t="records" class="${S.tab === 'records' ? 'on' : ''}">기록</button>
     <button data-t="stats" class="${S.tab === 'stats' ? 'on' : ''}">통계</button>
     <button data-t="pick" class="${S.tab === 'pick' ? 'on' : ''}">🎲 랜덤 추천</button>
+    <button data-t="academy" class="${S.tab === 'academy' ? 'on' : ''}">🏆 방구석 아카데미</button>
   </nav></header>
   <main class="wrap" id="main"></main>`;
   $('#out').onclick = () => logout();
   $('#pwbtn').onclick = openPassword;
   document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; render(); });
   $('#main').onclick = onMainClick;
-  S.tab === 'records' ? renderRecords() : S.tab === 'stats' ? renderStats() : renderPick();
+  ({ records:renderRecords, stats:renderStats, pick:renderPick, academy:renderAcademy })[S.tab]();
 }
 
 function onMainClick(e){
@@ -341,6 +374,12 @@ function onMainClick(e){
     case 'pgenre': S.pickGenre = b.dataset.k; S.pickResult = null; renderPick(); break;
     case 'roll': roll(); break;
     case 'goto': gotoMovie(id); break;
+    case 'ayear': S.ayear = id; renderAcademy(); break;
+    case 'acAdd': S.adraft[S.ayear].push({ category:'', pick:'' }); renderAcademy().then(() => { const c = document.querySelectorAll('.ac-cat'); c[c.length - 1]?.focus(); }); break;
+    case 'acDel': S.adraft[S.ayear].splice(id, 1); renderAcademy(); break;
+    case 'acSave': acSave(); break;
+    case 'acPub': acPublish(true); break;
+    case 'acUnpub': acPublish(false); break;
     case 'kind': S.kind = b.dataset.k; renderRecords(); break;
     case 'order': S.order = S.order === 'asc' ? 'desc' : 'asc'; try{ localStorage.setItem('mvclub_order', S.order) }catch(e){} renderRecords(); break;
     case 'addRound': openRound(null); break;
@@ -681,6 +720,130 @@ function gotoMovie(id){
   S.tab = 'records'; S.year = r.year; S.kind = r.period_type; render();
   const el = document.getElementById('mv-' + id);
   if (el){ el.scrollIntoView({ behavior:'smooth', block:'center' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 1600); }
+}
+
+// ---------- 방구석 아카데미 ----------
+const AC_CATS = ['작품상','감독상','각본상','촬영상','음악상','미술상','남우주연상','여우주연상','조연상'];
+const acNorm = t => String(t || '').replace(/\(.*?\)/g, '').replace(/[\s:·.,!?~\-]/g, '').toLowerCase();
+const acYears = () => [...new Set([new Date().getFullYear(), ...S.rounds.map(r => r.year), ...S.ballots.map(b => b.year)])].sort((a, b) => b - a);
+const ballotOf = (y, m) => S.ballots.find(b => b.year === y && b.member_id === m);
+
+async function renderAcademy(){
+  S.ayear ??= new Date().getFullYear();
+  S.adraft ??= {};
+  const y = S.ayear;
+  const mine = ballotOf(y, S.me);
+  if (!S.adraft[y]){
+    $('#main').innerHTML = '<div class="loading">불러오는 중…</div>';
+    try {
+      const rows = await call('mv_my_awards', { p_year:y });
+      S.adraft[y] = rows?.length ? rows.map(r => ({ category:r.category, pick:r.pick })) : AC_CATS.map(c => ({ category:c, pick:'' }));
+    } catch(e){ $('#main').innerHTML = `<div class="loading">${esc(errMsg(e))}</div>`; return; }
+    if (S.tab !== 'academy' || S.ayear !== y) return;
+  }
+  const draft = S.adraft[y];
+  const pub = S.members.filter(m => ballotOf(y, m.id)?.is_public);
+  const allPub = pub.length === S.members.length;
+  const titles = [...new Set(S.movies.filter(mv => S.rounds.find(r => r.id === mv.round_id)?.year === y).map(mv => searchTitle(mv.title)))];
+
+  const status = S.members.map(m => {
+    const b = ballotOf(y, m.id);
+    const [cls, txt] = b?.is_public ? ['pub', '공개 완료'] : b ? ['draft', '작성 중'] : ['none', '아직'];
+    return `<span class="ac-st ${cls}">${esc(m.name)} <b>${txt}</b></span>`;
+  }).join('');
+
+  const myPanel = mine?.is_public
+    ? `<div class="ac-head"><h3>내 투표</h3><span class="ac-badge pub">공개됨</span></div>
+       <p class="note">공개된 투표는 모두가 보고 있어요. 고치려면 공개를 취소해야 해요.</p>
+       <div class="row"><span class="sp"></span><button class="btn small" data-act="acUnpub">공개 취소하고 수정</button></div>`
+    : `<div class="ac-head"><h3>내 투표</h3><span class="ac-badge ${mine ? 'draft' : 'none'}">${mine ? '🔒 나만 보는 중' : '새로 작성'}</span></div>
+       <p class="note">공개 버튼을 누르기 전까지는 나만 볼 수 있어요. 제목을 입력하면 ${y}년에 본 영화가 자동완성으로 떠요.</p>
+       <datalist id="aclist">${titles.map(t => `<option value="${esc(t)}">`).join('')}</datalist>
+       <div class="ac-rows" id="acrows">${draft.map((d, i) => `
+         <div class="ac-row" data-i="${i}">
+           <input class="ac-cat" value="${esc(d.category)}" placeholder="부문">
+           <input class="ac-pick" value="${esc(d.pick)}" placeholder="수상작 / 수상자 (작품명)" list="aclist">
+           <button class="icon" data-act="acDel" data-id="${i}" title="부문 삭제">✕</button>
+         </div>`).join('')}</div>
+       <button class="btn ghost small" data-act="acAdd" style="margin-top:8px">+ 부문 추가</button>
+       <p class="err" id="acerr"></p>
+       <div class="row"><span class="sp"></span>
+         <button class="btn" data-act="acSave">저장</button>
+         <button class="btn primary" data-act="acPub">🏆 공개하기</button></div>`;
+
+  $('#main').innerHTML = `
+    <div class="toolbar">
+      <div class="chips">${acYears().map(yy => `<button class="chip ${yy === y ? 'on' : ''}" data-act="ayear" data-id="${yy}">${yy}</button>`).join('')}</div>
+    </div>
+    <div class="ac-hero">
+      <div class="ac-title">🏆 방구석 아카데미 <span>${y}</span></div>
+      <p>각자 투표를 만들고, 연말에 <b>공개</b>를 누르면 그때부터 다른 사람도 볼 수 있어요.</p>
+      <div class="ac-status">${status}</div>
+    </div>
+    <div class="ac-grid">
+      <section class="panel ac-mine">${myPanel}</section>
+      <section class="panel ac-result">${resultHTML(y, pub, allPub)}</section>
+    </div>`;
+
+  const rows = $('#acrows');
+  if (rows) rows.oninput = e => {
+    const r = e.target.closest('.ac-row'); if (!r) return;
+    const d = draft[+r.dataset.i];
+    if (e.target.classList.contains('ac-cat')) d.category = e.target.value; else d.pick = e.target.value;
+  };
+}
+
+function resultHTML(y, pub, allPub){
+  if (!pub.length) return `<div class="ac-head"><h3>공개된 투표</h3></div>
+    <div class="ac-locked">🔒<br>아직 아무도 공개하지 않았어요</div>`;
+  const items = S.awards.filter(a => a.year === y);
+  const cats = [...AC_CATS.filter(c => items.some(a => a.category === c)),
+                ...[...new Set(items.map(a => a.category))].filter(c => !AC_CATS.includes(c))];
+  const hidden = S.members.filter(m => !pub.includes(m));
+  const body = cats.map(c => {
+    const picks = pub.map(m => items.find(a => a.member_id === m.id && a.category === c)?.pick || '');
+    const cnt = {}; picks.forEach(p => { const k = acNorm(p); if (k) cnt[k] = (cnt[k] || 0) + 1; });
+    const top = Math.max(0, ...Object.values(cnt));
+    return `<tr><th>${esc(c)}</th>${picks.map(p => {
+      const n = cnt[acNorm(p)] || 0;
+      return `<td class="${n >= 2 ? 'match' : ''}">${p ? esc(p) : '<span class="dim">—</span>'}${n >= 2 && n === top ? ` <span class="crown" title="${n}명 일치">👑${n}</span>` : ''}</td>`;
+    }).join('')}</tr>`;
+  }).join('');
+  return `<div class="ac-head"><h3>${allPub ? '🎉 최종 결과' : '공개된 투표'}</h3>
+      ${hidden.length ? `<span class="note" style="margin:0">🔒 ${hidden.map(m => esc(m.name)).join(', ')} 아직 비공개</span>` : ''}</div>
+    <div class="ac-tablewrap"><table class="ac-table">
+      <thead><tr><th></th>${pub.map(m => `<th>${esc(m.name)}</th>`).join('')}</tr></thead>
+      <tbody>${body}</tbody></table></div>
+    ${pub.length >= 2 ? '<p class="note">👑 같은 작품·인물을 고른 사람이 2명 이상인 부문이에요.</p>' : ''}`;
+}
+
+function acCollect(){
+  return (S.adraft[S.ayear] || []).map(d => ({ category:d.category.trim(), pick:d.pick.trim() })).filter(d => d.category);
+}
+async function acSave(silent){
+  try {
+    await call('mv_save_awards', { p_year:S.ayear, p_items:acCollect() });
+    await loadAll();
+    if (!silent){ renderAcademy(); toast('저장했어요 · 아직 나만 볼 수 있어요'); }
+    return true;
+  } catch(e){ if ($('#acerr')) $('#acerr').textContent = errMsg(e); return false; }
+}
+async function acPublish(on){
+  if (on){
+    const filled = acCollect().filter(d => d.pick).length;
+    if (!filled){ $('#acerr').textContent = '수상작을 하나 이상 적어주세요.'; return; }
+    if (!confirm(`${S.ayear} 방구석 아카데미 투표를 공개할까요?\n공개하면 모든 멤버가 볼 수 있어요.`)) return;
+    if (!(await acSave(true))) return;
+  } else if (!confirm('공개를 취소할까요? 다시 나만 볼 수 있게 돼요.')) return;
+  try {
+    await call('mv_publish_awards', { p_year:S.ayear, p_public:on });
+    await loadAll(); renderAcademy();
+    toast(on ? '🏆 공개했어요!' : '공개를 취소했어요');
+  } catch(e){ if ($('#acerr')) $('#acerr').textContent = errMsg(e); else alert(errMsg(e)); }
+}
+function toast(msg){
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
 }
 
 // ---------- 통계 ----------
