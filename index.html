@@ -22,7 +22,7 @@
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit}
-.wrap{max-width:980px;margin:0 auto;padding:0 16px 48px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px 48px}
 .loading,.empty{padding:60px 0;text-align:center;color:var(--sub)}
 
 /* buttons */
@@ -50,10 +50,10 @@ button{font:inherit;color:inherit}
 
 /* header */
 .top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.top-in{max-width:980px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.top-in{max-width:1120px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
 .brand{font-weight:800;font-size:17px;letter-spacing:-.02em;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .me{display:flex;gap:12px;align-items:center}
-.tabs{max-width:980px;margin:0 auto;padding:0 16px;display:flex;gap:4px}
+.tabs{max-width:1120px;margin:0 auto;padding:0 16px;display:flex;gap:4px}
 .tabs button{background:none;border:0;padding:8px 12px 10px;cursor:pointer;font-weight:700;color:var(--sub);border-bottom:2px solid transparent}
 .tabs button.on{color:var(--ink);border-color:var(--accent)}
 
@@ -70,7 +70,16 @@ button{font:inherit;color:inherit}
 .theme{margin:6px 0 2px;font-size:22px;letter-spacing:-.03em;line-height:1.3}
 .reason{margin:0 0 14px;color:var(--sub);font-size:14px}
 .movies{display:grid;gap:12px;margin-bottom:12px}
-@media (min-width:760px){.movies{grid-template-columns:1fr 1fr}}
+@media (min-width:760px){.movies{grid-template-columns:repeat(var(--n,3),minmax(0,1fr))}.movies .movie.group{grid-column:1/-1}.movies .movie.group .scores{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.months{display:grid;gap:14px;margin-top:16px}
+@media (min-width:640px){.months{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:980px){.months{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.mcard{margin:0;padding:14px 0 0;border-top:0;display:flex;flex-direction:column}
+.mcard .reason{line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mcard .reason:empty{display:none}
+@media (min-width:640px){.mcard .reason,.mcard .reason:empty{display:-webkit-box;height:2.9em}}
+.mcard .movies{flex:1;margin-bottom:8px}
+.mcard .movie{height:100%}
 .movie{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
 .movie.group{border-color:color-mix(in srgb,var(--group) 45%,var(--line))}
 .m-top{display:flex;gap:12px;align-items:flex-start}
@@ -85,7 +94,7 @@ button{font:inherit;color:inherit}
 @media (min-width:480px){.movie .scores{grid-template-columns:repeat(4,1fr)}}
 @media (min-width:760px){.movie .scores{grid-template-columns:1fr 1fr}}
 .sc{display:flex;flex-direction:column;font-size:12px;padding:6px 8px;border-radius:10px;background:var(--bg)}
-.sc.me{outline:1.5px solid var(--accent)}
+.sc.mine{outline:1.5px solid var(--accent)}
 .sc .nm{color:var(--sub);font-weight:600}
 .stars{font-size:15px;letter-spacing:1px;white-space:nowrap}
 .stars.none{color:var(--sub)}
@@ -302,12 +311,28 @@ function renderRecords(){
       <button class="${S.kind === 'quarter' ? 'on' : ''}" data-act="kind" data-k="quarter">분기 테마작 <small>${quarters.length}</small></button>
       <button class="${S.kind === 'month' ? 'on' : ''}" data-act="kind" data-k="month">월별 추천작 <small>${months.length}</small></button>
     </div>` : ''}
-    ${list.length ? list.map(roundHTML).join('') : '<p class="empty">아직 기록이 없어요.</p>'}`;
+    ${!list.length ? '<p class="empty">아직 기록이 없어요.</p>'
+      : S.kind === 'month' ? `<div class="months">${list.map(monthHTML).join('')}</div>`
+      : list.map(roundHTML).join('')}`;
 }
 
 function sortedMovies(rid){
   return S.movies.filter(m => m.round_id === rid)
     .sort((a, b) => a.kind === b.kind ? a.slot - b.slot : (a.kind === 'pick' ? -1 : 1));
+}
+
+function monthHTML(r){
+  const mv = sortedMovies(r.id);
+  return `<section class="round mcard">
+    <div class="r-head">
+      <span class="period">${periodLabel(r)}</span>
+      ${r.recommender_id ? `<span class="badge">추천 ${esc(memName(r.recommender_id))}</span>` : ''}
+      <button class="icon" data-act="editRound" data-id="${r.id}" title="회차 수정">✎</button>
+    </div>
+    <p class="reason" title="${esc(r.reason)}">${esc(r.reason ?? '')}</p>
+    <div class="movies" style="--n:1">${mv.map(movieHTML).join('')}</div>
+    ${mv.length ? '' : `<button class="btn ghost small" data-act="addMovie" data-id="${r.id}">+ 영화 추가</button>`}
+  </section>`;
 }
 
 function roundHTML(r){
@@ -319,7 +344,7 @@ function roundHTML(r){
     </div>
     ${r.theme ? `<h2 class="theme">${esc(r.theme)}</h2>` : ''}
     ${r.reason ? `<p class="reason">${esc(r.reason)}</p>` : ''}
-    <div class="movies">${sortedMovies(r.id).map(movieHTML).join('')}</div>
+    <div class="movies" style="--n:${Math.min(3, Math.max(1, sortedMovies(r.id).filter(m => m.kind === 'pick').length))}">${sortedMovies(r.id).map(movieHTML).join('')}</div>
     <button class="btn ghost small" data-act="addMovie" data-id="${r.id}">+ 영화 추가</button>
   </section>`;
 }
@@ -343,7 +368,7 @@ function movieHTML(m){
     </div>
     <div class="scores">${S.members.map(mb => {
       const x = rs.find(y => y.member_id === mb.id);
-      return `<div class="sc${mb.id === S.me ? ' me' : ''}"><span class="nm">${esc(mb.name)}</span>${stars(x?.stars)}</div>`;
+      return `<div class="sc${mb.id === S.me ? ' mine' : ''}"><span class="nm">${esc(mb.name)}</span>${stars(x?.stars)}</div>`;
     }).join('')}</div>
     ${coms ? `<ul class="coms">${coms}</ul>` : ''}
     <div class="m-act">
