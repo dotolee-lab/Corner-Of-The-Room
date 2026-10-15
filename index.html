@@ -96,6 +96,12 @@ button{font:inherit;color:inherit}
 .coms li{font-size:14px;line-height:1.45;padding-left:10px;border-left:2px solid var(--line)}
 .coms li b{display:block;font-size:11px;color:var(--accent)}
 .coms li.anon b{color:var(--sub);font-weight:600}
+.coms li .ed{float:right;background:none;border:0;color:var(--sub);cursor:pointer;font-size:12px;padding:0 0 0 8px}
+.sec{margin:34px 0 0;font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--sub);display:flex;align-items:center;gap:10px}
+.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.sec+.round{border-top:0;margin-top:8px}
+.admin-tag{font-size:11px;font-weight:700;background:var(--accent);color:var(--accent-ink);padding:1px 7px;border-radius:999px;margin-left:4px;text-decoration:none}
+.note{font-size:12px;color:var(--sub);margin:6px 0 0}
 .m-act{display:flex;align-items:center;gap:6px;margin-top:auto}
 .m-act .icon{margin-left:auto}
 
@@ -155,6 +161,7 @@ const LS = 'mvclub_session';
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const memName = id => S.members.find(m => m.id === id)?.name ?? '?';
+const isAdmin = () => !!S.members.find(m => m.id === S.me)?.is_admin;
 const periodLabel = r => r.period_type === 'month' ? `${r.period}월` : `${r.period}분기`;
 const ratingsOf = mid => S.ratings.filter(x => x.movie_id === mid);
 const mean = a => a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
@@ -244,7 +251,7 @@ function render(){
   $('#app').innerHTML = `
   <header class="top"><div class="top-in">
     <div class="brand">🎬 ${esc(SITE_TITLE)}</div>
-    <div class="me"><button class="link" id="pwbtn">${esc(memName(S.me))}님</button><button class="link" id="out">로그아웃</button></div>
+    <div class="me"><button class="link" id="pwbtn">${esc(memName(S.me))}님${isAdmin() ? '<span class="admin-tag">관리자</span>' : ''}</button><button class="link" id="out">로그아웃</button></div>
   </div>
   <nav class="tabs">
     <button data-t="records" class="${S.tab === 'records' ? 'on' : ''}">기록</button>
@@ -267,18 +274,25 @@ function onMainClick(e){
     case 'editRound': openRound(id); break;
     case 'addMovie': openMovie(id, null); break;
     case 'editMovie': openMovie(null, id); break;
-    case 'rate': openRate(id); break;
+    case 'rate': openRate(id, S.me); break;
+    case 'editCom': openRate(id, +b.dataset.m); break;
+    case 'editLegacy': openLegacy(id); break;
   }
 }
 
 function renderRecords(){
-  const rounds = S.rounds.filter(r => r.year === S.year).sort((a, b) => b.period - a.period);
+  const inYear = S.rounds.filter(r => r.year === S.year);
+  const quarters = inYear.filter(r => r.period_type === 'quarter').sort((a, b) => b.period - a.period);
+  const months = inYear.filter(r => r.period_type === 'month').sort((a, b) => b.period - a.period);
+  const both = quarters.length && months.length;
   $('#main').innerHTML = `
     <div class="toolbar">
       <div class="chips">${yearsList().map(y => `<button class="chip ${y === S.year ? 'on' : ''}" data-act="year" data-id="${y}">${y}</button>`).join('')}</div>
       <button class="btn small" data-act="addRound">+ 회차 추가</button>
     </div>
-    ${rounds.length ? rounds.map(roundHTML).join('') : '<p class="empty">아직 기록이 없어요.</p>'}`;
+    ${!inYear.length ? '<p class="empty">아직 기록이 없어요.</p>' : ''}
+    ${quarters.length ? (both ? '<h2 class="sec">분기 테마작</h2>' : '') + quarters.map(roundHTML).join('') : ''}
+    ${months.length ? (both ? '<h2 class="sec">월별 추천작</h2>' : '') + months.map(roundHTML).join('') : ''}`;
 }
 
 function sortedMovies(rid){
@@ -304,11 +318,14 @@ function movieHTML(m){
   const rs = ratingsOf(m.id), vals = starVals(rs), avg = mean(vals);
   const mine = rs.find(x => x.member_id === S.me);
   const label = m.kind === 'group' ? `단체관람${m.schedule ? ' · ' + esc(m.schedule) : ''}` : `추천작 ${m.slot}`;
+  const admin = isAdmin();
   const coms = S.members.map(mb => {
       const x = rs.find(y => y.member_id === mb.id);
-      return x?.comment ? `<li><b>${esc(mb.name)}</b>${esc(x.comment)}</li>` : '';
+      const ed = admin || mb.id === S.me ? `<button class="ed" data-act="editCom" data-id="${m.id}" data-m="${mb.id}" title="수정">✎</button>` : '';
+      return x?.comment ? `<li>${ed}<b>${esc(mb.name)}</b>${esc(x.comment)}</li>` : '';
     }).join('')
-    + S.legacy.filter(l => l.movie_id === m.id).map(l => `<li class="anon"><b>작성자 미상</b>${esc(l.body)}</li>`).join('');
+    + S.legacy.filter(l => l.movie_id === m.id).map(l =>
+      `<li class="anon">${admin ? `<button class="ed" data-act="editLegacy" data-id="${l.id}" title="수정">✎</button>` : ''}<b>작성자 미상</b>${esc(l.body)}</li>`).join('');
   return `<article class="movie ${m.kind}">
     <div class="m-top">
       <div><div class="slot">${label}</div><h3>${esc(m.title)}</h3></div>
@@ -393,11 +410,15 @@ function closeModal(){ const d = $('#modal'); d.classList.remove('open'); d.inne
 async function afterSave(){ await loadAll(); closeModal(); render(); }
 
 // 내 평가
-function openRate(mid){
+function openRate(mid, who){
+  if (who !== S.me && !isAdmin()) who = S.me;
   const m = S.movies.find(x => x.id === mid);
-  const mine = ratingsOf(mid).find(x => x.member_id === S.me);
+  const mine = ratingsOf(mid).find(x => x.member_id === who);
   let val = mine?.stars != null ? Number(mine.stars) : null;
-  openModal(`<h3>${esc(m.title)}</h3><p class="sub" style="margin:0">별 왼쪽을 누르면 반 개, 오른쪽을 누르면 한 개</p>
+  const whoSel = isAdmin()
+    ? `<div class="form" style="margin:8px 0 4px"><label class="full">누구의 평가<select id="who">${S.members.map(mb => `<option value="${mb.id}" ${mb.id === who ? 'selected' : ''}>${esc(mb.name)}${mb.id === S.me ? ' (나)' : ''}</option>`).join('')}</select></label></div>`
+    : '';
+  openModal(`<h3>${esc(m.title)}</h3>${whoSel}<p class="sub" style="margin:0">별 왼쪽을 누르면 반 개, 오른쪽을 누르면 한 개</p>
     <div class="picker" id="pk"></div><div class="pv" id="pv"></div>
     <textarea id="cm" rows="3" maxlength="300" placeholder="한줄평">${esc(mine?.comment ?? '')}</textarea>
     <p class="err" id="merr"></p>
@@ -409,15 +430,48 @@ function openRate(mid){
     $('#pv').innerHTML = val != null ? `<strong>${val}점</strong> · <button class="link" id="clr">별점 지우기</button>` : '별점 없음';
   };
   draw();
+  if ($('#who')) $('#who').onchange = () => openRate(mid, +$('#who').value);
   $('#pk').onclick = e => { const b = e.target.closest('button[data-v]'); if (b){ val = +b.dataset.v; draw(); } };
   $('#pv').onclick = e => { if (e.target.id === 'clr'){ val = null; draw(); } };
   $('#cancel').onclick = closeModal;
   const save = async (stars, comment) => {
-    try { await call('mv_save_rating', { p_movie_id:mid, p_stars:stars, p_comment:comment }); await afterSave(); }
+    try { await call('mv_save_rating', { p_movie_id:mid, p_stars:stars, p_comment:comment, p_member_id:who }); await afterSave(); }
     catch(e){ if ($('#merr')) $('#merr').textContent = errMsg(e); }
   };
   $('#save').onclick = () => save(val, $('#cm').value);
-  if (mine) $('#del').onclick = () => { if (confirm('내 평가를 삭제할까요?')) save(null, ''); };
+  if (mine) $('#del').onclick = () => { if (confirm(`${who === S.me ? '내' : memName(who) + '님의'} 평가를 삭제할까요?`)) save(null, ''); };
+}
+
+// 작성자 미상 한줄평 수정 (관리자)
+function openLegacy(id){
+  const l = S.legacy.find(x => x.id === id); if (!l) return;
+  const mv = S.movies.find(x => x.id === l.movie_id);
+  openModal(`<h3>한줄평 수정</h3><p class="sub" style="margin:0">${esc(mv?.title)}</p>
+    <div class="form">
+      <label class="full">한줄평<textarea id="lb" rows="4" maxlength="500">${esc(l.body)}</textarea></label>
+      <label class="full">작성자<select id="lw"><option value="">작성자 미상</option>${S.members.map(mb => `<option value="${mb.id}">${esc(mb.name)}</option>`).join('')}</select></label>
+    </div>
+    <p class="note" id="lnote">작성자를 고르면 그 사람의 한줄평으로 옮겨져요.</p>
+    <p class="err" id="merr"></p>
+    <div class="row"><button class="btn danger" id="del">삭제</button><span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#lw').onchange = () => {
+    const w = +$('#lw').value;
+    const ex = w && ratingsOf(l.movie_id).find(x => x.member_id === w && x.comment);
+    $('#lnote').textContent = !w ? '작성자를 고르면 그 사람의 한줄평으로 옮겨져요.'
+      : ex ? `⚠ ${memName(w)}님은 이미 한줄평이 있어서 덮어써져요: "${ex.comment}"` : `${memName(w)}님의 한줄평으로 옮겨져요.`;
+  };
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    try {
+      await call('mv_save_legacy', { p_id:id, p_body:$('#lb').value, p_member_id:$('#lw').value ? +$('#lw').value : null });
+      await afterSave();
+    } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  $('#del').onclick = async () => {
+    if (!confirm('이 한줄평을 삭제할까요?')) return;
+    try { await call('mv_delete_legacy', { p_id:id }); await afterSave(); } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
 }
 
 // 회차 추가/수정
