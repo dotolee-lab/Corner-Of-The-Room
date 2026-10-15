@@ -963,7 +963,7 @@ async function renderAcademy(){
       <div class="chips">${acYears().map(yy => `<button class="chip ${yy === y ? 'on' : ''}" data-act="ayear" data-id="${yy}">${yy}</button>`).join('')}</div>
     </div>
     <div class="ac-hero">
-      <div class="ac-title">🏆 방구석 아카데미 <span>${y}</span></div>
+      <div class="ac-title">🏆 ${y >= 2020 ? `제 ${y - 2019}회 ` : ''}방구석 아카데미 <span>${y}</span></div>
       <p>각자 투표를 만들고, 연말에 <b>공개</b>를 누르면 그때부터 다른 사람도 볼 수 있어요.</p>
       <div class="ac-status">${status}</div>
     </div>
