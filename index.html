@@ -106,11 +106,22 @@ button{font:inherit;color:inherit}
 .coms li b{display:block;font-size:11px;color:var(--accent)}
 .coms li.anon b{color:var(--sub);font-weight:600}
 .coms li .ed{float:right;background:none;border:0;color:var(--sub);cursor:pointer;font-size:12px;padding:0 0 0 8px}
-.seg{display:flex;background:var(--chip);border-radius:12px;padding:4px;margin:14px 0 0;gap:4px}
+.viewbar{display:flex;align-items:center;gap:10px;margin:14px 0 0}
+.viewbar .sp{flex:1}
+.sortbtn{flex-shrink:0;white-space:nowrap}
+.viewbar+.round{border-top:0;margin-top:10px}
+.plats{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;align-items:center}
+.plat{font-size:11px;font-weight:700;padding:2px 8px 2px 6px;border-radius:999px;background:var(--bg);border:1px solid var(--line);display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.plat i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.jw{font-size:11px;color:var(--sub);text-decoration:none;padding:2px 6px;border-radius:999px;border:1px dashed var(--line);white-space:nowrap}
+.jw:hover{color:var(--ink);border-style:solid}
+.pchk{display:flex;flex-wrap:wrap;gap:6px}
+.pchk label{flex-direction:row!important;align-items:center;gap:5px!important;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:13px!important;color:var(--ink)!important;cursor:pointer}
+.pchk input{width:auto;margin:0}
+.seg{flex:1;display:flex;background:var(--chip);border-radius:12px;padding:4px;gap:4px}
 .seg button{flex:1;border:0;background:transparent;padding:9px 8px;border-radius:9px;cursor:pointer;font-weight:700;font-size:14px;color:var(--sub)}
 .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .seg small{font-weight:600;color:var(--sub);margin-left:2px}
-.seg+.round{border-top:0;margin-top:10px}
 .sec{margin:34px 0 0;font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--sub);display:flex;align-items:center;gap:10px}
 .sec::after{content:"";flex:1;height:1px;background:var(--line)}
 .sec+.round{border-top:0;margin-top:8px}
@@ -169,7 +180,13 @@ const SUPABASE_KEY = 'sb_publishable_DD4LX04ysEDt7T0ELcdo8Q_Cl1hSPPE';
 // =================
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const S = { members:[], rounds:[], movies:[], ratings:[], legacy:[], me:null, token:null, year:null, kind:'quarter', tab:'records' };
+const S = { members:[], rounds:[], movies:[], ratings:[], legacy:[], me:null, token:null, year:null, kind:'quarter', tab:'records', order:(()=>{try{return localStorage.getItem('mvclub_order')||'desc'}catch(e){return 'desc'}})() };
+const PLATFORMS = [
+  ['넷플릭스','#e50914'], ['티빙','#ff153c'], ['쿠팡플레이','#00a8e8'], ['웨이브','#1f6bff'],
+  ['왓챠','#ff0558'], ['디즈니+','#1a3fd1'], ['애플TV+','#8e8e93'], ['극장','#f2b33d'],
+];
+const platColor = n => PLATFORMS.find(p => p[0] === n)?.[1] ?? '#888';
+const searchTitle = t => t.replace(/\s*\(\d{4}\)\s*$/, '').replace(/\(.*?\)/g, '').trim();
 const LS = 'mvclub_session';
 
 const $ = s => document.querySelector(s);
@@ -285,6 +302,7 @@ function onMainClick(e){
   switch (b.dataset.act){
     case 'year': S.year = id; S.kind = 'quarter'; renderRecords(); break;
     case 'kind': S.kind = b.dataset.k; renderRecords(); break;
+    case 'order': S.order = S.order === 'asc' ? 'desc' : 'asc'; try{ localStorage.setItem('mvclub_order', S.order) }catch(e){} renderRecords(); break;
     case 'addRound': openRound(null); break;
     case 'editRound': openRound(id); break;
     case 'addMovie': openMovie(id, null); break;
@@ -297,8 +315,9 @@ function onMainClick(e){
 
 function renderRecords(){
   const inYear = S.rounds.filter(r => r.year === S.year);
-  const quarters = inYear.filter(r => r.period_type === 'quarter').sort((a, b) => b.period - a.period);
-  const months = inYear.filter(r => r.period_type === 'month').sort((a, b) => b.period - a.period);
+  const dir = S.order === 'asc' ? 1 : -1;
+  const quarters = inYear.filter(r => r.period_type === 'quarter').sort((a, b) => (a.period - b.period) * dir);
+  const months = inYear.filter(r => r.period_type === 'month').sort((a, b) => (a.period - b.period) * dir);
   const both = quarters.length && months.length;
   if (!both) S.kind = months.length ? 'month' : 'quarter';
   const list = S.kind === 'month' ? months : quarters;
@@ -307,10 +326,14 @@ function renderRecords(){
       <div class="chips">${yearsList().map(y => `<button class="chip ${y === S.year ? 'on' : ''}" data-act="year" data-id="${y}">${y}</button>`).join('')}</div>
       <button class="btn small" data-act="addRound">+ 회차 추가</button>
     </div>
+    <div class="viewbar">
     ${both ? `<div class="seg">
       <button class="${S.kind === 'quarter' ? 'on' : ''}" data-act="kind" data-k="quarter">분기 테마작 <small>${quarters.length}</small></button>
       <button class="${S.kind === 'month' ? 'on' : ''}" data-act="kind" data-k="month">월별 추천작 <small>${months.length}</small></button>
-    </div>` : ''}
+    </div>` : '<span class="sp"></span>'}
+      <button class="btn small sortbtn" data-act="order">${S.order === 'asc'
+        ? (S.kind === 'month' ? '1월부터 ↑' : '1분기부터 ↑') : '최신순 ↓'}</button>
+    </div>
     ${!list.length ? '<p class="empty">아직 기록이 없어요.</p>'
       : S.kind === 'month' ? `<div class="months">${list.map(monthHTML).join('')}</div>`
       : list.map(roundHTML).join('')}`;
@@ -363,7 +386,9 @@ function movieHTML(m){
       `<li class="anon">${admin ? `<button class="ed" data-act="editLegacy" data-id="${l.id}" title="수정">✎</button>` : ''}<b>작성자 미상</b>${esc(l.body)}</li>`).join('');
   return `<article class="movie ${m.kind}">
     <div class="m-top">
-      <div><div class="slot">${label}</div><h3>${esc(m.title)}</h3></div>
+      <div><div class="slot">${label}</div><h3>${esc(m.title)}</h3>
+        <div class="plats">${(m.platforms || []).map(n => `<span class="plat"><i style="background:${platColor(n)}"></i>${esc(n)}</span>`).join('')}
+          <a class="jw" href="https://www.justwatch.com/kr/%EA%B2%80%EC%83%89?q=${encodeURIComponent(searchTitle(m.title))}" target="_blank" rel="noopener" title="지금 어디서 볼 수 있는지 JustWatch에서 확인">어디서 볼까? ↗</a></div></div>
       <div class="avg">${avg != null ? `<strong>${avg.toFixed(1)}</strong><small>${vals.length}명 평균</small>` : '<small>평가 없음</small>'}</div>
     </div>
     <div class="scores">${S.members.map(mb => {
@@ -559,6 +584,8 @@ function openMovie(roundId, movieId){
       <label>구분<select id="fk"><option value="pick" ${kind === 'pick' ? 'selected' : ''}>추천작</option><option value="group" ${kind === 'group' ? 'selected' : ''}>단체관람</option></select></label>
       <label id="slotL">순서<input id="fs" type="number" min="1" max="9" value="${m?.kind === 'pick' ? m.slot : nextSlot}"></label>
       <label class="full">제목<input id="fti" value="${esc(m?.title ?? '')}"></label>
+      <div class="full"><div style="font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px">볼 수 있는 곳</div>
+        <div class="pchk">${PLATFORMS.map(([n]) => `<label><input type="checkbox" value="${esc(n)}" ${(m?.platforms || []).includes(n) ? 'checked' : ''}>${esc(n)}</label>`).join('')}</div></div>
       <label class="full" id="schL">일정 · 장소<input id="fsc" value="${esc(m?.schedule ?? '')}" placeholder="예) 10월 18일 대전 명보시네마"></label>
     </div>
     <p class="err" id="merr"></p>
@@ -576,7 +603,8 @@ function openMovie(roundId, movieId){
     try {
       await call('mv_save_movie', {
         p_id:m?.id ?? null, p_round_id:rid, p_kind:$('#fk').value,
-        p_slot:g ? 9 : +$('#fs').value, p_title:$('#fti').value, p_schedule:g ? $('#fsc').value : '' });
+        p_slot:g ? 9 : +$('#fs').value, p_title:$('#fti').value, p_schedule:g ? $('#fsc').value : '',
+        p_platforms:[...document.querySelectorAll('.pchk input:checked')].map(x => x.value) });
       await afterSave();
     } catch(e){ $('#merr').textContent = errMsg(e); }
   };
