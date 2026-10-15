@@ -199,6 +199,7 @@ button{font:inherit;color:inherit}
 .aw-pick.win .aw-txt b{color:#d4a017}
 .aw-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .aw-txt b{font-size:16px;line-height:1.35;word-break:keep-all;letter-spacing:-.01em}
+.aw-alt{font-size:12px;color:var(--sub);line-height:1.3}
 .aw-who{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
 .aw-who i{font-style:normal;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--chip);color:var(--sub)}
 .aw-who em{font-style:normal;font-size:11px;font-weight:800;color:#d4a017}
@@ -987,16 +988,42 @@ function acCats(items){
   return [...AC_CATS.filter(c => set.has(c)), ...[...set].filter(c => !AC_CATS.includes(c))];
 }
 // 같은 작품/인물을 고른 사람끼리 묶기 (많이 겹친 순)
+// 같은 작품/인물인지 판단하는 기준
+//  · 인물 부문(감독·주연·조연, 괄호 있는 각본상): 괄호 앞 이름으로 비교 (한 글자 차이까지는 같은 사람으로 봄)
+//  · 작품 부문: TMDB에서 찾은 영화가 같으면 같은 작품 (표기가 달라도 OK), 못 찾았으면 글자로 비교
+const isPersonCat = (cat, pick) => /감독|주연|조연/.test(cat) || (/각본/.test(cat) && /\(.+\)/.test(pick));
+function acIdent(y, cat, pick){
+  if (isPersonCat(cat, pick)) return 'p:' + acNorm(pick);
+  const t = pickTitle(cat, pick);
+  const ov = posterOverride(y, t);
+  const id = ov ? ov.tmdb_id : PCACHE[`${y}|${t}`]?.id;
+  return id ? 'm:' + id : 't:' + acNorm(t);
+}
+function lev1(a, b){                       // 편집 거리 1 이하인지
+  if (a === b) return true;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  let i = 0, j = 0, diff = 0;
+  while (i < a.length && j < b.length){
+    if (a[i] === b[j]){ i++; j++; continue; }
+    if (++diff > 1) return false;
+    if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+  }
+  return diff + (a.length - i) + (b.length - j) <= 1;
+}
+const sameIdent = (k1, k2) => k1 === k2 || (k1.startsWith('p:') && k2.startsWith('p:') && Math.min(k1.length, k2.length) >= 5 && lev1(k1, k2));
+// 같은 작품/인물을 고른 사람끼리 묶기 (많이 겹친 순)
 function acGroups(y, cat, members){
-  const g = new Map();
+  const groups = [];
   members.forEach(m => {
     const a = S.awards.find(x => x.year === y && x.member_id === m.id && x.category === cat);
     if (!a?.pick) return;
-    const k = acNorm(a.pick);
-    if (!g.has(k)) g.set(k, { pick:a.pick, who:[] });
-    g.get(k).who.push(m);
+    const k = acIdent(y, cat, a.pick);
+    let g = groups.find(x => sameIdent(x.key, k));
+    if (!g){ g = { key:k, pick:a.pick, alts:[], who:[] }; groups.push(g); }
+    else if (acNorm(a.pick) !== acNorm(g.pick) && !g.alts.includes(a.pick)) g.alts.push(a.pick);
+    g.who.push(m);
   });
-  return [...g.values()].sort((a, b) => b.who.length - a.who.length);
+  return groups.sort((a, b) => b.who.length - a.who.length);
 }
 
 // ----- 포스터 (TMDB) -----
@@ -1008,8 +1035,9 @@ function pickTitle(cat, pick){
   const t = (/감독|주연|조연|각본/.test(cat) && paren) ? paren : main;
   return AC_ALIAS[t] || t;
 }
-let PCACHE = {}; try { PCACHE = JSON.parse(localStorage.getItem('mvclub_posters2') || '{}'); } catch(e){}
-const pcSave = () => { try { localStorage.setItem('mvclub_posters2', JSON.stringify(PCACHE)); } catch(e){} };
+let PCACHE = {}; try { PCACHE = JSON.parse(localStorage.getItem('mvclub_posters3') || '{}'); } catch(e){}
+const PFAIL = new Set();   // 이번 접속에서 검색 실패한 것 (반복 요청 방지)
+const pcSave = () => { try { localStorage.setItem('mvclub_posters3', JSON.stringify(PCACHE)); } catch(e){} };
 const pposter = (cat, pick, cls = '', y = 0, editable = false) => useTMDB()
   ? `<div class="pp ${cls}${editable ? ' edit' : ''}" data-pq="${esc(pickTitle(cat, pick))}" data-py="${y}"${editable ? ' data-act="ppick" title="포스터 바꾸기"' : ''}><span>${AC_ICON[cat] || '🏆'}</span></div>` : '';
 const posterOverride = (y, q) => (S.aposters || []).find(p => p.year === y && p.title === q);
@@ -1032,9 +1060,18 @@ async function hydratePosters(){
     const ov = posterOverride(+el.dataset.py, el.dataset.pq);
     if (ov) return fill(el, ov.poster);
     const k = keyOf(el);
-    if (k in PCACHE) return fill(el, PCACHE[k]);
-    if (!todo.includes(k)) todo.push(k);
+    if (k in PCACHE) return fill(el, PCACHE[k]?.poster);
+    if (!todo.includes(k) && !PFAIL.has(k)) todo.push(k);
   });
+  // 화면에 포스터가 없는 수상작도 '같은 영화인지' 판단하려고 미리 찾아둠
+  if (S.tab === 'academy'){
+    const years = S.acView === 'hall' ? [...new Set(S.ballots.filter(b => b.is_public).map(b => b.year))] : [S.ayear];
+    S.awards.filter(a => years.includes(a.year) && a.pick && !isPersonCat(a.category, a.pick)).forEach(a => {
+      const t = pickTitle(a.category, a.pick), k = `${a.year}|${t}`;
+      if (!posterOverride(a.year, t) && !(k in PCACHE) && !todo.includes(k) && !PFAIL.has(k)) todo.push(k);
+    });
+  }
+  let found = 0;
   const worker = async () => {
     while (todo.length){
       const k = todo.shift(); const [y, ...rest] = k.split('|'); const q = rest.join('|');
@@ -1044,13 +1081,17 @@ async function hydratePosters(){
           res = (await tmdb('/search/movie', { query:qq })).results || [];
           if (res.length){ used = qq; break; }
         }
-        PCACHE[k] = bestForYear(res, used, +y)?.poster_path || null;
-      } catch(e){ continue; }
-      document.querySelectorAll('.pp[data-pq]:not(.done)').forEach(el => { if (keyOf(el) === k) fill(el, PCACHE[k]); });
+        const hit = bestForYear(res, used, +y);
+        PCACHE[k] = hit ? { id:hit.id, poster:hit.poster_path || null } : null;
+        if (hit) found++;
+      } catch(e){ PFAIL.add(k); continue; }
+      document.querySelectorAll('.pp[data-pq]:not(.done)').forEach(el => { if (keyOf(el) === k) fill(el, PCACHE[k]?.poster); });
     }
   };
   await Promise.all([worker(), worker(), worker()]);
   pcSave();
+  // 새로 찾은 정보로 '같은 작품' 묶음이 바뀔 수 있으니 한 번 다시 그림
+  if (found && S.tab === 'academy' && !document.querySelector('.cer') && !$('#modal').classList.contains('open')) renderAcademy();
 }
 // 포스터 직접 고르기
 function openPosterPick(y, q){
@@ -1172,7 +1213,7 @@ function awardCard(y, cat, members){
   const rowsH = groups.map((g, i) => `
     <div class="aw-pick ${crown && i === 0 ? 'win' : ''}">
       ${pposter(cat, g.pick, solo ? 'lg' : '', y, true)}
-      <div class="aw-txt"><b>${esc(g.pick)}</b>
+      <div class="aw-txt"><b>${esc(g.pick)}</b>${g.alts.length ? `<small class="aw-alt">= ${g.alts.map(esc).join(', ')}</small>` : ''}
         <span class="aw-who">${g.who.map(m => `<i>${esc(solo ? m.name : shortName(m.name))}</i>`).join('')}${crown && i === 0 ? ` <em>👑 ${g.who.length}명</em>` : ''}</span></div>
     </div>`).join('');
   return `<div class="aw-card ${crown ? 'gold' : ''}">
@@ -1211,7 +1252,7 @@ function tasteHTML(){
     const a = S.members[i], b = S.members[j]; let same = 0, n = 0;
     S.awards.filter(x => x.member_id === a.id && x.pick && ballotOf(x.year, a.id)?.is_public).forEach(x => {
       const o = S.awards.find(z => z.member_id === b.id && z.year === x.year && z.category === x.category && z.pick && ballotOf(z.year, b.id)?.is_public);
-      if (o){ n++; if (acNorm(o.pick) === acNorm(x.pick)) same++; }
+      if (o){ n++; if (sameIdent(acIdent(x.year, x.category, x.pick), acIdent(o.year, o.category, o.pick))) same++; }
     });
     if (n) pairs.push({ a, b, same, n, r:same / n });
   }
