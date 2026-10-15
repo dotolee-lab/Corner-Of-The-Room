@@ -282,6 +282,7 @@ button{font:inherit;color:inherit}
 .home-sub{color:var(--sub);margin:4px 0 22px}
 .home-grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
 @media (min-width:700px){.home-grid{grid-template-columns:1fr 1fr}}
+@media (min-width:980px){.home-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.home{max-width:1080px}}
 .home-card{text-align:left;border:1px solid var(--line);border-radius:22px;padding:24px 22px 20px;cursor:pointer;color:#f4efe2;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:6px;transition:transform .2s,border-color .2s;min-height:280px}
 .home-card:hover{transform:translateY(-3px)}
 .hc-movie{background:radial-gradient(120% 120% at 100% 0%,rgba(238,122,69,.35),transparent 55%),linear-gradient(160deg,#2a1a12,#15120f);border-color:rgba(238,122,69,.4)}
@@ -423,6 +424,95 @@ button{font:inherit;color:inherit}
 .b-row{display:flex;gap:6px;align-items:center;font-size:14px;padding:4px 0}
 .b-row b{margin-left:auto;color:var(--star);white-space:nowrap}
 .best-cer{background:radial-gradient(90% 70% at 50% 0%,#1b2a44,#0b0d12 70%)}
+.hc-food{background:radial-gradient(120% 120% at 100% 0%,rgba(232,185,62,.35),transparent 55%),linear-gradient(160deg,#2a2210,#14120d);border-color:rgba(232,185,62,.4)}
+.fd-hero{margin-top:18px;padding:24px 22px;border-radius:22px;background:radial-gradient(120% 140% at 100% 0%,rgba(232,185,62,.3),transparent 60%),linear-gradient(160deg,#2a2210,#14120d);border:1px solid rgba(232,185,62,.38);color:#f4efe2;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.fd-hero p{margin:4px 0 0;color:#d6cbb0;font-size:14px}
+.fd-hero .tv-stats b{color:#e8b93e}.fd-hero .tv-stats small{color:#d6cbb0}
+.fd-hero .aw-who i{background:rgba(255,255,255,.1);color:#f4efe2}
+.fd-filter{margin-top:8px;align-items:center}
+.fd-fl{font-size:12px;font-weight:700;color:var(--sub);margin-right:2px}
+.chip.sm{padding:4px 11px;font-size:13px}
+.fd-grid{display:grid;gap:14px;margin-top:14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:640px){.fd-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:980px){.fd-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.fd-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.fd-top{display:flex;gap:10px;align-items:flex-start}
+.fd-rank{flex-shrink:0;width:30px;height:30px;border-radius:50%;background:var(--chip);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:var(--sub)}
+.fd-rank.r1{background:#e8b93e;color:#1a1408}.fd-rank.r2{background:#c9ced6;color:#15171a}.fd-rank.r3{background:#c98b5a;color:#1a1008}
+.fd-head{flex:1;min-width:0;cursor:pointer}
+.fd-meta{font-size:12px;color:var(--sub);font-weight:600;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.fd-name{font-size:19px;font-weight:800;letter-spacing:-.02em;line-height:1.3;word-break:keep-all}
+.fd-price{color:#e8b93e;font-weight:800;letter-spacing:-1px;margin-left:2px}
+.fd-price i{font-style:normal;color:var(--line)}
+.fd-score{text-align:right;flex-shrink:0}
+.fd-score strong{display:block;font-size:28px;line-height:1;color:#e8b93e}
+.fd-score small{font-size:12px;color:var(--sub)}
+.fd-bars{display:flex;flex-direction:column;gap:5px}
+.fd-bar{display:grid;grid-template-columns:44px 1fr 28px;gap:8px;align-items:center;font-size:12px}
+.fd-bar span{color:var(--sub);font-weight:600}
+.fd-bar i{height:6px;border-radius:99px;background:var(--chip);overflow:hidden;display:block}
+.fd-bar i b{display:block;height:100%;background:#e8b93e;border-radius:99px}
+.fd-bar em{font-style:normal;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.fd-tags{display:flex;flex-wrap:wrap;gap:5px}
+.fd-rv{font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.fd-menu{font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:color-mix(in srgb,#e8b93e 14%,transparent);color:#e8b93e}
+.fd-who{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--sub)}
+.fd-who b{color:var(--ink);font-weight:700}
+.fd-card .m-act{flex-wrap:wrap}
+.fd-detail-top{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;margin:12px 0;padding:12px;border-radius:14px;background:var(--bg)}
+.fd-revs{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.fd-rev{padding:10px 12px;border-radius:12px;background:var(--bg)}
+.fd-rev-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fd-rev-h .fd-rv{margin-left:auto}
+.fd-rev-s{font-size:12px;color:var(--sub);margin-top:2px}
+.fd-rev-m{font-size:13px;color:#e8b93e;margin-top:4px}
+.fd-rev-c{font-size:14px;margin-top:4px}
+.fd-ov{display:flex;align-items:center;gap:10px;margin-top:12px}
+.fd-ov>span{font-weight:800;width:44px}
+.fd-ov b,.fd-srow b{font-variant-numeric:tabular-nums;min-width:32px;color:#e8b93e}
+.fd-ov .picker{margin:0}
+.fd-sub{display:flex;flex-direction:column;gap:2px;margin-top:6px;padding:10px 12px;border-radius:14px;background:var(--bg)}
+.fd-srow{display:flex;align-items:center;gap:10px}
+.fd-srow>span{width:44px;font-size:13px;font-weight:700;color:var(--sub)}
+.picker.sm{margin:0;gap:0}
+.pstar.sm{font-size:24px}
+.fd-srow .clr{margin-left:auto;font-size:12px}
+.fd-rvsel{display:flex;flex-wrap:wrap;gap:6px}
+.fd-rvsel button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer}
+.fd-rvsel button small{font-weight:500;color:var(--sub)}
+.fd-rvsel button.on{background:#e8b93e;border-color:#e8b93e;color:#1a1408}
+.fd-rvsel button.on small{color:#3a2e10}
+.tour-list{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.tour-card{display:flex;gap:14px;align-items:center;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;cursor:pointer;width:100%}
+.tour-card:hover{border-color:#e8b93e}
+.tc-date{width:56px;flex-shrink:0;text-align:center;display:flex;flex-direction:column}
+.tc-date b{font-size:20px;color:#e8b93e;letter-spacing:-.02em}
+.tc-date small{font-size:11px;color:var(--sub)}
+.tc-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.tc-title{font-size:17px;font-weight:800}
+.tc-title small{font-size:12px;color:var(--sub);font-weight:600}
+.tc-route{font-size:13px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.tc-route i{font-style:normal;color:var(--sub)}
+.tc-side{text-align:right;flex-shrink:0;display:flex;flex-direction:column}
+.tc-side strong{color:#e8b93e}
+.tc-side small{font-size:12px;color:var(--sub)}
+.course{margin-top:12px;display:flex;flex-direction:column}
+.stop{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.stop-no{width:34px;height:34px;flex-shrink:0;border-radius:50%;background:#e8b93e;color:#1a1408;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px}
+.stop-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.stop-name{font-size:18px;font-weight:800;cursor:pointer}
+.stop-menu{font-size:13px;color:var(--sub)}
+.stop-act{display:flex;align-items:center;gap:10px;margin-top:4px;flex-wrap:wrap}
+.fd-mini{font-weight:800;color:#e8b93e}
+.fd-mini small{color:var(--sub);font-weight:500}
+.stop-ctl{display:flex;flex-direction:column;gap:2px}
+.stop-ctl .icon:disabled{opacity:.25;cursor:default}
+.stop-arrow{text-align:center;color:#e8b93e;font-size:18px;line-height:1;padding:4px 0}
+.wish.fd.top{border-color:#e8b93e}
+.wish.fd.top .wish-rank{color:#e8b93e}
+.wish.fd .wish-bar span{background:#e8b93e}
+.wish.fd .vote.on{background:#e8b93e;border-color:#e8b93e;color:#1a1408}
+.dim{color:var(--sub);font-weight:500}
 .tabcount{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:18px;text-align:center;margin-left:2px;vertical-align:1px}
 .sec small{font-weight:600;letter-spacing:0;margin-left:4px}
 .todo-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
@@ -566,7 +656,7 @@ async function loadAll(){
   ]);
   const bad = res.find(x => x.error); if (bad) throw bad.error;
   [S.rounds, S.movies, S.ratings, S.legacy, S.ballots, S.awards, S.aposters] = res.map(x => x.data);
-  await Promise.all([loadTravel(), loadBest()]);
+  await Promise.all([loadTravel(), loadBest(), loadFood()]);
   const years = yearsList();
   if (!years.includes(S.year)) S.year = years[0] ?? new Date().getFullYear();
 }
@@ -595,7 +685,7 @@ function renderLogin(sel){
 
 // 계정이 바뀔 때 이전 사람의 화면 기록(작성 중인 아카데미 투표 등)을 모두 비움
 function resetUserState(){
-  S.adraft = {}; S.bdraft = {}; S.bBallots = []; S.bVotes = []; S.pickResult = null; S.tab = 'records'; S.cat = 'home'; S.lastTab = {}; S.tripId = null;
+  S.adraft = {}; S.bdraft = {}; S.bBallots = []; S.bVotes = []; S.pickResult = null; S.tab = 'records'; S.cat = 'home'; S.lastTab = {}; S.tripId = null; S.tourId = null;
   S.ballots = []; S.awards = [];
 }
 
@@ -609,6 +699,7 @@ async function logout(silent){
 const CATS = [
   { k:'movie',  icon:'🎬', label:'방구석 평론가', short:'평론가', first:'records' },
   { k:'travel', icon:'🧳', label:'방구석 여행가', short:'여행가', first:'trips' },
+  { k:'food',   icon:'🍽', label:'방구석 미식가', short:'미식가', first:'rank' },
 ];
 const TABS = {
   movie: () => [
@@ -618,6 +709,7 @@ const TABS = {
     ['academy', '🏆 방구석 아카데미'],
   ],
   travel: () => [['trips', '🗺 여행 기록'], ['wish', '📍 가고 싶은 곳']],
+  food: () => [['rank', '🏆 맛집 랭킹'], ['tours', '🚶 맛집 투어'], ['fwish', '📍 가볼 곳']],
 };
 function goCat(k){
   S.lastTab ??= {};
@@ -625,6 +717,7 @@ function goCat(k){
   S.cat = k;
   if (k !== 'home') S.tab = S.lastTab[k] || CATS.find(c => c.k === k).first;
   if (k === 'travel') S.tripId = null;
+  if (k === 'food') S.tourId = null;
   render(); scrollTo({ top:0 });
 }
 
@@ -643,11 +736,11 @@ function render(){
   $('#out').onclick = () => logout();
   $('#pwbtn').onclick = openPassword;
   document.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => goCat(b.dataset.nav));
-  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; if (S.tab === 'trips') S.tripId = null; render(); });
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; if (S.tab === 'trips') S.tripId = null; if (S.tab === 'tours') S.tourId = null; render(); });
   $('#main').onclick = onMainClick;
   if (home) return renderHome();
   ({ records:renderRecords, stats:renderStats, pick:renderPick, academy:renderAcademy, todo:renderTodo,
-     trips:renderTrips, wish:renderWish, best:renderBest })[S.tab]();
+     trips:renderTrips, wish:renderWish, best:renderBest, rank:renderRank, tours:renderTours, fwish:renderFwish })[S.tab]();
 }
 
 // ---------- 홈 ----------
@@ -687,6 +780,22 @@ function renderHome(){
           </ul>
           <span class="hc-go">들어가기 →</span>
         </button>
+        <button class="home-card hc-food" data-act="goCat" data-k="food">
+          <div class="hc-icon">🍽</div>
+          <div class="hc-title">방구석 미식가</div>
+          <div class="hc-desc">맛집 투어 기록, 맛·서비스·청결·가성비 평가</div>
+          <ul class="hc-facts">
+            ${S.foodErr ? '<li><span>준비 중</span><b>7_food.sql 실행 필요</b></li>' : (() => {
+              const best = (S.places || []).map(p => ({ p, a:placeStats(p).overall })).filter(x => x.a != null).sort((a, b) => b.a - a.a)[0];
+              const last = [...(S.tours || [])].sort((a, b) => (b.tour_date || '').localeCompare(a.tour_date || ''))[0];
+              const mineLeft = (S.places || []).filter(p => !fRatingsOf(p.id).some(r => r.member_id === S.me)).length;
+              return `<li><span>등록된 맛집</span><b>${(S.places || []).length}곳</b></li>
+                ${best ? `<li><span>최고 평점</span><b class="hot">${esc(best.p.name)} ★${best.a.toFixed(1)}</b></li>` : ''}
+                ${last ? `<li><span>최근 투어</span><b>${esc(last.title)}</b></li>` : ''}
+                ${mineLeft ? `<li><span>내가 평가 안 한 곳</span><b>${mineLeft}곳</b></li>` : ''}`; })()}
+          </ul>
+          <span class="hc-go">들어가기 →</span>
+        </button>
       </div>
     </div>`;
 }
@@ -705,6 +814,20 @@ function onMainClick(e){
     case 'goto': gotoMovie(id); break;
     case 'statMore': S.statOpen[b.dataset.k] = !S.statOpen[b.dataset.k]; renderStats(); break;
     case 'goCat': goCat(b.dataset.k); break;
+    case 'fSort': S.fSort = b.dataset.k; renderRank(); break;
+    case 'fArea': S.fArea = b.dataset.k; renderRank(); break;
+    case 'fCat': S.fCat = b.dataset.k; renderRank(); break;
+    case 'fPlace': openPlace(b.dataset.id ? id : null); break;
+    case 'fRate': openFoodRate(id); break;
+    case 'fDetail': openPlaceDetail(id); break;
+    case 'fTour': openTour(b.dataset.id ? id : null); break;
+    case 'fOpenTour': S.tourId = id; renderTours(); scrollTo({ top:0 }); break;
+    case 'fBackTour': S.tourId = null; renderTours(); break;
+    case 'fStop': openStop(b.dataset.id ? id : null); break;
+    case 'fMove': call('fd_move_visit', { p_id:id, p_dir:+b.dataset.k }).then(loadFood).then(renderTours).catch(e => alert(errMsg(e))); break;
+    case 'fWish': openFWish(b.dataset.id ? id : null); break;
+    case 'fVote': call('fd_toggle_vote', { p_wish_id:id }).then(loadFood).then(renderFwish).catch(e => alert(errMsg(e))); break;
+    case 'fWishDone': { const w = S.fWishes.find(x => x.id === id); S.tab = 'rank'; render(); openPlace(null, { name:w.name, area:w.area || '' }, async () => { try { await call('fd_delete_wish', { p_id:w.id }); await loadFood(); } catch(e){} }); break; }
     case 'byear': S.byear = id; renderBest(); break;
     case 'bSave': bestSave(); break;
     case 'bPub': bestPublish(true); break;
@@ -2155,6 +2278,336 @@ function openBestShow(){
   const key = e => { if (e.key === 'Escape') close(); };
   document.addEventListener('keydown', key);
   draw();
+}
+
+// ================= 방구석 미식가 =================
+const FD_CATS = ['한식', '고기', '해산물', '중식', '일식', '양식', '분식', '카페·디저트', '술집', '기타'];
+const FD_ICON = { 한식:'🍚', 고기:'🥩', 해산물:'🦀', 중식:'🥟', 일식:'🍣', 양식:'🍝', 분식:'🍢', '카페·디저트':'☕', 술집:'🍻', 기타:'🍴' };
+const FD_SCORES = [['taste', '맛'], ['service', '서비스'], ['clean', '청결'], ['value', '가성비'], ['mood', '분위기']];
+const FD_REVISIT = [[2, '😍', '무조건 또 간다'], [1, '🙂', '생각 있다'], [0, '🙅', '안 간다']];
+const FD_PRICE = { 1:'1만원 이하', 2:'1~2만원', 3:'2~4만원', 4:'4만원 이상' };
+const naverMap = q => `https://map.naver.com/p/search/${encodeURIComponent(q)}`;
+
+async function loadFood(){
+  const res = await Promise.all([
+    sb.from('fd_places').select('*'), sb.from('fd_ratings').select('*'), sb.from('fd_tours').select('*'),
+    sb.from('fd_visits').select('*'), sb.from('fd_wishes').select('*'), sb.from('fd_wish_votes').select('*'),
+  ]);
+  const bad = res.find(x => x.error);
+  if (bad){ S.foodErr = bad.error.message; [S.places, S.fRatings, S.tours, S.visits, S.fWishes, S.fVotes] = [[], [], [], [], [], []]; return; }
+  S.foodErr = null;
+  [S.places, S.fRatings, S.tours, S.visits, S.fWishes, S.fVotes] = res.map(x => x.data);
+}
+const foodGuard = () => S.foodErr
+  ? `<div class="panel ac-locked">🍽<br>미식가 기능을 쓰려면 Supabase에서 <b>7_food.sql</b>을 먼저 실행해주세요<br><small>${esc(S.foodErr)}</small></div>` : '';
+const fRatingsOf = pid => (S.fRatings || []).filter(r => r.place_id === pid);
+function placeStats(p){
+  const rs = fRatingsOf(p.id);
+  const avg = k => mean(rs.map(r => r[k]).filter(v => v != null).map(Number));
+  const rv = rs.filter(r => r.revisit != null);
+  return {
+    rs, n:rs.length, overall:avg('overall'),
+    scores:Object.fromEntries(FD_SCORES.map(([k]) => [k, avg(k)])),
+    revisit:FD_REVISIT.map(([v]) => rv.filter(r => r.revisit === v).length),
+    revisitRate:rv.length ? rv.filter(r => r.revisit === 2).length / rv.length : null,
+    menus:[...new Set(rs.flatMap(r => (r.best_menu || '').split(/[,、]/).map(x => x.trim()).filter(Boolean)))],
+    visits:(S.visits || []).filter(v => v.place_id === p.id).length,
+  };
+}
+const price = n => n ? `<span class="fd-price" title="1인 ${FD_PRICE[n]}">${'₩'.repeat(n)}<i>${'₩'.repeat(4 - n)}</i></span>` : '';
+
+// ----- 맛집 랭킹 -----
+function renderRank(){
+  if (S.foodErr) return $('#main').innerHTML = foodGuard();
+  S.fArea ??= '전체'; S.fCat ??= '전체'; S.fSort ??= 'score';
+  const areas = ['전체', ...new Set(S.places.map(p => p.area).filter(Boolean))];
+  const cats = ['전체', ...FD_CATS.filter(c => S.places.some(p => p.category === c))];
+  let list = S.places.filter(p => (S.fArea === '전체' || p.area === S.fArea) && (S.fCat === '전체' || p.category === S.fCat))
+    .map(p => ({ p, st:placeStats(p) }));
+  const sorters = {
+    score:(a, b) => (b.st.overall ?? -1) - (a.st.overall ?? -1) || b.st.n - a.st.n,
+    count:(a, b) => b.st.n - a.st.n || (b.st.overall ?? -1) - (a.st.overall ?? -1),
+    revisit:(a, b) => (b.st.revisitRate ?? -1) - (a.st.revisitRate ?? -1) || (b.st.overall ?? -1) - (a.st.overall ?? -1),
+    recent:(a, b) => b.p.id - a.p.id,
+  };
+  list.sort(sorters[S.fSort]);
+  const totalR = (S.fRatings || []).length;
+  const unrated = S.places.filter(p => !fRatingsOf(p.id).some(r => r.member_id === S.me)).length;
+  $('#main').innerHTML = `
+    <div class="fd-hero">
+      <div><div class="ac-kicker" style="color:#e8b93e">CORNER OF THE ROOM</div>
+        <div class="ac-title">방구석 미식가</div>
+        <p>함께 먹고, 깐깐하게 매기는 우리만의 맛집 지도</p></div>
+      <div class="tv-stats"><div><b>${S.places.length}</b><small>맛집</small></div><div><b>${S.tours.length}</b><small>맛집 투어</small></div><div><b>${totalR}</b><small>평가</small></div></div>
+    </div>
+    <div class="toolbar">
+      <div class="chips">${[['score', '⭐ 평점순'], ['revisit', '😍 재방문율'], ['count', '👥 평가 많은순'], ['recent', '🆕 최근 등록']].map(([k, l]) => `<button class="chip ${S.fSort === k ? 'on' : ''}" data-act="fSort" data-k="${k}">${l}</button>`).join('')}</div>
+      <button class="btn small primary" data-act="fPlace">+ 맛집 등록</button>
+    </div>
+    ${areas.length > 2 ? `<div class="chips fd-filter"><span class="fd-fl">지역</span>${areas.map(a => `<button class="chip sm ${S.fArea === a ? 'on' : ''}" data-act="fArea" data-k="${esc(a)}">${esc(a)}</button>`).join('')}</div>` : ''}
+    ${cats.length > 2 ? `<div class="chips fd-filter"><span class="fd-fl">종류</span>${cats.map(c => `<button class="chip sm ${S.fCat === c ? 'on' : ''}" data-act="fCat" data-k="${esc(c)}">${c === '전체' ? '전체' : FD_ICON[c] + ' ' + c}</button>`).join('')}</div>` : ''}
+    ${unrated ? `<p class="note">아직 내가 평가 안 한 맛집이 ${unrated}곳 있어요.</p>` : ''}
+    ${list.length ? `<div class="fd-grid">${list.map((x, i) => placeCard(x.p, x.st, S.fSort === 'score' || S.fSort === 'revisit' ? i + 1 : 0)).join('')}</div>`
+      : '<div class="panel ac-locked">🍽<br>아직 등록된 맛집이 없어요<br><small>"+ 맛집 등록"으로 첫 맛집을 올려보세요</small></div>'}`;
+}
+
+function scoreBars(st){
+  return `<div class="fd-bars">${FD_SCORES.map(([k, l]) => { const v = st.scores[k];
+    return `<div class="fd-bar"><span>${l}</span><i><b style="width:${v == null ? 0 : v / 5 * 100}%"></b></i><em>${v == null ? '–' : v.toFixed(1)}</em></div>`; }).join('')}</div>`;
+}
+function placeCard(p, st, rank){
+  const mine = st.rs.find(r => r.member_id === S.me);
+  return `<article class="fd-card">
+    <div class="fd-top">
+      ${rank && st.overall != null ? `<span class="fd-rank ${rank <= 3 ? 'r' + rank : ''}">${rank}</span>` : ''}
+      <div class="fd-head" data-act="fDetail" data-id="${p.id}">
+        <div class="fd-meta">${FD_ICON[p.category] || '🍴'} ${esc(p.category)}${p.area ? ` · ${esc(p.area)}` : ''} ${price(p.price_level)}</div>
+        <div class="fd-name">${esc(p.name)}</div>
+      </div>
+      <div class="fd-score">${st.overall != null ? `<strong>${st.overall.toFixed(1)}</strong><small>${st.n}명</small>` : '<small>평가 없음</small>'}</div>
+    </div>
+    ${st.n ? scoreBars(st) : ''}
+    <div class="fd-tags">
+      ${st.n ? `<span class="fd-rv" title="재방문 의사">${FD_REVISIT.map(([v, e], i) => st.revisit[i] ? `${e} ${st.revisit[i]}` : '').filter(Boolean).join(' · ') || '재방문 –'}</span>` : ''}
+      ${st.menus.slice(0, 3).map(m => `<span class="fd-menu">👍 ${esc(m)}</span>`).join('')}
+    </div>
+    ${st.n ? `<div class="fd-who">${st.rs.map(r => `<span><b>${esc(shortName(memName(r.member_id)))}</b> ★${Number(r.overall).toFixed(1)}</span>`).join('')}</div>` : ''}
+    <div class="m-act">
+      <button class="btn small ${mine ? '' : 'primary'}" data-act="fRate" data-id="${p.id}">${mine ? '내 평가 수정' : '평가하기'}</button>
+      <button class="btn small" data-act="fDetail" data-id="${p.id}">한줄평 ${st.rs.filter(r => r.comment).length}</button>
+      <a class="jw" href="${naverMap((p.area ? p.area + ' ' : '') + p.name)}" target="_blank" rel="noopener">지도 ↗</a>
+      <button class="icon" data-act="fPlace" data-id="${p.id}" title="맛집 정보 수정">✎</button>
+    </div>
+  </article>`;
+}
+
+function openPlaceDetail(id){
+  const p = S.places.find(x => x.id === id); const st = placeStats(p);
+  const tours = (S.visits || []).filter(v => v.place_id === id).map(v => S.tours.find(t => t.id === v.tour_id)).filter(Boolean);
+  openModal(`<div class="fd-meta">${FD_ICON[p.category] || '🍴'} ${esc(p.category)}${p.area ? ` · ${esc(p.area)}` : ''} ${price(p.price_level)}</div>
+    <h3 style="font-size:22px">${esc(p.name)}</h3>
+    ${p.address ? `<p class="note" style="margin:0">${esc(p.address)}</p>` : ''}
+    <div class="fd-detail-top"><div class="fd-score"><strong>${st.overall != null ? st.overall.toFixed(1) : '–'}</strong><small>${st.n}명 평균</small></div>${st.n ? scoreBars(st) : ''}</div>
+    ${p.memo ? `<p class="trip-memo" style="margin:8px 0">${esc(p.memo)}</p>` : ''}
+    <div class="fd-revs">${st.rs.map(r => `<div class="fd-rev">
+        <div class="fd-rev-h"><b>${esc(memName(r.member_id))}</b>${stars(r.overall)}<span class="fd-rv">${FD_REVISIT.find(x => x[0] === r.revisit)?.slice(1).join(' ') || ''}</span></div>
+        <div class="fd-rev-s">${FD_SCORES.filter(([k]) => r[k] != null).map(([k, l]) => `${l} ${Number(r[k]).toFixed(1)}`).join(' · ')}</div>
+        ${r.best_menu ? `<div class="fd-rev-m">👍 ${esc(r.best_menu)}</div>` : ''}
+        ${r.comment ? `<div class="fd-rev-c">${esc(r.comment)}</div>` : ''}
+      </div>`).join('') || '<p class="note">아직 평가가 없어요</p>'}</div>
+    ${tours.length ? `<p class="note">🚶 투어에서 방문: ${tours.map(t => esc(t.title)).join(', ')}</p>` : ''}
+    <div class="row"><a class="jw" href="${naverMap((p.area ? p.area + ' ' : '') + p.name)}" target="_blank" rel="noopener">네이버 지도 ↗</a><span class="sp"></span>
+      <button class="btn" id="cancel">닫기</button><button class="btn primary" id="rate">${st.rs.some(r => r.member_id === S.me) ? '내 평가 수정' : '평가하기'}</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#rate').onclick = () => openFoodRate(id);
+}
+
+// ----- 평가 창 -----
+function openFoodRate(pid){
+  const p = S.places.find(x => x.id === pid);
+  const r = fRatingsOf(pid).find(x => x.member_id === S.me) || {};
+  const val = { overall:r.overall != null ? +r.overall : null };
+  FD_SCORES.forEach(([k]) => { val[k] = r[k] != null ? +r[k] : null; });
+  let revisit = r.revisit ?? null;
+  const row = (k, size) => [1, 2, 3, 4, 5].map(i => `<span class="pstar st ${size} ${val[k] >= i ? 'on' : val[k] >= i - .5 ? 'half' : ''}">★<button class="hl" data-k="${k}" data-v="${i - .5}"></button><button class="hr" data-k="${k}" data-v="${i}"></button></span>`).join('');
+  openModal(`<h3>${esc(p.name)}</h3><p class="sub" style="margin:0">별 왼쪽 = 반 개, 오른쪽 = 한 개</p>
+    <div class="fd-ov"><span>총점</span><div class="picker" id="pk-overall">${row('overall', '')}</div><b id="v-overall"></b></div>
+    <div class="fd-sub">${FD_SCORES.map(([k, l]) => `<div class="fd-srow"><span>${l}</span><div class="picker sm" id="pk-${k}">${row(k, 'sm')}</div><b id="v-${k}"></b><button class="icon clr" data-clr="${k}" title="지우기">✕</button></div>`).join('')}</div>
+    <div class="flabel" style="margin-top:12px">재방문 의사</div>
+    <div class="fd-rvsel">${FD_REVISIT.map(([v, e, l]) => `<button type="button" data-rv="${v}" class="${revisit === v ? 'on' : ''}">${e} ${l}</button>`).join('')}</div>
+    <div class="form">
+      <label class="full">추천 메뉴<input id="frm" value="${esc(r.best_menu || '')}" placeholder="예) 생갈비, 된장찌개"></label>
+      <label class="full">한줄평<textarea id="frc" rows="2" placeholder="한줄평">${esc(r.comment || '')}</textarea></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${r.id ? '<button class="btn danger" id="del">평가 삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  const redraw = k => { $('#pk-' + k).innerHTML = row(k, k === 'overall' ? '' : 'sm'); $('#v-' + k).textContent = val[k] != null ? val[k].toFixed(1) : (k === 'overall' ? '필수' : '–'); };
+  ['overall', ...FD_SCORES.map(x => x[0])].forEach(redraw);
+  $('.sheet').onclick = e => {
+    const b = e.target.closest('button[data-v]'); if (b){ val[b.dataset.k] = +b.dataset.v; redraw(b.dataset.k); return; }
+    const c = e.target.closest('[data-clr]'); if (c){ val[c.dataset.clr] = null; redraw(c.dataset.clr); return; }
+    const rv = e.target.closest('[data-rv]'); if (rv){ revisit = revisit === +rv.dataset.rv ? null : +rv.dataset.rv; document.querySelectorAll('[data-rv]').forEach(x => x.classList.toggle('on', +x.dataset.rv === revisit)); }
+  };
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    if (val.overall == null){ $('#merr').textContent = '총점 별점을 골라주세요.'; return; }
+    try { await call('fd_save_rating', { p_place_id:pid, p_d:{ ...val, revisit, best_menu:$('#frm').value, comment:$('#frc').value } }); await loadFood(); closeModal(); render(); toast('평가를 저장했어요'); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (r.id) $('#del').onclick = async () => { if (!confirm('내 평가를 삭제할까요?')) return; try { await call('fd_delete_rating', { p_place_id:pid }); await loadFood(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+// ----- 맛집 등록 / 수정 -----
+function openPlace(id, preset = {}, after){
+  const p = id ? S.places.find(x => x.id === id) : { category:'한식', ...preset };
+  openModal(`<h3>${id ? '맛집 정보 수정' : '맛집 등록'}</h3>
+    <div class="form">
+      <label class="full">가게 이름<input id="fp-n" value="${esc(p.name || '')}" placeholder="예) 개미집 서면점"></label>
+      <label>지역<input id="fp-a" value="${esc(p.area || '')}" placeholder="예) 서면" list="fd-areas"></label>
+      <label>종류<select id="fp-c">${FD_CATS.map(c => `<option ${c === p.category ? 'selected' : ''}>${c}</option>`).join('')}</select></label>
+      <datalist id="fd-areas">${[...new Set(S.places.map(x => x.area).filter(Boolean))].map(a => `<option value="${esc(a)}">`).join('')}</datalist>
+      <div class="full"><div class="flabel">가격대 (1인 기준)</div><div class="fd-rvsel" id="fp-p">${[1, 2, 3, 4].map(n => `<button type="button" data-pl="${n}" class="${p.price_level === n ? 'on' : ''}">${'₩'.repeat(n)} <small>${FD_PRICE[n]}</small></button>`).join('')}</div></div>
+      <label class="full">주소 (선택)<input id="fp-ad" value="${esc(p.address || '')}"></label>
+      <label class="full">메모 (선택)<input id="fp-m" value="${esc(p.memo || '')}" placeholder="예) 웨이팅 필수, 주차 가능"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">맛집 삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">${id ? '저장' : '등록하고 평가하기'}</button></div>`);
+  let pl = p.price_level ?? null;
+  $('#fp-p').onclick = e => { const b = e.target.closest('[data-pl]'); if (!b) return; pl = pl === +b.dataset.pl ? null : +b.dataset.pl; document.querySelectorAll('[data-pl]').forEach(x => x.classList.toggle('on', +x.dataset.pl === pl)); };
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    try {
+      const nid = await call('fd_save_place', { p_id:id ?? null, p_d:{ name:$('#fp-n').value, area:$('#fp-a').value, category:$('#fp-c').value, price_level:pl, address:$('#fp-ad').value, memo:$('#fp-m').value } });
+      await loadFood(); closeModal(); render();
+      if (after) await after(nid);
+      if (!id) openFoodRate(nid);
+    } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (id) $('#del').onclick = async () => { if (!confirm('맛집과 모든 평가가 지워져요. 삭제할까요?')) return; try { await call('fd_delete_place', { p_id:id }); await loadFood(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+// ----- 맛집 투어 -----
+const tourPlaces = t => (S.visits || []).filter(v => v.tour_id === t.id).sort((a, b) => a.sort - b.sort).map(v => ({ v, p:S.places.find(x => x.id === v.place_id) })).filter(x => x.p);
+const tourMembers = t => S.members.filter(m => (t.member_ids?.length ? t.member_ids : S.members.map(x => x.id)).includes(m.id));
+function renderTours(){
+  if (S.foodErr) return $('#main').innerHTML = foodGuard();
+  if (S.tourId && S.tours.some(t => t.id === S.tourId)) return renderTour();
+  S.tourId = null;
+  const list = [...S.tours].sort((a, b) => (b.tour_date || '').localeCompare(a.tour_date || '') || b.id - a.id);
+  $('#main').innerHTML = `
+    <div class="toolbar" style="margin-top:20px"><div style="flex:1"><h2 class="sec" style="margin:0">🚶 맛집 투어</h2>
+      <p class="note" style="margin:4px 0 0">함께 돈 코스를 순서대로 기록해요</p></div>
+      <button class="btn small primary" data-act="fTour">+ 새 투어</button></div>
+    <div class="tour-list">${list.map(t => {
+      const stops = tourPlaces(t);
+      const avg = mean(stops.map(x => placeStats(x.p).overall).filter(v => v != null));
+      return `<button class="tour-card" data-act="fOpenTour" data-id="${t.id}">
+        <div class="tc-date">${t.tour_date ? `<b>${t.tour_date.slice(5).replace('-', '.')}</b><small>${t.tour_date.slice(0, 4)}</small>` : '<b>미정</b>'}</div>
+        <div class="tc-main">
+          <div class="tc-title">${esc(t.title)}${t.area ? ` <small>${esc(t.area)}</small>` : ''}</div>
+          <div class="tc-route">${stops.map((x, i) => `<span>${i + 1}. ${esc(x.p.name)}</span>`).join('<i>→</i>') || '<span class="dim">코스 없음</span>'}</div>
+          <div class="aw-who">${tourMembers(t).map(m => `<i>${esc(shortName(m.name))}</i>`).join('')}</div>
+        </div>
+        <div class="tc-side">${avg != null ? `<strong>★ ${avg.toFixed(1)}</strong>` : ''}<small>${stops.length}곳</small></div>
+      </button>`; }).join('') || '<div class="panel ac-locked">🚶<br>아직 투어 기록이 없어요</div>'}</div>`;
+}
+function renderTour(){
+  const t = S.tours.find(x => x.id === S.tourId);
+  const stops = tourPlaces(t);
+  $('#main').innerHTML = `
+    <button class="link" data-act="fBackTour" style="margin-top:16px">← 투어 목록</button>
+    <div class="fd-hero" style="margin-top:10px">
+      <div><div class="ac-kicker" style="color:#e8b93e">${t.tour_date ? t.tour_date.replaceAll('-', '.') : '날짜 미정'}${t.area ? ' · ' + esc(t.area) : ''}</div>
+        <div class="ac-title">${esc(t.title)}</div>
+        <div class="aw-who" style="margin-top:6px">${tourMembers(t).map(m => `<i>${esc(m.name)}</i>`).join('')}</div>
+        ${t.memo ? `<p>${esc(t.memo)}</p>` : ''}</div>
+      <button class="btn small" data-act="fTour" data-id="${t.id}">✎ 투어 수정</button>
+    </div>
+    <div class="toolbar"><h2 class="sec" style="margin:0;flex:1">코스 <small>${stops.length}곳</small></h2><button class="btn small primary" data-act="fStop">+ 코스 추가</button></div>
+    <div class="course">${stops.map(({ v, p }, i) => { const st = placeStats(p); const mine = st.rs.find(r => r.member_id === S.me);
+      return `<div class="stop">
+        <div class="stop-no">${i + 1}</div>
+        <div class="stop-body">
+          <div class="fd-meta">${FD_ICON[p.category] || '🍴'} ${esc(p.category)}${p.area ? ` · ${esc(p.area)}` : ''} ${price(p.price_level)}</div>
+          <div class="stop-name" data-act="fDetail" data-id="${p.id}">${esc(p.name)}</div>
+          ${v.menu ? `<div class="stop-menu">🍽 ${esc(v.menu)}</div>` : ''}
+          <div class="stop-act">
+            ${st.overall != null ? `<span class="fd-mini">★ ${st.overall.toFixed(1)} <small>${st.n}명</small></span>` : ''}
+            <button class="btn small ${mine ? '' : 'primary'}" data-act="fRate" data-id="${p.id}">${mine ? `내 평가 ★${Number(mine.overall).toFixed(1)}` : '평가하기'}</button>
+          </div>
+        </div>
+        <div class="stop-ctl">
+          <button class="icon" data-act="fMove" data-id="${v.id}" data-k="-1" ${i === 0 ? 'disabled' : ''} title="위로">▲</button>
+          <button class="icon" data-act="fStop" data-id="${v.id}" title="수정">✎</button>
+          <button class="icon" data-act="fMove" data-id="${v.id}" data-k="1" ${i === stops.length - 1 ? 'disabled' : ''} title="아래로">▼</button>
+        </div>
+      </div>`; }).join('<div class="stop-arrow">↓</div>') || '<div class="panel ac-locked">🍽<br>첫 코스를 추가해보세요</div>'}</div>`;
+}
+function openTour(id){
+  const t = id ? S.tours.find(x => x.id === id) : { member_ids:S.members.map(m => m.id), tour_date:todayStr() };
+  openModal(`<h3>${id ? '투어 수정' : '새 맛집 투어'}</h3>
+    <div class="form">
+      <label class="full">투어 이름<input id="ft-t" value="${esc(t.title || '')}" placeholder="예) 서면 고기 투어"></label>
+      <label>날짜<input id="ft-d" type="date" value="${t.tour_date || ''}"></label>
+      <label>지역<input id="ft-a" value="${esc(t.area || '')}" placeholder="예) 서면"></label>
+      <div class="full"><div class="flabel">함께한 사람</div>${memChecks(t.member_ids || [], 'fm')}</div>
+      <label class="full">메모<input id="ft-m" value="${esc(t.memo || '')}"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">투어 삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    try { const nid = await call('fd_save_tour', { p_id:id ?? null, p_d:{ title:$('#ft-t').value, tour_date:$('#ft-d').value, area:$('#ft-a').value, member_ids:checked('fm'), memo:$('#ft-m').value } });
+      await loadFood(); S.tourId = nid; closeModal(); render(); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (id) $('#del').onclick = async () => { if (!confirm('투어 기록을 삭제할까요? (맛집과 평가는 남아요)')) return; try { await call('fd_delete_tour', { p_id:id }); await loadFood(); S.tourId = null; closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+function openStop(vid){
+  const t = S.tours.find(x => x.id === S.tourId);
+  const v = vid ? S.visits.find(x => x.id === vid) : {};
+  const places = [...S.places].sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+  openModal(`<h3>${vid ? '코스 수정' : '코스 추가'}</h3>
+    <div class="form">
+      <label class="full">어디 갔나요<select id="fs-p"><option value="">맛집 선택</option>${places.map(p => `<option value="${p.id}" ${p.id === v.place_id ? 'selected' : ''}>${esc(p.name)}${p.area ? ` (${esc(p.area)})` : ''}</option>`).join('')}</select></label>
+      <button type="button" class="link full" id="fs-new" style="text-align:left">+ 목록에 없으면 새 맛집 등록</button>
+      <label class="full">먹은 메뉴<input id="fs-m" value="${esc(v.menu || '')}" placeholder="예) 낙곱새 3인분, 볶음밥"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${vid ? '<button class="btn danger" id="del">코스에서 빼기</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#fs-new').onclick = () => openPlace(null, { area:t.area || '' }, async nid => { await call('fd_save_visit', { p_id:null, p_tour_id:t.id, p_place_id:nid, p_menu:'' }); await loadFood(); render(); });
+  $('#save').onclick = async () => {
+    if (!$('#fs-p').value){ $('#merr').textContent = '맛집을 골라주세요.'; return; }
+    try { await call('fd_save_visit', { p_id:vid ?? null, p_tour_id:t.id, p_place_id:+$('#fs-p').value, p_menu:$('#fs-m').value }); await loadFood(); closeModal(); render(); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (vid) $('#del').onclick = async () => { try { await call('fd_delete_visit', { p_id:vid }); await loadFood(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+// ----- 가볼 곳 -----
+const fVotes = id => (S.fVotes || []).filter(v => v.wish_id === id);
+function renderFwish(){
+  if (S.foodErr) return $('#main').innerHTML = foodGuard();
+  const list = [...S.fWishes].sort((a, b) => fVotes(b.id).length - fVotes(a.id).length || b.id - a.id);
+  const max = Math.max(1, ...list.map(w => fVotes(w.id).length));
+  $('#main').innerHTML = `
+    <div class="toolbar" style="margin-top:20px"><div style="flex:1"><h2 class="sec" style="margin:0">📍 가볼 곳</h2>
+      <p class="note" style="margin:4px 0 0">👍 투표로 다음 투어 코스를 정해요 · 다녀오면 "다녀왔어요"로 맛집 등록</p></div>
+      <button class="btn small primary" data-act="fWish">+ 추가</button></div>
+    <div class="wish-list">${list.map((w, i) => { const vs = fVotes(w.id), mine = vs.some(v => v.member_id === S.me);
+      return `<div class="wish fd ${i === 0 && vs.length ? 'top' : ''}">
+        <div class="wish-rank">${i + 1}</div>
+        <div class="wish-main">
+          <div class="wish-place">${esc(w.name)}${w.area ? ` <small class="dim">${esc(w.area)}</small>` : ''} <a class="jw" href="${naverMap((w.area ? w.area + ' ' : '') + w.name)}" target="_blank" rel="noopener">지도 ↗</a></div>
+          ${w.note ? `<div class="wish-note">${esc(w.note)}</div>` : ''}
+          <div class="wish-bar"><span style="width:${vs.length / max * 100}%"></span></div>
+          <div class="wish-by">${vs.length ? vs.map(v => esc(memName(v.member_id))).join(', ') : '아직 투표 없음'} · ${esc(memName(w.created_by))}님이 올림</div>
+        </div>
+        <div class="wish-act">
+          <button class="vote ${mine ? 'on' : ''}" data-act="fVote" data-id="${w.id}">👍 ${vs.length}</button>
+          <button class="link" data-act="fWishDone" data-id="${w.id}">다녀왔어요</button>
+          ${w.created_by === S.me || isAdmin() ? `<button class="link" data-act="fWish" data-id="${w.id}">수정</button>` : ''}
+        </div></div>`; }).join('') || '<div class="panel ac-locked">📍<br>가보고 싶은 맛집을 올려보세요</div>'}</div>`;
+}
+function openFWish(id){
+  const w = id ? S.fWishes.find(x => x.id === id) : {};
+  openModal(`<h3>${id ? '가볼 곳 수정' : '가볼 곳 추가'}</h3>
+    <div class="form">
+      <label class="full">가게 이름<input id="fw-n" value="${esc(w.name || '')}"></label>
+      <label class="full">지역<input id="fw-a" value="${esc(w.area || '')}"></label>
+      <label class="full">이유 / 메모<input id="fw-t" value="${esc(w.note || '')}" placeholder="예) 유튜브에서 봤는데 맛있어 보임"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => { try { await call('fd_save_wish', { p_id:id ?? null, p_d:{ name:$('#fw-n').value, area:$('#fw-a').value, note:$('#fw-t').value } }); await loadFood(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+  if (id) $('#del').onclick = async () => { if (!confirm('삭제할까요?')) return; try { await call('fd_delete_wish', { p_id:id }); await loadFood(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
 }
 
 // ---------- 통계 ----------
