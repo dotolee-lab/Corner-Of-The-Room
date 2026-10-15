@@ -205,6 +205,8 @@ button{font:inherit;color:inherit}
 .pp{width:40px;flex-shrink:0;aspect-ratio:2/3;border-radius:6px;overflow:hidden;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:16px}
 .pp img{width:100%;height:100%;object-fit:cover;display:block}
 .pp.lg{width:64px;font-size:22px}
+.pp.edit{cursor:pointer;position:relative}
+.pp.edit:hover::after{content:"✎";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);color:#fff;font-size:16px}
 .hall-grid{display:grid;gap:14px;margin-top:12px;grid-template-columns:minmax(0,1fr)}
 @media (min-width:760px){.hall-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .hall-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;cursor:pointer;transition:border-color .2s,transform .2s}
@@ -404,9 +406,10 @@ async function loadAll(){
     sb.from('mv_legacy_comments').select('*').order('sort'),
     sb.from('mv_award_ballots').select('*'),
     sb.from('mv_awards').select('*').order('sort'),
+    sb.from('mv_award_posters').select('*'),
   ]);
   const bad = res.find(x => x.error); if (bad) throw bad.error;
-  [S.rounds, S.movies, S.ratings, S.legacy, S.ballots, S.awards] = res.map(x => x.data);
+  [S.rounds, S.movies, S.ratings, S.legacy, S.ballots, S.awards, S.aposters] = res.map(x => x.data);
   const years = yearsList();
   if (!years.includes(S.year)) S.year = years[0] ?? new Date().getFullYear();
 }
@@ -484,6 +487,7 @@ function onMainClick(e){
     case 'ayearGo': S.ayear = id; S.acView = 'year'; renderAcademy(); scrollTo({ top:0, behavior:'smooth' }); break;
     case 'acView': S.acView = b.dataset.k; renderAcademy(); break;
     case 'acShow': openCeremony(); break;
+    case 'ppick': openPosterPick(+b.dataset.py, b.dataset.pq); break;
     case 'acAdd': S.adraft[S.ayear].push({ category:'', pick:'' }); renderAcademy().then(() => { const c = document.querySelectorAll('.ac-cat'); c[c.length - 1]?.focus(); }); break;
     case 'acDel': S.adraft[S.ayear].splice(id, 1); renderAcademy(); break;
     case 'acSave': acSave(); break;
@@ -1004,31 +1008,76 @@ function pickTitle(cat, pick){
   const t = (/감독|주연|조연|각본/.test(cat) && paren) ? paren : main;
   return AC_ALIAS[t] || t;
 }
-let PCACHE = {}; try { PCACHE = JSON.parse(localStorage.getItem('mvclub_posters') || '{}'); } catch(e){}
-const pcSave = () => { try { localStorage.setItem('mvclub_posters', JSON.stringify(PCACHE)); } catch(e){} };
-const pposter = (cat, pick, cls = '') => useTMDB()
-  ? `<div class="pp ${cls}" data-pq="${esc(pickTitle(cat, pick))}"><span>${AC_ICON[cat] || '🏆'}</span></div>` : '';
+let PCACHE = {}; try { PCACHE = JSON.parse(localStorage.getItem('mvclub_posters2') || '{}'); } catch(e){}
+const pcSave = () => { try { localStorage.setItem('mvclub_posters2', JSON.stringify(PCACHE)); } catch(e){} };
+const pposter = (cat, pick, cls = '', y = 0, editable = false) => useTMDB()
+  ? `<div class="pp ${cls}${editable ? ' edit' : ''}" data-pq="${esc(pickTitle(cat, pick))}" data-py="${y}"${editable ? ' data-act="ppick" title="포스터 바꾸기"' : ''}><span>${AC_ICON[cat] || '🏆'}</span></div>` : '';
+const posterOverride = (y, q) => (S.aposters || []).find(p => p.year === y && p.title === q);
+const ryear = x => +(x.release_date || '0').slice(0, 4) || 0;
+// 시상식 연도(한국 개봉 기준)에 가까운 작품을 고름 → 같은 제목이라도 구분
+function bestForYear(res, q, y){
+  const nq = normT(q);
+  const exact = res.filter(x => normT(x.title) === nq || normT(x.original_title) === nq);
+  const pool = exact.length ? exact : res.slice(0, 5);
+  const dist = x => { const r = ryear(x); if (!r || !y) return 50; return r <= y ? y - r : (r - y) * 3; };
+  return [...pool].sort((a, b) => dist(a) - dist(b) || (b.vote_count || 0) - (a.vote_count || 0))[0];
+}
 async function hydratePosters(){
   if (!useTMDB()) return;
   const els = [...document.querySelectorAll('.pp[data-pq]:not(.done)')];
-  const fill = (el, path) => { el.classList.add('done'); if (path) el.innerHTML = `<img src="${TMDB_IMG}w185${path}" alt="" loading="lazy">`; };
-  const want = [...new Set(els.map(e => e.dataset.pq))];
-  els.forEach(el => { if (el.dataset.pq in PCACHE) fill(el, PCACHE[el.dataset.pq]); });
-  const todo = want.filter(q => !(q in PCACHE));
+  const fill = (el, path) => { el.classList.add('done'); el.innerHTML = path ? `<img src="${TMDB_IMG}w185${path}" alt="" loading="lazy">` : `<span>${el.textContent.trim() || '🎬'}</span>`; };
+  const keyOf = el => `${el.dataset.py}|${el.dataset.pq}`;
+  const todo = [];
+  els.forEach(el => {
+    const ov = posterOverride(+el.dataset.py, el.dataset.pq);
+    if (ov) return fill(el, ov.poster);
+    const k = keyOf(el);
+    if (k in PCACHE) return fill(el, PCACHE[k]);
+    if (!todo.includes(k)) todo.push(k);
+  });
   const worker = async () => {
     while (todo.length){
-      const q = todo.shift();
+      const k = todo.shift(); const [y, ...rest] = k.split('|'); const q = rest.join('|');
       try {
         const res = (await tmdb('/search/movie', { query:q })).results || [];
-        const nq = normT(q);
-        const hit = res.find(x => normT(x.title) === nq || normT(x.original_title) === nq) || res[0];
-        PCACHE[q] = hit?.poster_path || null;
+        PCACHE[k] = bestForYear(res, q, +y)?.poster_path || null;
       } catch(e){ continue; }
-      document.querySelectorAll(`.pp[data-pq="${CSS.escape(q)}"]`).forEach(el => fill(el, PCACHE[q]));
+      document.querySelectorAll('.pp[data-pq]:not(.done)').forEach(el => { if (keyOf(el) === k) fill(el, PCACHE[k]); });
     }
   };
   await Promise.all([worker(), worker(), worker()]);
   pcSave();
+}
+// 포스터 직접 고르기
+function openPosterPick(y, q){
+  openModal(`<h3>포스터 바꾸기</h3><p class="sub" style="margin:0">${y}년 · ${esc(q)}</p>
+    <div style="display:flex;gap:6px;margin-top:12px"><input id="ppq" value="${esc(q)}" placeholder="영화 제목"><button class="btn small" id="ppgo">검색</button></div>
+    <div id="ppres" class="tm-res" style="max-height:360px"></div>
+    <p class="err" id="merr"></p>
+    <div class="row"><button class="btn danger" id="ppnone">포스터 없이 두기</button><span class="sp"></span><button class="btn" id="cancel">닫기</button></div>`);
+  const search = async () => {
+    $('#ppres').innerHTML = '<small class="note">검색 중…</small>';
+    try {
+      const res = ((await tmdb('/search/movie', { query:$('#ppq').value })).results || []).slice(0, 10);
+      $('#ppres').innerHTML = res.map(x => `<button type="button" class="tm-opt" data-tid="${x.id}" data-pp="${esc(x.poster_path || '')}">
+          ${x.poster_path ? `<img src="${TMDB_IMG}w92${x.poster_path}" alt="">` : '<span class="ph">🎬</span>'}
+          <span><b>${esc(x.title)}</b><br><small>${esc([(x.release_date || '').slice(0, 4), x.original_title !== x.title ? x.original_title : ''].filter(Boolean).join(' · '))}</small></span></button>`).join('')
+        || '<small class="note">검색 결과가 없어요</small>';
+    } catch(e){ $('#ppres').innerHTML = `<small class="err">${esc(e.message)}</small>`; }
+  };
+  const save = async (tid, poster) => {
+    try {
+      await call('mv_set_award_poster', { p_year:y, p_title:q, p_tmdb_id:tid, p_poster:poster });
+      S.aposters = [...(S.aposters || []).filter(p => !(p.year === y && p.title === q)), { year:y, title:q, tmdb_id:tid, poster }];
+      closeModal(); renderAcademy(); toast('포스터를 바꿨어요 · 모두에게 적용돼요');
+    } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  $('#ppgo').onclick = search;
+  $('#ppq').onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); search(); } };
+  $('#ppres').onclick = e => { const b = e.target.closest('[data-tid]'); if (b) save(+b.dataset.tid, b.dataset.pp || null); };
+  $('#ppnone').onclick = () => save(0, null);
+  $('#cancel').onclick = closeModal;
+  search();
 }
 
 // ----- 화면 -----
@@ -1118,7 +1167,7 @@ function awardCard(y, cat, members){
   const solo = members.length === 1;
   const rowsH = groups.map((g, i) => `
     <div class="aw-pick ${crown && i === 0 ? 'win' : ''}">
-      ${pposter(cat, g.pick, solo ? 'lg' : '')}
+      ${pposter(cat, g.pick, solo ? 'lg' : '', y, true)}
       <div class="aw-txt"><b>${esc(g.pick)}</b>
         <span class="aw-who">${g.who.map(m => `<i>${esc(solo ? m.name : shortName(m.name))}</i>`).join('')}${crown && i === 0 ? ` <em>👑 ${g.who.length}명</em>` : ''}</span></div>
     </div>`).join('');
@@ -1136,7 +1185,7 @@ function hallHTML(){
     const rest = acCats(items).filter(c => c !== '작품상');
     return `<div class="hall-card" data-act="ayearGo" data-id="${y}">
       <div class="hall-top">
-        <div class="hall-posters">${best.slice(0, 3).map(g => pposter('작품상', g.pick, 'hall')).join('') || pposter('작품상', '', 'hall')}</div>
+        <div class="hall-posters">${best.slice(0, 3).map(g => pposter('작품상', g.pick, 'hall', y)).join('') || pposter('작품상', '', 'hall', y)}</div>
         <div class="hall-head"><div class="ac-kicker">${acRound(y)} · ${y}</div>
           <div class="hall-best"><small>🎬 작품상</small>${best.map(g => `<b>${esc(g.pick)}</b>${pub.length > 1 ? `<span class="aw-who">${g.who.map(m => `<i>${esc(shortName(m.name))}</i>`).join('')}</span>` : ''}`).join('<br>') || '—'}</div>
           <div class="hall-by">투표: ${pub.map(m => esc(m.name)).join(', ')}</div></div>
@@ -1191,7 +1240,7 @@ function openCeremony(){
       inner = `<div class="cer-kicker">${i + 1} / ${cats.length}</div>
         <div class="cer-cat">${AC_ICON[c] || '🏆'} ${esc(c)}</div>
         ${opened ? `<div class="cer-picks">${groups.map((g, k) => `<div class="cer-pick ${k === 0 && g.who.length >= 2 ? 'win' : ''}" style="animation-delay:${k * 0.25}s">
-              ${pposter(c, g.pick, 'cerpp')}<div><b>${esc(g.pick)}</b><span>${g.who.map(m => esc(m.name)).join(' · ')}${k === 0 && g.who.length >= 2 ? ' 👑' : ''}</span></div></div>`).join('')}</div>
+              ${pposter(c, g.pick, 'cerpp', y)}<div><b>${esc(g.pick)}</b><span>${g.who.map(m => esc(m.name)).join(' · ')}${k === 0 && g.who.length >= 2 ? ' 👑' : ''}</span></div></div>`).join('')}</div>
             <button class="btn primary cer-btn" data-c="next">${i === cats.length - 1 ? '마치기' : '다음 부문 →'}</button>`
           : `<div class="cer-env" data-c="open">✉️<small>눌러서 공개</small></div>
             <div class="cer-sub">The winner is…</div>`}`;
