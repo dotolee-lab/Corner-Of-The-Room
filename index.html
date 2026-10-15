@@ -35,7 +35,7 @@ button{font:inherit;color:inherit}
 .loading,.empty{padding:60px 0;text-align:center;color:var(--sub)}
 
 /* buttons */
-.btn{border:1px solid var(--line);background:var(--card);padding:9px 16px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px}
+.btn{white-space:nowrap;border:1px solid var(--line);background:var(--card);padding:9px 16px;border-radius:999px;cursor:pointer;font-weight:600;font-size:14px}
 .btn.small{padding:6px 12px;font-size:13px}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .btn.ghost{background:transparent;border-style:dashed;color:var(--sub)}
@@ -196,6 +196,21 @@ button{font:inherit;color:inherit}
 .wrap{padding-bottom:calc(48px + env(safe-area-inset-bottom))}
 .statmore{display:block;margin:10px auto 0}
 .rk{display:inline-block;min-width:22px;color:var(--sub);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.m-top .mposter{width:58px;flex-shrink:0;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:20px;text-decoration:none}
+.m-top .mposter img{width:100%;height:100%;object-fit:cover;display:block}
+.m-top .mposter.loading{animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+.movie.group .m-top .mposter{width:64px}
+.minfo{font-size:12px;color:var(--sub);margin-top:2px;line-height:1.4}
+.tm-cur{display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.tm-cur img{width:36px;border-radius:4px}
+.tm-cur>div{flex:1;min-width:0;font-size:14px;color:var(--ink)}
+.tm-cur small{color:var(--sub)}
+.tm-res{display:flex;flex-direction:column;gap:4px;margin-top:8px;max-height:280px;overflow:auto}
+.tm-opt{display:flex;align-items:center;gap:10px;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 8px;cursor:pointer;font-size:14px}
+.tm-opt:hover{border-color:var(--accent)}
+.tm-opt img,.tm-opt .ph{width:32px;height:48px;object-fit:cover;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--chip)}
+.tm-opt small{color:var(--sub)}
 .tabcount{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:18px;text-align:center;margin-left:2px;vertical-align:1px}
 .sec small{font-weight:600;letter-spacing:0;margin-left:4px}
 .todo-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
@@ -324,7 +339,7 @@ async function init(){
     if (me){ S.token = ss.token; S.me = me; } else clearSess();
   }
   if (!S.me) return renderLogin();
-  await loadAll(); render();
+  await loadAll(); render(); fillTmdb();
 }
 
 async function loadAll(){
@@ -360,7 +375,7 @@ function renderLogin(sel){
     const { data, error } = await sb.rpc('mv_login', { p_member_id:sel, p_password:pw });
     if (error || !data){ $('#lerr').textContent = '비밀번호가 맞지 않아요.'; return; }
     resetUserState(); S.token = data; S.me = sel; saveSess();
-    try { await loadAll(); render(); } catch(err){ $('#lerr').textContent = errMsg(err); }
+    try { await loadAll(); render(); fillTmdb(); } catch(err){ $('#lerr').textContent = errMsg(err); }
   };
 }
 
@@ -488,6 +503,78 @@ function roundHTML(r){
   </section>`;
 }
 
+// ----- TMDB 포스터·정보 -----
+function posterHTML(m){
+  const t = m.tmdb;
+  if (!useTMDB() || m.tmdb_id === 0) return '';
+  if (!t) return '<div class="mposter loading"></div>';
+  const img = t.poster ? `<img src="${TMDB_IMG}w185${t.poster}" alt="" loading="lazy">` : '<span>🎬</span>';
+  return `<a class="mposter" href="https://www.themoviedb.org/movie/${m.tmdb_id}?language=ko" target="_blank" rel="noopener" title="${esc(t.title || '')} 상세 정보">${img}</a>`;
+}
+function infoLine(m){
+  const t = m.tmdb; if (!t) return '';
+  const bits = [t.year, t.director, t.runtime ? `${t.runtime}분` : '', (t.genres || []).slice(0, 2).join('·')].filter(Boolean);
+  return bits.length ? `<div class="minfo">${bits.map(esc).join(' · ')}</div>` : '';
+}
+async function tmdbDetails(id){
+  const d = await tmdb(`/movie/${id}`, { append_to_response:'credits' });
+  const dirP = d.credits?.crew?.find(c => c.job === 'Director');
+  let director = dirP?.name || '';
+  if (dirP && !/[가-힣]/.test(director)){
+    try { const p = await tmdb(`/person/${dirP.id}`); director = (p.also_known_as || []).find(n => /^[가-힣\s·]+$/.test(n)) || director; } catch(e){}
+  }
+  return { title:d.title, original_title:d.original_title, year:(d.release_date || '').slice(0, 4),
+           poster:d.poster_path || null, runtime:d.runtime || null, director,
+           genres:(d.genres || []).map(g => g.name), overview:d.overview || '' };
+}
+async function tmdbBestMatch(m){
+  const r = S.rounds.find(x => x.id === m.round_id);
+  const yHint = +(String(m.title).match(/\((\d{4})\)/)?.[1] || 0);
+  const live = /실사/.test(m.title);                    // '룩백(실사화)' 같은 경우 최신작 우선
+  const q = searchTitle(m.title);
+  const queries = [...new Set([q, q.replace(/[:·\-!?.,]/g, ' ').replace(/\s+/g, ' ').trim(), q.split(/[:\-]/)[0].trim()])].filter(Boolean);
+  let res = [], used = q;
+  for (const qq of queries){
+    res = (await tmdb('/search/movie', { query:qq, ...(yHint ? { year:String(yHint) } : {}) })).results || [];
+    if (res.length){ used = qq; break; }
+  }
+  if (!res.length) return null;
+  const nq = normT(used);
+  const exact = res.filter(x => normT(x.title) === nq || normT(x.original_title) === nq);
+  let pool = exact.length ? exact : res.slice(0, 1);
+  const yr = x => +(x.release_date || '0').slice(0, 4) || 0;
+  const limit = (r?.year ?? new Date().getFullYear()) + 1;   // 회차보다 나중에 나온 작품은 제외
+  const ok = pool.filter(x => !yr(x) || yr(x) <= limit);
+  if (ok.length) pool = ok;
+  if (live) return [...pool].sort((a, b) => yr(b) - yr(a))[0];
+  return [...pool].sort((a, b) => (b.vote_count || 0) - (a.vote_count || 0))[0];
+}
+async function saveTmdb(m, tmdbId, info){
+  await call('mv_set_tmdb', { p_movie_id:m.id, p_tmdb_id:tmdbId, p_info:info });
+  m.tmdb_id = tmdbId; m.tmdb = info;
+  const el = document.getElementById('mv-' + m.id);
+  if (el) el.outerHTML = movieHTML(m);
+}
+let tmdbFilling = false;
+async function fillTmdb(){
+  if (!useTMDB() || tmdbFilling || !S.token) return;
+  const todo = S.movies.filter(m => m.tmdb_id == null);
+  if (!todo.length) return;
+  tmdbFilling = true;
+  const worker = async () => {
+    while (todo.length && S.token){
+      const m = todo.shift();
+      try {
+        const hit = await tmdbBestMatch(m);
+        if (hit) await saveTmdb(m, hit.id, await tmdbDetails(hit.id));
+        else await saveTmdb(m, 0, null);
+      } catch(e){ /* 다음에 다시 시도 */ }
+    }
+  };
+  await Promise.all([worker(), worker(), worker()]);
+  tmdbFilling = false;
+}
+
 function movieHTML(m){
   const rs = ratingsOf(m.id), vals = starVals(rs), avg = mean(vals);
   const mine = rs.find(x => x.member_id === S.me);
@@ -502,7 +589,9 @@ function movieHTML(m){
       `<li class="anon">${admin ? `<button class="ed" data-act="editLegacy" data-id="${l.id}" title="수정">✎</button>` : ''}<b>작성자 미상</b>${esc(l.body)}</li>`).join('');
   return `<article class="movie ${m.kind}" id="mv-${m.id}">
     <div class="m-top">
+      ${posterHTML(m)}
       <div><div class="slot">${label}</div><h3>${esc(m.title)}</h3>
+        ${infoLine(m)}
         <div class="plats">${(m.platforms || []).map(n => `<span class="plat"><i style="background:${platColor(n)}"></i>${esc(n)}</span>`).join('')}
           <a class="jw" href="https://www.justwatch.com/kr/%EA%B2%80%EC%83%89?q=${encodeURIComponent(searchTitle(m.title))}" target="_blank" rel="noopener" title="지금 어디서 볼 수 있는지 JustWatch에서 확인">어디서 볼까? ↗</a></div></div>
       <div class="avg">${avg != null ? `<strong>${avg.toFixed(1)}</strong><small>${vals.length}명 평균</small>` : '<small>평가 없음</small>'}</div>
@@ -1014,7 +1103,7 @@ function openModal(html){
 }
 function closeModal(){ const d = $('#modal'); d.classList.remove('open'); d.innerHTML = ''; }
 
-async function afterSave(){ await loadAll(); closeModal(); render(); }
+async function afterSave(){ await loadAll(); closeModal(); render(); fillTmdb(); }
 
 // 내 평가
 function openRate(mid, who){
@@ -1131,6 +1220,15 @@ function openMovie(roundId, movieId){
       <label>구분<select id="fk"><option value="pick" ${kind === 'pick' ? 'selected' : ''}>추천작</option><option value="group" ${kind === 'group' ? 'selected' : ''}>단체관람</option></select></label>
       <label id="slotL">순서<input id="fs" type="number" min="1" max="9" value="${m?.kind === 'pick' ? m.slot : nextSlot}"></label>
       <label class="full">제목<input id="fti" value="${esc(m?.title ?? '')}"></label>
+      ${m && useTMDB() ? `<div class="full"><div style="font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px">포스터·영화 정보 (TMDB)</div>
+        <div class="tm-cur" id="tmcur">${m.tmdb_id ? `${m.tmdb?.poster ? `<img src="${TMDB_IMG}w92${m.tmdb.poster}" alt="">` : ''}<div><b>${esc(m.tmdb?.title || '')}</b><br><small>${esc([m.tmdb?.year, m.tmdb?.director].filter(Boolean).join(' · '))}</small></div>`
+          : m.tmdb_id === 0 ? '<div><small>정보 없음으로 지정됨</small></div>' : '<div><small>자동으로 찾는 중이에요</small></div>'}
+          <button type="button" class="btn small" id="tmfind">다른 영화로 찾기</button></div>
+        <div id="tmsearch" style="display:none">
+          <div style="display:flex;gap:6px;margin-top:8px"><input id="tmq" value="${esc(searchTitle(m.title))}" placeholder="영화 제목"><button type="button" class="btn small" id="tmgo">검색</button></div>
+          <div id="tmres" class="tm-res"></div>
+          <button type="button" class="link" id="tmnone" style="margin-top:6px">포스터·정보 없이 두기</button>
+        </div></div>` : ''}
       <div class="full"><div style="font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px">볼 수 있는 곳</div>
         <div class="pchk">${PLATFORMS.map(([n]) => `<label><input type="checkbox" value="${esc(n)}" ${(m?.platforms || []).includes(n) ? 'checked' : ''}>${esc(n)}</label>`).join('')}</div></div>
       <label class="full" id="schL">일정 · 장소<input id="fsc" value="${esc(m?.schedule ?? '')}" placeholder="예) 10월 18일 대전 명보시네마"></label>
@@ -1145,6 +1243,28 @@ function openMovie(roundId, movieId){
   };
   toggle(); $('#fk').onchange = toggle;
   $('#cancel').onclick = closeModal;
+  if (m && useTMDB()){
+    const search = async () => {
+      $('#tmres').innerHTML = '<small class="note">검색 중…</small>';
+      try {
+        const res = (await tmdb('/search/movie', { query:$('#tmq').value })).results || [];
+        $('#tmres').innerHTML = res.slice(0, 8).map(x => `<button type="button" class="tm-opt" data-tid="${x.id}">
+          ${x.poster_path ? `<img src="${TMDB_IMG}w92${x.poster_path}" alt="">` : '<span class="ph">🎬</span>'}
+          <span><b>${esc(x.title)}</b><br><small>${esc([(x.release_date || '').slice(0, 4), x.original_title !== x.title ? x.original_title : ''].filter(Boolean).join(' · '))}</small></span></button>`).join('')
+          || '<small class="note">검색 결과가 없어요</small>';
+      } catch(e){ $('#tmres').innerHTML = `<small class="err">${esc(e.message)}</small>`; }
+    };
+    $('#tmfind').onclick = () => { $('#tmsearch').style.display = ''; search(); };
+    $('#tmgo').onclick = search;
+    $('#tmq').onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); search(); } };
+    $('#tmres').onclick = async e => {
+      const b = e.target.closest('[data-tid]'); if (!b) return;
+      $('#tmres').innerHTML = '<small class="note">저장 중…</small>';
+      try { await saveTmdb(m, +b.dataset.tid, await tmdbDetails(+b.dataset.tid)); closeModal(); }
+      catch(err){ $('#merr').textContent = errMsg(err); }
+    };
+    $('#tmnone').onclick = async () => { try { await saveTmdb(m, 0, null); closeModal(); } catch(err){ $('#merr').textContent = errMsg(err); } };
+  }
   $('#save').onclick = async () => {
     const g = $('#fk').value === 'group';
     try {
