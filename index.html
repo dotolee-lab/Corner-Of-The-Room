@@ -62,6 +62,10 @@ button{font:inherit;color:inherit}
 .top-in{max-width:1120px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px}
 .brand{font:inherit;font-weight:800;font-size:17px;letter-spacing:-.02em;white-space:nowrap;background:none;border:0;padding:0;cursor:pointer;color:var(--ink)}
 .brand .b-short{display:none}
+.brand{display:inline-flex;align-items:center;gap:8px}
+.cor-mark{width:22px;height:22px;flex-shrink:0;color:var(--ink)}
+.login-mark .cor-mark{width:56px;height:56px}
+.login-mark{margin-bottom:6px}
 .top-in .sp{flex:1}
 .catsw{flex:1;display:flex;gap:4px;min-width:0}
 .catsw button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 11px;font-size:13px;font-weight:700;cursor:pointer;color:var(--sub);white-space:nowrap}
@@ -581,6 +585,7 @@ textarea{resize:vertical}
 <script>
 // ===== 설정 =====
 const SITE_TITLE   = 'Corner Of The Room';
+const COR_MARK = '<svg class="cor-mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 12 V34 M32 34 L13 45 M32 34 L51 45" stroke="currentColor" stroke-width="4.4" stroke-linecap="round" fill="none"/><circle cx="32" cy="34" r="4.6" fill="#ee7a45"/></svg>';
 const SUPABASE_URL = 'https://gudwubeutvkhjrsardtc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DD4LX04ysEDt7T0ELcdo8Q_Cl1hSPPE';
 const TMDB_KEY     = '645b1fc12706b3545394daf79af67c7d';   // ← TMDB API 키(32자리)를 따옴표 안에 붙여넣기. 비워두면 기본 명작 목록 사용
@@ -665,7 +670,7 @@ const yearsList = () => [...new Set(S.rounds.map(x => x.year))].sort((a, b) => b
 // ---------- 로그인 ----------
 function renderLogin(sel){
   $('#app').innerHTML = `<div class="login">
-    <h1>${esc(SITE_TITLE)}</h1>
+    <div class="login-mark">${COR_MARK}</div><h1>${esc(SITE_TITLE)}</h1>
     <p class="sub">누구신가요?</p>
     <div class="who">${S.members.map(m => `<button class="who-btn${m.id === sel ? ' on' : ''}" data-id="${m.id}">${esc(m.name)}</button>`).join('')}</div>
     <form id="lf"><input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" ${sel ? '' : 'disabled'}>
@@ -726,7 +731,7 @@ function render(){
   const home = S.cat === 'home';
   $('#app').innerHTML = `
   <header class="top"><div class="top-in">
-    <button class="brand" data-nav="home" title="홈으로"><span class="b-full">${esc(SITE_TITLE)}</span><span class="b-short">COR</span></button>
+    <button class="brand" data-nav="home" title="홈으로">${COR_MARK}<span class="b-full">${esc(SITE_TITLE)}</span><span class="b-short">COR</span></button>
     ${home ? '<span class="sp"></span>' : `<span class="catsw">${CATS.map(c => `<button data-nav="${c.k}" class="${S.cat === c.k ? 'on' : ''}">${c.icon}<span class="cl"> ${c.label}</span><span class="cs"> ${c.short}</span></button>`).join('')}</span>`}
     <div class="me"><button class="link" id="pwbtn">${esc(memName(S.me))}님${isAdmin() ? '<span class="admin-tag">관리자</span>' : ''}</button>${S.canInstall ? '<button class="link" id="instbtn">📲 앱 설치</button>' : ''}<button class="link" id="out">로그아웃</button></div>
   </div>
