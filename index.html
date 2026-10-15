@@ -97,6 +97,11 @@ button{font:inherit;color:inherit}
 .coms li b{display:block;font-size:11px;color:var(--accent)}
 .coms li.anon b{color:var(--sub);font-weight:600}
 .coms li .ed{float:right;background:none;border:0;color:var(--sub);cursor:pointer;font-size:12px;padding:0 0 0 8px}
+.seg{display:flex;background:var(--chip);border-radius:12px;padding:4px;margin:14px 0 0;gap:4px}
+.seg button{flex:1;border:0;background:transparent;padding:9px 8px;border-radius:9px;cursor:pointer;font-weight:700;font-size:14px;color:var(--sub)}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.seg small{font-weight:600;color:var(--sub);margin-left:2px}
+.seg+.round{border-top:0;margin-top:10px}
 .sec{margin:34px 0 0;font-size:13px;font-weight:800;letter-spacing:.04em;color:var(--sub);display:flex;align-items:center;gap:10px}
 .sec::after{content:"";flex:1;height:1px;background:var(--line)}
 .sec+.round{border-top:0;margin-top:8px}
@@ -155,7 +160,7 @@ const SUPABASE_KEY = 'sb_publishable_DD4LX04ysEDt7T0ELcdo8Q_Cl1hSPPE';
 // =================
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const S = { members:[], rounds:[], movies:[], ratings:[], legacy:[], me:null, token:null, year:null, tab:'records' };
+const S = { members:[], rounds:[], movies:[], ratings:[], legacy:[], me:null, token:null, year:null, kind:'quarter', tab:'records' };
 const LS = 'mvclub_session';
 
 const $ = s => document.querySelector(s);
@@ -269,7 +274,8 @@ function onMainClick(e){
   const b = e.target.closest('[data-act]'); if (!b) return;
   const id = +b.dataset.id;
   switch (b.dataset.act){
-    case 'year': S.year = id; renderRecords(); break;
+    case 'year': S.year = id; S.kind = 'quarter'; renderRecords(); break;
+    case 'kind': S.kind = b.dataset.k; renderRecords(); break;
     case 'addRound': openRound(null); break;
     case 'editRound': openRound(id); break;
     case 'addMovie': openMovie(id, null); break;
@@ -285,14 +291,18 @@ function renderRecords(){
   const quarters = inYear.filter(r => r.period_type === 'quarter').sort((a, b) => b.period - a.period);
   const months = inYear.filter(r => r.period_type === 'month').sort((a, b) => b.period - a.period);
   const both = quarters.length && months.length;
+  if (!both) S.kind = months.length ? 'month' : 'quarter';
+  const list = S.kind === 'month' ? months : quarters;
   $('#main').innerHTML = `
     <div class="toolbar">
       <div class="chips">${yearsList().map(y => `<button class="chip ${y === S.year ? 'on' : ''}" data-act="year" data-id="${y}">${y}</button>`).join('')}</div>
       <button class="btn small" data-act="addRound">+ 회차 추가</button>
     </div>
-    ${!inYear.length ? '<p class="empty">아직 기록이 없어요.</p>' : ''}
-    ${quarters.length ? (both ? '<h2 class="sec">분기 테마작</h2>' : '') + quarters.map(roundHTML).join('') : ''}
-    ${months.length ? (both ? '<h2 class="sec">월별 추천작</h2>' : '') + months.map(roundHTML).join('') : ''}`;
+    ${both ? `<div class="seg">
+      <button class="${S.kind === 'quarter' ? 'on' : ''}" data-act="kind" data-k="quarter">분기 테마작 <small>${quarters.length}</small></button>
+      <button class="${S.kind === 'month' ? 'on' : ''}" data-act="kind" data-k="month">월별 추천작 <small>${months.length}</small></button>
+    </div>` : ''}
+    ${list.length ? list.map(roundHTML).join('') : '<p class="empty">아직 기록이 없어요.</p>'}`;
 }
 
 function sortedMovies(rid){
@@ -478,7 +488,7 @@ function openLegacy(id){
 function openRound(id){
   const r = id ? S.rounds.find(x => x.id === id) : null;
   const yr = r?.year ?? S.year;
-  const pt = r?.period_type ?? 'quarter';
+  const pt = r?.period_type ?? S.kind ?? 'quarter';
   let per = r?.period;
   if (!r){
     const same = S.rounds.filter(x => x.year === yr && x.period_type === pt).map(x => x.period);
