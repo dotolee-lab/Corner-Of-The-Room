@@ -497,27 +497,8 @@ button.cal-c{border-top:0;border-left:0;border-radius:0}
 button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line-height:inherit}
 .seg.sm{flex:0 0 auto}.seg.sm button{padding:6px 12px;font-size:13px;white-space:nowrap}
 .fw-tt{flex:1;min-width:0}
-@media (max-width:600px){.fw-tb{flex-wrap:wrap}.fw-tt{flex-basis:100%}.fw-tb .seg{margin-right:auto}}
-.fw-map{height:480px;border-radius:16px;border:1px solid var(--line);overflow:hidden;position:relative;z-index:0;background:var(--card);margin-top:12px}
-.fw-map-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--sub)}
-.fw-map-foot .lg{display:inline-flex;align-items:center;gap:6px}
-.fpin-lg{display:inline-block;width:12px;height:12px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--accent)}
-.fpin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--accent);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center}
-.fpin b{transform:rotate(45deg);color:#fff;font-size:13px;font-weight:800;line-height:1}
-.fpin.top{background:#e8b93e}.fpin.top b{color:#1a1206}
-.fpin.done{background:#2f6b58;width:26px;height:26px}.fpin.done b{font-size:12px}
-.fpop{display:flex;flex-direction:column;gap:2px;min-width:150px;font-family:inherit}
-.fpop small{color:#888;font-size:11px}.fpop b{font-size:15px}.fpop span{font-size:12px}.fpop a{font-size:12px;margin-top:4px}
-.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--ink)}
-.leaflet-container a.leaflet-popup-close-button{color:var(--sub)}
-.leaflet-container{font-family:inherit}
-@media (prefers-color-scheme:dark){.osm-tiles{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.9) saturate(.6)}}
-.loc-map{height:210px;border-radius:12px;border:1px solid var(--line);overflow:hidden;margin-top:8px;position:relative;z-index:0;background:var(--bg)}
-.loc-res{display:flex;flex-direction:column;gap:4px;margin-top:6px}
-.loc-res button{text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font:inherit;color:var(--ink);cursor:pointer;display:flex;flex-direction:column}
-.loc-res button small{color:var(--sub);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.loc-st{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub);margin-top:6px}
-@media (max-width:600px){.fw-map{height:380px}}
+@media (max-width:600px){.fw-tb{flex-wrap:wrap}.fw-tt{flex-basis:100%}.fw-tb > .btn{margin-left:auto}}
+
 .flabel{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px}
 .r-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .tk-link{border:1px dashed color-mix(in srgb,var(--group) 60%,transparent);background:color-mix(in srgb,var(--group) 10%,transparent);color:var(--group);border-radius:999px;padding:6px 14px;font-weight:700;font-size:13px;cursor:pointer}
@@ -1052,11 +1033,8 @@ function onMainClick(e){
     case 'fStop': openStop(b.dataset.id ? id : null); break;
     case 'fMove': call('fd_move_visit', { p_id:id, p_dir:+b.dataset.k }).then(loadFood).then(renderTours).catch(e => alert(errMsg(e))); break;
     case 'fWish': openFWish(b.dataset.id ? id : null); break;
-    case 'fwView': S.fwView = b.dataset.k; S.fwFocus = null; renderFwish(); break;
     case 'fwReg': S.fwReg = b.dataset.k; renderFwish(); break;
     case 'fwCat': S.fwCat = b.dataset.k; renderFwish(); break;
-    case 'fwDone': S.fwShowPlaces = !S.fwShowPlaces; renderFwish(); break;
-    case 'fwFocus': S.fwView = 'map'; S.fwFocus = id; renderFwish(); scrollTo({ top:0, behavior:'smooth' }); break;
     case 'fVote': call('fd_toggle_vote', { p_wish_id:id }).then(loadFood).then(renderFwish).catch(e => alert(errMsg(e))); break;
     case 'fWishDone': { const w = S.fWishes.find(x => x.id === id); S.tab = 'rank'; render(); openPlace(null, { name:w.name, area:w.area || '', category:w.category || '한식', region:regionOf(w), lat:w.lat, lng:w.lng }, async () => { try { await call('fd_delete_wish', { p_id:w.id }); await loadFood(); } catch(e){} }); break; }
     case 'byear': S.byear = id; renderBest(); break;
@@ -2953,73 +2931,6 @@ function guessRegion(text){
 const regionOf = x => x.region || guessRegion(x.area);
 const regionOpts = cur => `<option value="">선택 안 함</option>${FD_REGIONS.map(r => `<option ${r === cur ? 'selected' : ''}>${r}</option>`).join('')}`;
 
-let _leaf = null;
-const loadLeaflet = () => _leaf ??= new Promise((ok, no) => {
-  const l = document.createElement('link'); l.rel = 'stylesheet';
-  l.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'; document.head.appendChild(l);
-  const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
-  s.onload = () => ok(window.L); s.onerror = () => { _leaf = null; no(new Error('지도를 불러오지 못했어요. 인터넷 연결을 확인해 주세요.')); };
-  document.head.appendChild(s);
-});
-const isDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
-const baseTiles = L => L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-  { attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom:19, className:'osm-tiles' });
-const KOREA = [36.2, 127.9];
-const pinIcon = (L, html, cls = '') => L.divIcon({ className:'', html:`<div class="fpin ${cls}"><b>${html}</b></div>`, iconSize:[30, 38], iconAnchor:[15, 36], popupAnchor:[0, -32] });
-
-// 지도에서 위치 찾기 (OpenStreetMap 검색)
-async function geoSearch(q){
-  const r = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=kr&limit=6&accept-language=ko&q=${encodeURIComponent(q)}`);
-  if (!r.ok) throw new Error('검색이 잠시 안 돼요');
-  const js = await r.json();
-  return (Array.isArray(js) ? js : []).map(x => ({ lat:+x.lat, lng:+x.lon, name:x.name || x.display_name.split(',')[0], addr:x.display_name }));
-}
-
-// 등록 창 안의 '지도 위치' 칸
-function locPickerHTML(o){
-  return `<div class="full"><div class="flabel">지도 위치 <small class="dim">· 검색하거나 지도를 눌러 핀을 꽂아요</small></div>
-    <div style="display:flex;gap:6px"><input id="lq" placeholder="가게 이름 또는 주소"><button type="button" class="btn small" id="lgo">검색</button></div>
-    <div id="lres" class="loc-res"></div>
-    <div id="lmap" class="loc-map"></div>
-    <div class="loc-st"><span id="lst">${o.lat != null ? '📍 위치 지정됨' : '아직 위치 없음 (지도에 안 보여요)'}</span><span class="sp"></span><button type="button" class="link" id="lclr" ${o.lat != null ? '' : 'hidden'}>위치 지우기</button></div></div>`;
-}
-function bindLocPicker(o, { query, onPlace }){
-  const pos = { lat:o.lat ?? null, lng:o.lng ?? null };
-  let map, mk, L;
-  const st = () => { $('#lst').textContent = pos.lat != null ? '📍 위치 지정됨' : '아직 위치 없음 (지도에 안 보여요)'; $('#lclr').hidden = pos.lat == null; };
-  const set = (lat, lng, zoom) => {
-    pos.lat = +lat.toFixed(6); pos.lng = +lng.toFixed(6);
-    if (map){ if (mk) mk.setLatLng([lat, lng]); else mk = L.marker([lat, lng], { icon:pinIcon(L, '★'), draggable:true }).addTo(map).on('dragend', e => { const p = e.target.getLatLng(); set(p.lat, p.lng); });
-      if (zoom) map.setView([lat, lng], zoom); }
-    st();
-  };
-  loadLeaflet().then(l => {
-    L = l; if (!$('#lmap')) return;
-    map = L.map('lmap', { attributionControl:true }).setView(pos.lat != null ? [pos.lat, pos.lng] : KOREA, pos.lat != null ? 16 : 7);
-    baseTiles(L).addTo(map);
-    if (pos.lat != null) set(pos.lat, pos.lng);
-    map.on('click', e => set(e.latlng.lat, e.latlng.lng));
-    setTimeout(() => map.invalidateSize(), 250);
-  }).catch(e => { $('#lmap').innerHTML = `<p class="note" style="padding:12px">${esc(e.message)}</p>`; });
-  const run = async () => {
-    const q = $('#lq').value.trim() || query();
-    if (!q) return;
-    $('#lq').value = q; $('#lres').innerHTML = '<small class="dim">찾는 중…</small>';
-    try {
-      let rs = await geoSearch(q);
-      if (!rs.length && q.includes(' ')) rs = await geoSearch(q.split(' ').slice(0, -1).join(' '));   // 가게가 없으면 지역으로
-      $('#lres').innerHTML = rs.length ? rs.map((r, i) => `<button type="button" data-i="${i}"><b>${esc(r.name)}</b><small>${esc(r.addr)}</small></button>`).join('')
-        : '<small class="dim">못 찾았어요. 동네 이름으로 찾은 뒤 지도를 눌러 핀을 꽂아 주세요.</small>';
-      $('#lres').onclick = e => { const b = e.target.closest('[data-i]'); if (!b) return; const r = rs[+b.dataset.i]; set(r.lat, r.lng, 17); onPlace?.(r); $('#lres').innerHTML = ''; };
-    } catch(e){ $('#lres').innerHTML = `<small class="err">${esc(e.message)}</small>`; }
-  };
-  $('#lgo').onclick = run;
-  $('#lq').onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); run(); } };
-  $('#lclr').onclick = () => { pos.lat = pos.lng = null; if (mk){ mk.remove(); mk = null; } st(); };
-  return () => ({ lat:pos.lat, lng:pos.lng });
-}
-
-
 async function loadFood(){
   const res = await Promise.all([
     sb.from('fd_places').select('*'), sb.from('fd_ratings').select('*'), sb.from('fd_tours').select('*'),
@@ -3184,7 +3095,6 @@ function openPlace(id, preset = {}, after){
       <div class="full"><div class="flabel">가격대 (1인 기준)</div><div class="fd-rvsel" id="fp-p">${[1, 2, 3, 4].map(n => `<button type="button" data-pl="${n}" class="${p.price_level === n ? 'on' : ''}">${'₩'.repeat(n)} <small>${FD_PRICE[n]}</small></button>`).join('')}</div></div>
       <label class="full">주소 (선택)<input id="fp-ad" value="${esc(p.address || '')}"></label>
       <label class="full">메모 (선택)<input id="fp-m" value="${esc(p.memo || '')}" placeholder="예) 웨이팅 필수, 주차 가능"></label>
-      ${locPickerHTML(p)}
     </div>
     <p class="err" id="merr"></p>
     <div class="row">${id ? '<button class="btn danger" id="del">맛집 삭제</button>' : ''}<span class="sp"></span>
@@ -3192,13 +3102,11 @@ function openPlace(id, preset = {}, after){
   let pl = p.price_level ?? null;
   $('#fp-a').oninput = () => { const g = guessRegion($('#fp-a').value); if (g && !$('#fp-r').dataset.touched) $('#fp-r').value = g; };
   $('#fp-r').onchange = () => { $('#fp-r').dataset.touched = 1; };
-  const getPos = bindLocPicker(p, { query:() => [$('#fp-a').value, $('#fp-n').value].filter(Boolean).join(' '),
-    onPlace:r => { if (!$('#fp-ad').value) $('#fp-ad').value = r.addr.split(', ').reverse().slice(1).join(' '); const g = guessRegion(r.addr); if (g && !$('#fp-r').value) $('#fp-r').value = g; } });
   $('#fp-p').onclick = e => { const b = e.target.closest('[data-pl]'); if (!b) return; pl = pl === +b.dataset.pl ? null : +b.dataset.pl; document.querySelectorAll('[data-pl]').forEach(x => x.classList.toggle('on', +x.dataset.pl === pl)); };
   $('#cancel').onclick = closeModal;
   $('#save').onclick = async () => {
     try {
-      const nid = await call('fd_save_place', { p_id:id ?? null, p_d:{ name:$('#fp-n').value, area:$('#fp-a').value, category:$('#fp-c').value, price_level:pl, address:$('#fp-ad').value, memo:$('#fp-m').value, region:$('#fp-r').value, ...getPos() } });
+      const nid = await call('fd_save_place', { p_id:id ?? null, p_d:{ name:$('#fp-n').value, area:$('#fp-a').value, category:$('#fp-c').value, price_level:pl, address:$('#fp-ad').value, memo:$('#fp-m').value, region:$('#fp-r').value, lat:p.lat ?? null, lng:p.lng ?? null } });
       await loadFood(); closeModal(); render();
       if (after) await after(nid);
       if (!id) openFoodRate(nid);
@@ -3312,7 +3220,7 @@ function openStop(vid){
 const fVotes = id => (S.fVotes || []).filter(v => v.wish_id === id);
 function renderFwish(){
   if (S.foodErr) return $('#main').innerHTML = foodGuard();
-  S.fwView ??= 'list'; S.fwReg ??= '전체'; S.fwCat ??= '전체';
+  S.fwReg ??= '전체'; S.fwCat ??= '전체';
   const all = [...S.fWishes].sort((a, b) => fVotes(b.id).length - fVotes(a.id).length || b.id - a.id);
   const regs = ['전체', ...FD_REGIONS.filter(r => all.some(w => regionOf(w) === r))];
   const cats = ['전체', ...FD_CATS.filter(c => all.some(w => w.category === c))];
@@ -3322,26 +3230,18 @@ function renderFwish(){
   const list = all.filter(pass);
   const rankOf = w => all.indexOf(w) + 1;
   const max = Math.max(1, ...list.map(w => fVotes(w.id).length));
-  const isMap = S.fwView === 'map';
-  const noPos = list.filter(w => w.lat == null).length;
   $('#main').innerHTML = `
     <div class="toolbar fw-tb" style="margin-top:20px"><div class="fw-tt"><h2 class="sec" style="margin:0">📍 가볼 곳</h2>
       <p class="note" style="margin:4px 0 0">👍 투표로 다음 투어 코스를 정해요 · 다녀오면 "다녀왔어요"로 맛집 등록</p></div>
-      <div class="seg sm"><button class="${!isMap ? 'on' : ''}" data-act="fwView" data-k="list">📋 목록</button><button class="${isMap ? 'on' : ''}" data-act="fwView" data-k="map">🗺 지도</button></div>
       <button class="btn small primary" data-act="fWish">+ 추가</button></div>
     ${regs.length > 2 ? `<div class="chips fd-filter"><span class="fd-fl">지역</span>${regs.map(r => `<button class="chip sm ${S.fwReg === r ? 'on' : ''}" data-act="fwReg" data-k="${r}">${r}</button>`).join('')}</div>` : ''}
     ${cats.length > 2 ? `<div class="chips fd-filter"><span class="fd-fl">종류</span>${cats.map(c => `<button class="chip sm ${S.fwCat === c ? 'on' : ''}" data-act="fwCat" data-k="${esc(c)}">${c === '전체' ? '전체' : FD_ICON[c] + ' ' + c}</button>`).join('')}</div>` : ''}
-    ${isMap ? `<div id="fwmap" class="fw-map"></div>
-      <div class="fw-map-foot"><span class="lg"><i class="fpin-lg"></i>가볼 곳 (숫자 = 투표 순위)</span>
-        <button class="chip sm ${S.fwShowPlaces ? 'on' : ''}" data-act="fwDone">${S.fwShowPlaces ? '✓ ' : ''}다녀온 맛집도 보기</button>
-        <span class="sp"></span>${noPos ? `<span class="dim">위치 미지정 ${noPos}곳 · 수정에서 위치를 넣어주세요</span>` : ''}</div>` : ''}
-    <div class="wish-list" ${isMap ? 'style="margin-top:14px"' : ''}>${list.map(w => { const vs = fVotes(w.id), mine = vs.some(v => v.member_id === S.me), i = rankOf(w) - 1, reg = regionOf(w);
-      return `<div class="wish fd ${i === 0 && vs.length ? 'top' : ''} ${S.fwFocus === w.id ? 'focus' : ''}">
+    <div class="wish-list">${list.map(w => { const vs = fVotes(w.id), mine = vs.some(v => v.member_id === S.me), i = rankOf(w) - 1, reg = regionOf(w);
+      return `<div class="wish fd ${i === 0 && vs.length ? 'top' : ''} ">
         <div class="wish-rank">${i + 1}</div>
         <div class="wish-main">
           <div class="wish-tags">${w.category ? `<span>${FD_ICON[w.category] || '🍴'} ${esc(w.category)}</span>` : ''}${reg ? `<span>${esc(reg)}</span>` : ''}</div>
           <div class="wish-place">${esc(w.name)}${w.area ? ` <small class="dim">${esc(w.area)}</small>` : ''}
-            ${w.lat != null ? `<button class="jw" data-act="fwFocus" data-id="${w.id}">🗺 지도에서</button>` : ''}
             <a class="jw" href="${naverMap((w.area ? w.area + ' ' : '') + w.name)}" target="_blank" rel="noopener">네이버 ↗</a></div>
           ${w.note ? `<div class="wish-note">${esc(w.note)}</div>` : ''}
           <div class="wish-bar"><span style="width:${vs.length / max * 100}%"></span></div>
@@ -3352,37 +3252,6 @@ function renderFwish(){
           <button class="link" data-act="fWishDone" data-id="${w.id}">다녀왔어요</button>
           ${w.created_by === S.me || isAdmin() ? `<button class="link" data-act="fWish" data-id="${w.id}">수정</button>` : ''}
         </div></div>`; }).join('') || `<div class="panel ac-locked">📍<br>${all.length ? '조건에 맞는 곳이 없어요' : '가보고 싶은 맛집을 올려보세요'}</div>`}</div>`;
-  if (isMap) drawFwMap(list, rankOf, pass);
-}
-async function drawFwMap(list, rankOf, pass){
-  const el = $('#fwmap');
-  let L;
-  try { L = await loadLeaflet(); } catch(e){ el.innerHTML = `<p class="note" style="padding:16px">${esc(e.message)}</p>`; return; }
-  if (!document.body.contains(el)) return;
-  const map = L.map(el, { scrollWheelZoom:false }); baseTiles(L).addTo(map);
-  const pts = []; let focus = null;
-  if (S.fwShowPlaces) S.places.filter(p => p.lat != null && pass(p)).forEach(p => {
-    const st = placeStats(p);
-    L.marker([p.lat, p.lng], { icon:pinIcon(L, FD_ICON[p.category] || '🍴', 'done'), zIndexOffset:-100 }).addTo(map)
-      .bindPopup(`<div class="fpop"><small>다녀온 맛집 · ${esc(p.category)}</small><b>${esc(p.name)}</b>${st.overall != null ? `<span>★ ${st.overall.toFixed(1)} · ${st.n}명 평가</span>` : ''}
-        <a href="${naverMap((p.area ? p.area + ' ' : '') + p.name)}" target="_blank" rel="noopener">네이버 지도 ↗</a></div>`);
-    pts.push([p.lat, p.lng]);
-  });
-  list.forEach(w => {
-    if (w.lat == null) return;
-    const n = rankOf(w), vs = fVotes(w.id);
-    const m = L.marker([w.lat, w.lng], { icon:pinIcon(L, n, n === 1 && vs.length ? 'top' : ''), zIndexOffset:1000 - n }).addTo(map)
-      .bindPopup(`<div class="fpop"><small>${n}위 · 👍 ${vs.length}${w.category ? ' · ' + esc(w.category) : ''}</small><b>${esc(w.name)}</b>
-        ${w.area ? `<span>${esc(w.area)}</span>` : ''}${w.note ? `<span>${esc(w.note)}</span>` : ''}
-        <a href="${naverMap((w.area ? w.area + ' ' : '') + w.name)}" target="_blank" rel="noopener">네이버 지도 ↗</a></div>`);
-    pts.push([w.lat, w.lng]);
-    if (S.fwFocus === w.id) focus = m;
-  });
-  if (focus){ map.setView(focus.getLatLng(), 16); focus.openPopup(); }
-  else if (pts.length > 1) map.fitBounds(pts, { padding:[40, 40], maxZoom:15 });
-  else if (pts.length) map.setView(pts[0], 15);
-  else map.setView(KOREA, 7);
-  setTimeout(() => map.invalidateSize(), 100);
 }
 function openFWish(id){
   const w = id ? S.fWishes.find(x => x.id === id) : {};
@@ -3393,17 +3262,14 @@ function openFWish(id){
       <label>지역 (시·도)<select id="fw-r">${regionOpts(regionOf(w))}</select></label>
       <label class="full">동네 · 상세 지역<input id="fw-a" value="${esc(w.area || '')}" placeholder="예) 서울 관악구, 경주 황리단길"></label>
       <label class="full">이유 / 메모<input id="fw-t" value="${esc(w.note || '')}" placeholder="예) 유튜브에서 봤는데 맛있어 보임"></label>
-      ${locPickerHTML(w)}
     </div>
     <p class="err" id="merr"></p>
     <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
       <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
   $('#fw-a').oninput = () => { const g = guessRegion($('#fw-a').value); if (g && !$('#fw-r').dataset.touched) $('#fw-r').value = g; };
   $('#fw-r').onchange = () => { $('#fw-r').dataset.touched = 1; };
-  const getPos = bindLocPicker(w, { query:() => [$('#fw-a').value, $('#fw-n').value].filter(Boolean).join(' '),
-    onPlace:r => { const g = guessRegion(r.addr); if (g && !$('#fw-r').value) $('#fw-r').value = g; } });
   $('#cancel').onclick = closeModal;
-  $('#save').onclick = async () => { try { await call('fd_save_wish', { p_id:id ?? null, p_d:{ name:$('#fw-n').value, area:$('#fw-a').value, note:$('#fw-t').value, category:$('#fw-c').value, region:$('#fw-r').value, ...getPos() } }); await loadFood(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+  $('#save').onclick = async () => { try { await call('fd_save_wish', { p_id:id ?? null, p_d:{ name:$('#fw-n').value, area:$('#fw-a').value, note:$('#fw-t').value, category:$('#fw-c').value, region:$('#fw-r').value, lat:w.lat ?? null, lng:w.lng ?? null } }); await loadFood(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
   if (id) $('#del').onclick = async () => { if (!confirm('삭제할까요?')) return; try { await call('fd_delete_wish', { p_id:id }); await loadFood(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
 }
 
