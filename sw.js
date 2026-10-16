@@ -1,6 +1,6 @@
 // Corner Of The Room – 앱 서비스워커
 // 화면 파일만 저장해 두고, 기록 데이터(Supabase)·TMDB는 항상 인터넷에서 새로 받아요.
-const VERSION = 'cor-v11';
+const VERSION = 'cor-v12';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './favicon.svg', './favicon.ico',
                './apple-touch-icon.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
