@@ -711,6 +711,10 @@ textarea{resize:vertical}
 .form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .form label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--sub)}
 .form .full{grid-column:1/-1}
+.form > *{min-width:0}
+.form label > input:not([type=checkbox]):not([type=radio]),.form label > select{width:100%;min-width:0;box-sizing:border-box;height:46px}
+.form input[type=date]{-webkit-appearance:none;appearance:none;display:block;line-height:1.2;text-align:left}
+.form input[type=date]::-webkit-date-and-time-value{text-align:left}
 .row{display:flex;gap:8px;align-items:center;margin-top:14px}
 .row .sp{flex:1}
 </style>
@@ -885,6 +889,8 @@ function render(){
      trips:renderTrips, wish:renderWish, pool:renderPool, cal:renderCal, best:renderBest, rank:renderRank, tours:renderTours, fwish:renderFwish })[S.tab]();
 }
 
+// 단체관람 메모에서 관람 날짜와 겹치는 앞부분(10월 18일 …)은 빼고 보여줌
+const schedPlace = m => !m ? '' : m.event_date ? (m.schedule || '').replace(/^\s*\d{1,2}\s*(월|\/|\.)\s*\d{1,2}\s*일?\s*/, '').trim() : (m.schedule || '');
 // ---------- 다가오는 COR 일정 (홈) ----------
 function corEvents(all){
   const today = todayStr(), ev = [];
@@ -892,7 +898,7 @@ function corEvents(all){
     title:t.title, sub:[t.place, fmtRange(t)].filter(Boolean).join(' · '), act:'evTrip', id:t.id }));
   (S.movies || []).filter(m => m.kind === 'group' && m.event_date).forEach(m => {
     const r = S.rounds.find(x => x.id === m.round_id);
-    ev.push({ date:m.event_date, cat:'movie', icon:'🎟', title:`단체관람 · ${m.title}`, sub:(m.schedule || '').replace(/^[\d\s월일/.]+/, '').trim() || (r?.theme ?? ''), act:'evMovie', id:m.id });
+    ev.push({ date:m.event_date, cat:'movie', icon:'🎟', title:`단체관람 · ${m.title}`, sub:schedPlace(m) || (r?.theme ?? ''), act:'evMovie', id:m.id });
   });
   (S.tours || []).filter(t => t.tour_date).forEach(t => ev.push({ date:t.tour_date, cat:'food', icon:'🍽', title:t.title, sub:t.area || '맛집 투어', act:'evTour', id:t.id }));
   const q = quarterNow(), qEnd = ymd(new Date(q.y, q.q * 3, 0));
@@ -925,7 +931,7 @@ function agendaHTML(){
 // ---------- 홈 ----------
 function renderHome(){
   const todo = unratedOf(S.me).length;
-  const groups = S.movies.filter(m => m.kind === 'group' && m.schedule).sort(movieOrder);
+  const groups = S.movies.filter(m => m.kind === 'group' && (m.schedule || m.event_date)).sort(movieOrder);
   const nextGroup = groups.find(m => /예정/.test(m.schedule)) || groups[0];
   const trips = S.trips || [];
   const today = todayStr();
@@ -1221,7 +1227,7 @@ function groupHTML({ r, m }){
   return `<section class="ticket">
     <div class="tk-head">
       <span class="tk-label">🎟 ${periodLabel(r)} 단체관람</span>
-      ${m.schedule ? `<span class="tk-when">${esc(m.schedule)}</span>` : ''}
+      ${m.schedule || m.event_date ? `<span class="tk-when">${esc([m.event_date ? `${+m.event_date.slice(5, 7)}월 ${+m.event_date.slice(8)}일` : '', schedPlace(m)].filter(Boolean).join(' '))}</span>` : ''}
     </div>
     <div class="tk-theme">${esc(r.theme || '')}</div>
     ${movieHTML(m)}
@@ -1340,7 +1346,7 @@ async function fillTmdb(){
 function movieHTML(m){
   const rs = ratingsOf(m.id), vals = starVals(rs), avg = mean(vals);
   const mine = rs.find(x => x.member_id === S.me);
-  const label = m.kind === 'group' ? `단체관람${m.event_date ? ' · ' + (+m.event_date.slice(5, 7)) + '/' + (+m.event_date.slice(8)) : ''}${m.schedule ? ' · ' + esc(m.schedule) : ''}` : `추천작 ${m.slot}`;
+  const label = m.kind === 'group' ? `단체관람${m.event_date ? ' · ' + (+m.event_date.slice(5, 7)) + '/' + (+m.event_date.slice(8)) : ''}${schedPlace(m) ? ' · ' + esc(schedPlace(m)) : ''}` : `추천작 ${m.slot}`;
   const admin = isAdmin();
   const coms = S.members.map(mb => {
       const x = rs.find(y => y.member_id === mb.id);
@@ -3390,7 +3396,7 @@ function openMovie(roundId, movieId){
       <div class="full"><div style="font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px">볼 수 있는 곳</div>
         <div class="pchk">${PLATFORMS.map(([n]) => `<label><input type="checkbox" value="${esc(n)}" ${(m?.platforms || []).includes(n) ? 'checked' : ''}>${esc(n)}</label>`).join('')}</div></div>
       <label id="sdL">관람 날짜<input id="fsd" type="date" value="${m?.event_date || ''}"></label>
-      <label id="schL">장소 · 메모<input id="fsc" value="${esc(m?.schedule ?? '')}" placeholder="예) 대전 명보시네마"></label>
+      <label id="schL">장소 · 메모<input id="fsc" value="${esc(schedPlace(m))}" placeholder="예) 대전 명보시네마"></label>
     </div>
     <p class="err" id="merr"></p>
     <div class="row">${m ? '<button class="btn danger" id="del">영화 삭제</button>' : ''}<span class="sp"></span>
