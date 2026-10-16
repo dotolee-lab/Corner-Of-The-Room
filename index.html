@@ -566,6 +566,22 @@ button{font:inherit;color:inherit}
 .dd-ok{font-size:13px;font-weight:700;color:#7cc4a8}
 .dd-chip{font-size:11px;font-weight:800;padding:2px 9px;border-radius:999px;background:var(--accent);color:var(--accent-ink)}
 .dd-chip.urgent{background:var(--danger);color:#fff}
+.tb-btns{display:flex;gap:6px;flex-shrink:0}
+@media (max-width:480px){.tb-btns .tl{display:none}}
+.dw-opt{justify-content:flex-end}
+.dw-chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink);font-weight:600;padding:10px 0}
+.dw-chk input{width:auto}
+.dw-slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.dw-slot{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--bg);display:flex;flex-direction:column;gap:2px;min-height:78px}
+.dw-slot small{font-size:12px;font-weight:800;color:var(--accent)}
+.dw-slot b{font-size:20px;letter-spacing:-.02em}
+.dw-slot em{font-style:normal;font-size:11px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dw-slot.old b{color:var(--sub)}
+.dw-slot.spin b{opacity:.6;filter:blur(.4px)}
+.dw-slot.new{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--bg));animation:pop .35s ease}
+@keyframes pop{50%{transform:scale(1.05)}}
+.theme.dim{color:var(--sub);font-size:18px}
+.theme.dim small{font-size:13px}
 .tabcount{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:18px;text-align:center;margin-left:2px;vertical-align:1px}
 .sec small{font-weight:600;letter-spacing:0;margin-left:4px}
 .todo-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
@@ -915,6 +931,7 @@ function onMainClick(e){
     case 'tvVote': call('tv_toggle_vote', { p_wish_id:id }).then(loadTravel).then(renderWish).catch(e => alert(errMsg(e))); break;
     case 'tvWishTrip': { const w = S.wishes.find(x => x.id === id); S.tab = 'trips'; render(); openTrip(null, { title:`${w.place} 여행`, place:w.place }); break; }
     case 'ddGo': { const n = quarterNow(); S.year = n.y; S.kind = 'quarter'; renderRecords(); document.getElementById('cur-round')?.scrollIntoView({ behavior:'smooth', block:'start' }); break; }
+    case 'drawPick': openDraw(); break;
     case 'todoView': S.todoView = b.dataset.k; renderTodo(); break;
     case 'ayear': S.ayear = id; renderAcademy(); break;
     case 'ayearGo': S.ayear = id; S.acView = 'year'; renderAcademy(); scrollTo({ top:0, behavior:'smooth' }); break;
@@ -936,6 +953,81 @@ function onMainClick(e){
     case 'editCom': openRate(id, +b.dataset.m); break;
     case 'editLegacy': openLegacy(id); break;
   }
+}
+
+// ----- 분기 선정자 랜덤 뽑기 -----
+function drawDefaultYear(){
+  const y = new Date().getFullYear();
+  const assigned = yy => [1, 2, 3, 4].every(q => S.rounds.find(r => r.year === yy && r.period_type === 'quarter' && r.period === q)?.recommender_id);
+  return assigned(y) ? y + 1 : y;
+}
+function shuffle(a){ a = [...a]; for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function drawOrder(y, avoidPrev){
+  const ids = S.members.map(m => m.id);
+  const pick = () => { const out = []; while (out.length < 4) out.push(...shuffle(ids)); return out.slice(0, 4); };
+  const prev = q => S.rounds.find(r => r.year === y - 1 && r.period_type === 'quarter' && r.period === q)?.recommender_id;
+  const lastQ4 = prev(4);
+  let best = pick();
+  if (avoidPrev){
+    for (let i = 0; i < 300; i++){
+      const o = pick();
+      const ok = o.every((id, k) => id !== prev(k + 1)) && o[0] !== lastQ4;
+      if (ok){ best = o; break; }
+    }
+  }
+  return best;
+}
+function openDraw(){
+  let y = drawDefaultYear(), result = null, rolling = false;
+  const cur = (yy, q) => S.rounds.find(r => r.year === yy && r.period_type === 'quarter' && r.period === q);
+  const draw = () => {
+    const existing = [1, 2, 3, 4].map(q => cur(y, q)?.recommender_id).filter(Boolean).length;
+    const prevLine = [1, 2, 3, 4].map(q => { const r = cur(y - 1, q); return r?.recommender_id ? `${q}분기 ${esc(shortName(memName(r.recommender_id)))}` : null; }).filter(Boolean).join(' · ');
+    openModal(`<h3>🎲 분기 테마 선정자 뽑기</h3>
+      <div class="form">
+        <label>연도<select id="dw-y">${[y - 1, y, y + 1].filter((v, i, a) => a.indexOf(v) === i).sort().map(v => `<option ${v === y ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+        <label class="dw-opt"><span>옵션</span><span class="dw-chk"><input type="checkbox" id="dw-av" checked> 작년 같은 분기 담당 피하기</span></label>
+      </div>
+      ${prevLine ? `<p class="note">${y - 1}년: ${prevLine}</p>` : ''}
+      <div class="dw-slots">${[1, 2, 3, 4].map((q, k) => { const now = cur(y, q);
+        const name = result ? memName(result[k]) : now?.recommender_id ? memName(now.recommender_id) : '?';
+        return `<div class="dw-slot ${result ? 'new' : now?.recommender_id ? 'old' : ''}" id="dw-s${k}"><small>${q}분기</small><b>${esc(name)}</b>${now?.theme ? `<em>${esc(now.theme)}</em>` : ''}</div>`; }).join('')}</div>
+      ${existing && !result ? `<p class="note">⚠ ${y}년은 이미 ${existing}개 분기에 선정자가 있어요. 확정하면 바뀌어요 (테마명은 그대로 유지).</p>` : ''}
+      <p class="err" id="merr"></p>
+      <div class="row"><span class="sp"></span>
+        <button class="btn" id="cancel">닫기</button>
+        <button class="btn ${result ? '' : 'primary'}" id="roll">${result ? '🎲 다시 뽑기' : '🎲 뽑기'}</button>
+        ${result ? '<button class="btn primary" id="ok">✅ 이대로 확정</button>' : ''}</div>`);
+    $('#cancel').onclick = closeModal;
+    $('#dw-y').onchange = () => { y = +$('#dw-y').value; result = null; draw(); };
+    $('#roll').onclick = () => {
+      if (rolling) return; rolling = true;
+      const final = drawOrder(y, $('#dw-av').checked);
+      const names = S.members.map(m => m.name);
+      const slots = [0, 1, 2, 3].map(k => $('#dw-s' + k));
+      slots.forEach(s => { s.classList.remove('old', 'new'); s.classList.add('spin'); });
+      let tick = 0;
+      const timer = setInterval(() => {
+        tick++;
+        slots.forEach((s, k) => {
+          if (tick < 10 + k * 6) s.querySelector('b').textContent = names[Math.floor(Math.random() * names.length)];
+          else if (s.classList.contains('spin')){ s.classList.remove('spin'); s.classList.add('new'); s.querySelector('b').textContent = memName(final[k]); }
+        });
+        if (tick >= 10 + 3 * 6){ clearInterval(timer); rolling = false; result = final; setTimeout(draw, 350); }
+      }, 80);
+    };
+    if ($('#ok')) $('#ok').onclick = async () => {
+      if (!confirm(`${y}년 분기 선정자를\n${result.map((id, k) => `${k + 1}분기 ${memName(id)}`).join(' / ')}\n로 확정할까요? 모두에게 공유돼요.`)) return;
+      try {
+        for (let q = 1; q <= 4; q++){
+          const r = cur(y, q);
+          await call('mv_save_round', { p_id:r?.id ?? null, p_year:y, p_period_type:'quarter', p_period:q, p_recommender_id:result[q - 1], p_theme:r?.theme ?? '', p_reason:r?.reason ?? '' });
+        }
+        await loadAll(); closeModal(); S.year = y; S.kind = 'quarter'; render(); toast(`🎲 ${y}년 선정자를 확정했어요`);
+      } catch(e){ $('#merr').textContent = errMsg(e); }
+    };
+  };
+  draw();
 }
 
 // ----- 이번 분기 D-Day -----
@@ -988,7 +1080,8 @@ function renderRecords(){
     ${ddayHTML()}
     <div class="toolbar">
       <div class="chips">${yearsList().map(y => `<button class="chip ${y === S.year ? 'on' : ''}" data-act="year" data-id="${y}">${y}</button>`).join('')}</div>
-      <button class="btn small" data-act="addRound">+ 회차 추가</button>
+      <span class="tb-btns"><button class="btn small" data-act="drawPick">🎲<span class="tl"> 선정자 뽑기</span></button>
+      <button class="btn small" data-act="addRound">+<span class="tl"> 회차 추가</span></button></span>
     </div>
     <div class="viewbar">
     ${views.length > 1 ? `<div class="seg">${views.map(([k, l, n]) => `<button class="${S.kind === k ? 'on' : ''}" data-act="kind" data-k="${k}">${l} <small>${n}</small></button>`).join('')}</div>` : '<span class="sp"></span>'}
@@ -1036,7 +1129,7 @@ function roundHTML(r){
       ${r.recommender_id ? `<span class="badge">추천 ${esc(memName(r.recommender_id))}</span>` : ''}
       <button class="icon" data-act="editRound" data-id="${r.id}" title="회차 수정">✎</button>
     </div>
-    ${r.theme ? `<h2 class="theme">${esc(r.theme)}</h2>` : ''}
+    ${r.theme ? `<h2 class="theme">${esc(r.theme)}</h2>` : r.period_type === 'quarter' && r.recommender_id ? `<h2 class="theme dim">테마 준비 중… <small>(${esc(memName(r.recommender_id))}님 차례)</small></h2>` : ''}
     ${r.reason ? `<p class="reason">${esc(r.reason)}</p>` : ''}
     <div class="movies" style="--n:${Math.min(3, Math.max(1, sortedMovies(r.id).filter(m => m.kind === 'pick').length))}">${sortedMovies(r.id).filter(m => m.kind === 'pick').map(movieHTML).join('')}</div>
     <div class="r-foot">
