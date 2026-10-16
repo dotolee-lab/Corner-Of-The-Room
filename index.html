@@ -391,6 +391,7 @@ button{font:inherit;color:inherit}
 .cal-w.sun,.cal-c.sun .cal-d{color:#f97066}.cal-w.sat,.cal-c.sat .cal-d{color:#9fc3ff}
 .cal-c{min-height:92px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:4px;display:flex;flex-direction:column;gap:2px;background:var(--card);text-align:left;font:inherit;color:inherit;min-width:0;position:relative}
 .cal-c:nth-child(7n){border-right:0}
+button.cal-c{border-top:0;border-left:0;border-radius:0}
 .cal-c.empty{background:var(--bg)}
 .cal-c.past{opacity:.5}
 .cal-d{font-size:13px;font-weight:700;padding:2px 4px}
@@ -402,10 +403,11 @@ button{font:inherit;color:inherit}
 .cal.avail .cal-c:disabled{cursor:default}
 .cal-ok{font-size:11px;font-weight:700;color:var(--sub);padding:0 4px}
 .cal-no{display:flex;flex-wrap:wrap;gap:2px;padding:0 3px}
-.cal-no i{font-style:normal;font-size:10px;font-weight:800;width:17px;height:17px;border-radius:50%;background:color-mix(in srgb,var(--danger) 25%,var(--bg));color:var(--danger);display:flex;align-items:center;justify-content:center}
+.cal-no i{font-style:normal;font-size:10px;font-weight:800;width:17px;height:17px;border-radius:50%;background:color-mix(in srgb,#7cc4a8 30%,var(--bg));color:#3f9b78;display:flex;align-items:center;justify-content:center}
 .cal-c.all-ok{background:color-mix(in srgb,#7cc4a8 18%,var(--card))}
 .cal-c.all-ok .cal-ok{color:#7cc4a8}
-.cal-c.mine-no{background:color-mix(in srgb,var(--danger) 12%,var(--card));box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--danger) 55%,transparent)}
+.cal-recs.near span{background:var(--chip);color:var(--sub)}
+.cal-c.mine-yes{box-shadow:inset 0 0 0 2px color-mix(in srgb,#7cc4a8 75%,transparent)}
 .cal-tdot{position:absolute;right:5px;top:7px;width:7px;height:7px;border-radius:50%}
 .cal-rec{border-color:color-mix(in srgb,#7cc4a8 45%,var(--line))}
 .cal-recs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
@@ -1032,10 +1034,10 @@ function onMainClick(e){
     case 'calToday': { const d = new Date(); S.calYm = [d.getFullYear(), d.getMonth()]; renderCal(); break; }
     case 'tvOpenCal': S.tab = 'trips'; S.tripId = id; S.tripTab = 'plan'; render(); scrollTo({ top:0 }); break;
     case 'calDay': {
-      const day = b.dataset.k, on = !unavailOn(day).includes(S.me);
-      if (on) S.unavail.push({ member_id:S.me, day }); else S.unavail = S.unavail.filter(u => !(u.member_id === S.me && u.day === day));
+      const day = b.dataset.k, on = !availOn(day).includes(S.me);
+      if (on) S.avail.push({ member_id:S.me, day }); else S.avail = S.avail.filter(u => !(u.member_id === S.me && u.day === day));
       renderCal();
-      call('tv_set_unavail', { p_days:[day], p_on:on }).catch(e => { alert(errMsg(e)); loadTravel().then(renderCal); });
+      call('tv_set_avail', { p_days:[day], p_on:on }).catch(e => { alert(errMsg(e)); loadTravel().then(renderCal); });
       break; }
     case 'evCal': S.cat = 'travel'; S.tab = 'cal'; S.calMode = 'trips'; render(); break;
     case 'evTrip': S.cat = 'travel'; S.tab = 'trips'; S.tripId = id; S.tripTab = 'plan'; render(); scrollTo({ top:0 }); break;
@@ -2070,8 +2072,8 @@ async function loadTravel(){
   ]);
   const st = await sb.from('tv_settles').select('*');
   S.settles = st.error ? [] : st.data;
-  const ua = await sb.from('tv_unavail').select('*');
-  S.unavail = ua.error ? [] : ua.data;
+  const ua = await sb.from('tv_avail').select('*');
+  S.avail = ua.error ? [] : ua.data;
   const px = await sb.from('tv_pool_tx').select('*');
   S.poolErr = px.error ? px.error.message : null; S.poolTx = px.error ? [] : px.data;
   const bad = res.find(x => x.error);
@@ -2268,7 +2270,7 @@ function moneyHTML(t){
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const TRIP_COLORS = ['#7cc4a8', '#f2b33d', '#ee7a45', '#9fc3ff', '#d68bd6', '#e8b93e', '#6fd0d6'];
 const tripColor = t => TRIP_COLORS[t.id % TRIP_COLORS.length];
-const unavailOn = day => (S.unavail || []).filter(u => u.day === day).map(u => u.member_id);
+const availOn = day => (S.avail || []).filter(u => u.day === day).map(u => u.member_id);
 function renderCal(){
   if (S.travelErr) return $('#main').innerHTML = travelGuard();
   const now = new Date();
@@ -2292,12 +2294,12 @@ function renderCal(){
     const day = ymd(d), dow = d.getDay(), past = day < today;
     const cls = ['cal-c', dow === 0 ? 'sun' : dow === 6 ? 'sat' : '', day === today ? 'today' : '', past ? 'past' : ''];
     if (avail){
-      const no = unavailOn(day), mine = no.includes(S.me), ok = n - no.length;
-      cls.push(mine ? 'mine-no' : '', !past && ok === n ? 'all-ok' : '');
+      const yes = availOn(day), mine = yes.includes(S.me), ok = yes.length;
+      cls.push(mine ? 'mine-yes' : '', !past && ok === n ? 'all-ok' : '');
       return `<button class="${cls.join(' ')}" ${past ? 'disabled' : `data-act="calDay" data-k="${day}"`}>
         <span class="cal-d">${d.getDate()}</span>
-        ${past ? '' : `<span class="cal-ok">${ok === n ? '✓ 모두' : `${ok}/${n}`}</span>
-        <span class="cal-no">${no.map(id => `<i title="${esc(memName(id))} 안 됨">${esc(memName(id).slice(-2, -1) || memName(id)[0])}</i>`).join('')}</span>`}
+        ${past ? '' : `${ok ? `<span class="cal-ok">${ok === n ? '✓ 모두' : `${ok}/${n}`}</span>` : ''}
+        <span class="cal-no">${yes.map(id => `<i title="${esc(memName(id))} 가능">${esc(memName(id).slice(-2, -1) || memName(id)[0])}</i>`).join('')}</span>`}
         ${tripsOn(day).map(t => `<span class="cal-tdot" style="background:${tripColor(t)}"></span>`).join('')}
       </button>`;
     }
@@ -2310,18 +2312,19 @@ function renderCal(){
   };
 
   // 이번 달 4명 다 되는 주말 / 연속 날짜
-  const weekendOk = [];
+  const weekendOk = [], nearOk = [];
   if (avail) for (let d = 1; d <= daysIn; d++){
     const a = new Date(Y, M, d);
     if (a.getDay() !== 6) continue;
     const b = new Date(Y, M, d + 1), da = ymd(a), db = ymd(b);
     if (da < today) continue;
-    const okA = unavailOn(da).length === 0, okB = unavailOn(db).length === 0;
+    const okA = availOn(da).length === n, okB = availOn(db).length === n;
     if (okA && okB) weekendOk.push(`${M + 1}/${d}(토)~${b.getMonth() + 1}/${b.getDate()}(일)`);
     else if (okA) weekendOk.push(`${M + 1}/${d}(토) 당일`);
+    else if (n > 1){ const c = Math.max(availOn(da).length, availOn(db).length); if (c === n - 1) nearOk.push(`${M + 1}/${d}~${b.getDate()} 주말 · ${c}명`); }
   }
   const monthTrips = trips.filter(t => t.start_date <= ymd(new Date(Y, M, daysIn)) && (t.end_date || t.start_date) >= ymd(first)).sort((a, b) => a.start_date.localeCompare(b.start_date));
-  const myCount = (S.unavail || []).filter(u => u.member_id === S.me && u.day >= ymd(first) && u.day <= ymd(new Date(Y, M, daysIn))).length;
+  const myCount = (S.avail || []).filter(u => u.member_id === S.me && u.day >= ymd(first) && u.day <= ymd(new Date(Y, M, daysIn))).length;
 
   $('#main').innerHTML = `
     <div class="viewbar" style="margin-top:18px"><div class="seg">
@@ -2335,14 +2338,14 @@ function renderCal(){
       <button class="btn small" data-act="calToday">오늘</button>
     </div>
     ${!avail ? '<div class="cal-legend"><span><i class="lg-t"></i>여행</span><span>🎟 단체관람</span><span>🍽 맛집 투어</span><span>⏰ 분기 마감</span></div>' : ''}
-    ${avail ? `<div class="cal-help">📌 <b>내가 안 되는 날</b>을 눌러 체크하세요. 4명 모두 되는 날은 초록색으로 보여요. <span class="dim">(이번 달 내 체크 ${myCount}일)</span></div>` : ''}
+    ${avail ? `<div class="cal-help">📌 <b>내가 되는 날</b>을 눌러 체크하세요. 체크 안 한 날은 안 되는 걸로 봐요. 4명 모두 되는 날은 초록색으로 보여요. <span class="dim">(이번 달 내 체크 ${myCount}일)</span></div>` : ''}
     <div class="cal ${avail ? 'avail' : ''}">
       ${['일', '월', '화', '수', '목', '금', '토'].map((w, i) => `<div class="cal-w ${i === 0 ? 'sun' : i === 6 ? 'sat' : ''}">${w}</div>`).join('')}
       ${cells.map(cellHTML).join('')}
     </div>
     ${avail ? `<div class="panel cal-rec"><h3>✨ ${M + 1}월에 4명 다 되는 주말</h3>
-        ${weekendOk.length ? `<div class="cal-recs">${weekendOk.map(w => `<span>${w}</span>`).join('')}</div>` : '<p class="d">아직 없어요. 다음 달도 확인해보세요 →</p>'}
-        <p class="note">${S.members.map(m => { const c = (S.unavail || []).filter(u => u.member_id === m.id && u.day >= today).length; return `${esc(m.name)} ${c ? `안 되는 날 ${c}일` : '<span class="dim">체크 안 함</span>'}`; }).join(' · ')}</p>
+        ${weekendOk.length ? `<div class="cal-recs">${weekendOk.map(w => `<span>${w}</span>`).join('')}</div>` : (nearOk.length ? `<p class="d">아직 없어요. 한 명만 더 되면 되는 주말 👇</p><div class="cal-recs near">${nearOk.map(w => `<span>${w}</span>`).join('')}</div>` : '<p class="d">아직 없어요. 각자 되는 날을 체크해 주세요 →</p>')}
+        <p class="note">${S.members.map(m => { const c = (S.avail || []).filter(u => u.member_id === m.id && u.day >= today).length; return `${esc(m.name)} ${c ? `되는 날 ${c}일` : '<span class="dim">체크 안 함</span>'}`; }).join(' · ')}</p>
         <button class="btn small primary" data-act="tvNewTrip">+ 이 날짜로 새 여행 만들기</button></div>`
       : `<div class="cal-list">${monthTrips.map(t => `<button class="cal-li" data-act="tvOpenCal" data-id="${t.id}"><i style="background:${tripColor(t)}"></i>
           <b>${esc(t.title)}</b><span>${fmtRange(t)}</span><em class="trip-st ${tripStatus(t).k}">${tripStatus(t).label}</em></button>`).join('') || '<p class="note">이번 달 여행이 없어요</p>'}</div>`}`;
