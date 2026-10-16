@@ -238,9 +238,20 @@ button{font:inherit;color:inherit}
 .hall-list li span{color:var(--sub);white-space:nowrap}
 .hall-list li b{font-weight:600}
 .hall-list small{color:var(--sub);font-weight:500}
-.cer{position:fixed;inset:0;z-index:40;background:radial-gradient(90% 70% at 50% 0%,#3a2c0c,#0d0b08 70%);color:#f4efe2;display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}
+.cer{position:fixed;inset:0;z-index:40;background:radial-gradient(90% 70% at 50% 0%,#3a2c0c,#0d0b08 70%) fixed;color:#f4efe2;display:flex;align-items:flex-start;justify-content:center;padding:24px;overflow:auto}
 .cer-x{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;background:none;border:0;color:#a9a091;font-size:20px;cursor:pointer}
-.cer-in{text-align:center;max-width:560px;width:100%;animation:cerIn .5s ease}
+.cer-in{text-align:center;max-width:560px;width:100%;animation:cerIn .5s ease;margin:auto 0;padding:20px 0}
+.cer-in.wide{max-width:980px}
+.cer-title.sm{font-size:28px}
+.cer-skip{background:none;border:0;color:#a9a091;font:inherit;font-size:13px;text-decoration:underline;margin-top:14px;cursor:pointer}
+.cer-sum{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;text-align:left;margin:22px 0 6px}
+.cer-sc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;opacity:0;animation:cerPick .5s ease forwards}
+.cer-sc-h{font-size:14px;font-weight:800;color:#d4a017;letter-spacing:-.01em}
+.cer-sr{display:flex;gap:10px;align-items:center;border-radius:10px;padding:4px}
+.cer-sr.win{background:rgba(212,160,23,.12);box-shadow:inset 0 0 0 1px rgba(212,160,23,.5)}
+.cer-sr b{display:block;font-size:15px;line-height:1.3}
+.cer-sr span{font-size:12px;color:#c9c0ad}
+.pp.cersp{width:40px;font-size:16px;border-radius:7px;flex-shrink:0}
 @keyframes cerIn{from{opacity:0;transform:translateY(12px)}}
 .cer-kicker{font-size:13px;font-weight:800;letter-spacing:.2em;color:#d4a017}
 .cer-title{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1.2;margin:10px 0}
@@ -1973,8 +1984,9 @@ function tasteHTML(){
 function openCeremony(){
   const y = S.ayear;
   const pub = S.members.filter(m => ballotOf(y, m.id)?.is_public);
-  const cats = acCats(S.awards.filter(a => a.year === y && pub.some(m => m.id === a.member_id)));
-  if (!cats.length) return;
+  const order = acCats(S.awards.filter(a => a.year === y && pub.some(m => m.id === a.member_id)));
+  if (!order.length) return;
+  const cats = [...order].reverse();   // 발표는 조연상 → … → 작품상 (가장 큰 상을 마지막에)
   let i = -1, opened = false;
   const ov = document.createElement('div'); ov.className = 'cer';
   document.body.appendChild(ov);
@@ -1983,9 +1995,15 @@ function openCeremony(){
     let inner;
     if (i < 0) inner = `<div class="cer-kicker">${acRound(y)}</div><div class="cer-title">방구석 아카데미<br><span>${y}</span></div>
         <div class="cer-sub">${pub.map(m => esc(m.name)).join(' · ')}</div>
-        <button class="btn primary cer-btn" data-c="next">시상식 시작 →</button>`;
-    else if (i >= cats.length) inner = `<div class="cer-trophy">🏆</div><div class="cer-title">모든 시상이<br>끝났습니다</div>
-        <div class="cer-sub">수고하셨습니다 👏</div><button class="btn primary cer-btn" data-c="close">닫기</button>`;
+        <button class="btn primary cer-btn" data-c="next">시상식 시작 →</button>
+        <div><button class="cer-skip" data-c="all">결과 한 번에 보기</button></div>`;
+    else if (i >= cats.length) inner = `<div class="cer-kicker">${acRound(y)}</div><div class="cer-title sm">🏆 ${y} 방구석 아카데미<br><span>전체 수상 결과</span></div>
+        <div class="cer-sum">${order.map((c, n) => { const groups = acGroups(y, c, pub);
+          return `<div class="cer-sc" style="animation-delay:${n * 0.06}s"><div class="cer-sc-h">${AC_ICON[c] || '🏆'} ${esc(c)}</div>
+            ${groups.map((g, k) => `<div class="cer-sr ${k === 0 && g.who.length >= 2 ? 'win' : ''}">${pposter(c, g.pick, 'cersp', y)}
+              <div><b>${esc(g.pick)}${k === 0 && g.who.length >= 2 ? ' 👑' : ''}</b><span>${g.who.map(m => esc(m.name)).join(' · ')}</span></div></div>`).join('')}</div>`; }).join('')}</div>
+        <div class="cer-sub">수고하셨습니다 👏</div>
+        <button class="btn primary cer-btn" data-c="close">닫기</button>`;
     else {
       const c = cats[i], groups = acGroups(y, c, pub);
       inner = `<div class="cer-kicker">${i + 1} / ${cats.length}</div>
@@ -1996,13 +2014,15 @@ function openCeremony(){
           : `<div class="cer-env" data-c="open">✉️<small>눌러서 공개</small></div>
             <div class="cer-sub">The winner is…</div>`}`;
     }
-    ov.innerHTML = `<button class="cer-x" data-c="close" aria-label="닫기">✕</button><div class="cer-in">${inner}</div>`;
+    ov.innerHTML = `<button class="cer-x" data-c="close" aria-label="닫기">✕</button><div class="cer-in ${i >= cats.length ? 'wide' : ''}">${inner}</div>`;
+    ov.scrollTop = 0;
     hydratePosters();
   };
   ov.onclick = e => {
     const c = e.target.closest('[data-c]')?.dataset.c;
     if (c === 'close') close();
     else if (c === 'open'){ opened = true; draw(); }
+    else if (c === 'all'){ i = cats.length; draw(); }
     else if (c === 'next'){ i++; opened = false; draw(); }
   };
   const key = e => {
