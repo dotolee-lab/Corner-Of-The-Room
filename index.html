@@ -342,6 +342,7 @@ button{font:inherit;color:inherit}
 .money-sum div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
 .money-sum small{display:block;font-size:12px;color:var(--sub);font-weight:600}
 .money-sum b{font-size:19px;letter-spacing:-.02em}
+@media (max-width:600px){.money-sum{gap:6px}.money-sum div{padding:10px}.money-sum b{font-size:15px;white-space:nowrap}.money-sum small{font-size:11px}}
 .money-grid{display:grid;gap:0 14px;grid-template-columns:minmax(0,1fr)}
 @media (min-width:760px){.money-grid{grid-template-columns:1fr 1fr}}
 .xfer{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:var(--bg);margin-top:6px;font-size:15px}
@@ -351,6 +352,22 @@ button{font:inherit;color:inherit}
 .xfer{flex-wrap:wrap}
 .xdone{border-color:#7cc4a8;color:#7cc4a8;background:transparent}
 .xdone:hover{background:#7cc4a8;color:#0b1a14}
+.xfer.pool{background:color-mix(in srgb,#9fc3ff 10%,var(--bg))}
+.xfer.pool b:first-child{color:#9fc3ff}
+.pool-c{color:#9fc3ff}
+.exp-pool{border-color:color-mix(in srgb,#9fc3ff 35%,var(--line))}
+.exp-amt.in{color:#7cc4a8}.exp-amt.out{color:var(--ink)}
+.fund-sel{display:grid;gap:6px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:520px){.fund-sel{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.fund-sel button{border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:9px 10px;text-align:left;font-weight:700;font-size:13px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.fund-sel button small{font-weight:500;color:var(--sub);font-size:11px}
+.fund-sel button.on{border-color:#9fc3ff;background:color-mix(in srgb,#9fc3ff 14%,var(--bg))}
+.pool-hero{margin-top:18px;padding:24px 22px;border-radius:22px;background:radial-gradient(120% 140% at 100% 0%,rgba(159,195,255,.28),transparent 60%),linear-gradient(160deg,#141b26,#0f1217);border:1px solid rgba(159,195,255,.35);color:#f4efe2;display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.pool-bal{font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-top:4px}
+.pool-bal.neg{color:#f97066}
+.pool-hero p{margin:6px 0 0;color:#b9c3d6;font-size:14px}
+.pool-btns{display:flex;gap:8px;flex-wrap:wrap}
+.pool-pend{border-color:color-mix(in srgb,#9fc3ff 40%,var(--line))}
 .xdone-h{font-size:12px;font-weight:700;color:var(--sub);margin:16px 0 2px}
 .xfer.ok{opacity:.75;outline:0}
 .xfer.ok b{text-decoration:line-through;text-decoration-color:var(--sub)}
@@ -729,7 +746,7 @@ const TABS = {
     ['best', '🏅 올해의 작품'],
     ['academy', '🏆 방구석 아카데미'],
   ],
-  travel: () => [['trips', '🗺 여행 기록'], ['wish', '📍 가고 싶은 곳']],
+  travel: () => [['trips', '🗺 여행 기록'], ['pool', '🏦 모임통장'], ['wish', '📍 가고 싶은 곳']],
   food: () => [['rank', '🏆 맛집 랭킹'], ['tours', '🚶 맛집 투어'], ['fwish', '📍 가볼 곳']],
 };
 function goCat(k){
@@ -761,7 +778,7 @@ function render(){
   $('#main').onclick = onMainClick;
   if (home) return renderHome();
   ({ records:renderRecords, stats:renderStats, pick:renderPick, academy:renderAcademy, todo:renderTodo,
-     trips:renderTrips, wish:renderWish, best:renderBest, rank:renderRank, tours:renderTours, fwish:renderFwish })[S.tab]();
+     trips:renderTrips, wish:renderWish, pool:renderPool, best:renderBest, rank:renderRank, tours:renderTours, fwish:renderFwish })[S.tab]();
 }
 
 // ---------- 홈 ----------
@@ -796,6 +813,7 @@ function renderHome(){
           <ul class="hc-facts">
             ${S.travelErr ? '<li><span>준비 중</span><b>5_travel.sql 실행 필요</b></li>' : `
             <li><span>다녀온 여행</span><b>${trips.filter(t => tripStatus(t).k === 'done').length}번</b></li>
+            ${S.poolErr ? '' : `<li><span>🏦 모임통장 잔액</span><b>${won(poolBalance())}</b></li>`}
             <li><span>다음 여행</span><b class="${upcoming ? 'hot' : ''}">${upcoming ? `${esc(upcoming.title)} · ${tripStatus(upcoming).label}` : '아직 없음'}</b></li>
             ${topWish ? `<li><span>가고 싶은 곳 1위</span><b>${esc(topWish.place)}</b></li>` : ''}`}
           </ul>
@@ -864,11 +882,19 @@ function onMainClick(e){
     case 'tvRev': openReview(b.dataset.id ? id : null); break;
     case 'rvKind': S.rvKind = b.dataset.k; renderTrips(); break;
     case 'tvSettle': {
-      const f = +b.dataset.f, to = +b.dataset.t, a = +b.dataset.a;
-      if (!confirm(`${memName(f)} → ${memName(to)} ${won(a)}\n송금 완료로 표시할까요?`)) break;
+      const f = b.dataset.f ? +b.dataset.f : null, to = +b.dataset.t, a = +b.dataset.a;
+      if (!confirm(`${f == null ? '🏦 모임통장' : memName(f)} → ${memName(to)} ${won(a)}\n송금 완료로 표시할까요?`)) break;
       call('tv_settle', { p_trip_id:S.tripId, p_from:f, p_to:to, p_amount:a }).then(loadTravel).then(() => { renderTrips(); toast('송금 완료로 표시했어요'); }).catch(e => alert(errMsg(e)));
       break; }
     case 'tvUnsettle': if (confirm('완료 표시를 취소할까요?')) call('tv_unsettle', { p_id:id }).then(loadTravel).then(renderTrips).catch(e => alert(errMsg(e))); break;
+    case 'goPool': S.tab = 'pool'; render(); break;
+    case 'poolTx': openPoolTx(b.dataset.id ? id : null, b.dataset.k); break;
+    case 'poolYear': S.poolYear = b.dataset.k; renderPool(); break;
+    case 'poolPay': {
+      const tr = +b.dataset.trip, to = +b.dataset.t, a = +b.dataset.a;
+      if (!confirm(`🏦 모임통장 → ${memName(to)} ${won(a)}\n송금 완료로 표시할까요?`)) break;
+      call('tv_settle', { p_trip_id:tr, p_from:null, p_to:to, p_amount:a }).then(loadTravel).then(() => { renderPool(); toast('송금 완료로 표시했어요'); }).catch(e => alert(errMsg(e)));
+      break; }
     case 'tvWish': openWish(b.dataset.id ? id : null); break;
     case 'tvVote': call('tv_toggle_vote', { p_wish_id:id }).then(loadTravel).then(renderWish).catch(e => alert(errMsg(e))); break;
     case 'tvWishTrip': { const w = S.wishes.find(x => x.id === id); S.tab = 'trips'; render(); openTrip(null, { title:`${w.place} 여행`, place:w.place }); break; }
@@ -1780,6 +1806,8 @@ async function loadTravel(){
   ]);
   const st = await sb.from('tv_settles').select('*');
   S.settles = st.error ? [] : st.data;
+  const px = await sb.from('tv_pool_tx').select('*');
+  S.poolErr = px.error ? px.error.message : null; S.poolTx = px.error ? [] : px.data;
   const bad = res.find(x => x.error);
   if (bad){ S.travelErr = bad.error.message; [S.trips, S.plans, S.expenses, S.reviews, S.wishes, S.wishVotes] = [[], [], [], [], [], []]; return; }
   S.travelErr = null;
@@ -1884,25 +1912,38 @@ function planHTML(t){
 }
 
 // 정산
+const POOL_ACC = { id:null, name:'🏦 모임통장' };
+const FUND_LABEL = { split:'개인 결제 · 1/n', pool:'모임통장으로 결제', reimburse:'개인 결제 → 통장에서 돌려받기' };
 function settle(t){
   const mem = tripMembers(t);
   const exps = S.expenses.filter(e => e.trip_id === t.id);
-  const paid = {}, owe = {};
-  S.members.forEach(m => { paid[m.id] = 0; owe[m.id] = 0; });
+  const paid = {}, owe = {}, poolOwes = {};
+  let poolPaid = 0;
+  S.members.forEach(m => { paid[m.id] = 0; owe[m.id] = 0; poolOwes[m.id] = 0; });
   exps.forEach(e => {
-    const amt = Number(e.amount), split = e.split_ids?.length ? e.split_ids : mem.map(m => m.id);
+    const amt = Number(e.amount), fund = e.fund || 'split';
+    if (fund === 'pool'){ poolPaid += amt; return; }
+    if (fund === 'reimburse'){ poolOwes[e.paid_by] = (poolOwes[e.paid_by] || 0) + amt; return; }
+    const split = e.split_ids?.length ? e.split_ids : mem.map(m => m.id);
     paid[e.paid_by] = (paid[e.paid_by] || 0) + amt;
     split.forEach(id => { owe[id] = (owe[id] || 0) + amt / split.length; });
   });
-  // 완료 처리된 송금 반영 (보낸 사람은 낸 돈↑, 받은 사람은 낸 돈↓)
-  const sent = {};
   const done = (S.settles || []).filter(x => x.trip_id === t.id).sort((a, b) => a.id - b.id);
-  done.forEach(x => { sent[x.from_id] = (sent[x.from_id] || 0) + Number(x.amount); sent[x.to_id] = (sent[x.to_id] || 0) - Number(x.amount); });
-  const people = S.members.filter(m => mem.includes(m) || paid[m.id] || owe[m.id] || sent[m.id]);
-  const bal = people.map(m => ({ m, paid:paid[m.id], owe:owe[m.id], sent:sent[m.id] || 0, diff:paid[m.id] + (sent[m.id] || 0) - owe[m.id] }));
+  // 개인 간 송금 반영
+  const sent = {};
+  done.filter(x => x.from_id != null).forEach(x => { sent[x.from_id] = (sent[x.from_id] || 0) + Number(x.amount); sent[x.to_id] = (sent[x.to_id] || 0) - Number(x.amount); });
+  // 통장 → 개인 송금 반영
+  const poolSent = {};
+  done.filter(x => x.from_id == null).forEach(x => { poolSent[x.to_id] = (poolSent[x.to_id] || 0) + Number(x.amount); });
+  const people = S.members.filter(m => mem.includes(m) || paid[m.id] || owe[m.id] || sent[m.id] || poolOwes[m.id]);
+  const bal = people.map(m => ({ m, paid:paid[m.id], owe:owe[m.id], sent:sent[m.id] || 0, poolOwe:poolOwes[m.id] || 0, poolGot:poolSent[m.id] || 0,
+    diff:paid[m.id] + (sent[m.id] || 0) - owe[m.id] }));
+  const transfers = [];
+  // 1) 통장에서 돌려줄 돈
+  bal.forEach(b => { const left = Math.round(b.poolOwe - b.poolGot); if (left > 0) transfers.push({ from:POOL_ACC, to:b.m, amount:left, pool:true }); });
+  // 2) 개인 간 1/n
   const cred = bal.filter(b => b.diff > 0.5).map(b => ({ ...b, left:b.diff })).sort((a, b) => b.left - a.left);
   const debt = bal.filter(b => b.diff < -0.5).map(b => ({ ...b, left:-b.diff })).sort((a, b) => b.left - a.left);
-  const transfers = [];
   let i = 0, j = 0;
   while (i < debt.length && j < cred.length){
     const x = Math.min(debt[i].left, cred[j].left);
@@ -1911,44 +1952,140 @@ function settle(t){
     if (debt[i].left < 0.5) i++;
     if (cred[j].left < 0.5) j++;
   }
-  return { exps, bal, transfers, done, total:exps.reduce((s, e) => s + Number(e.amount), 0) };
+  const total = exps.reduce((s, e) => s + Number(e.amount), 0);
+  const poolTotal = poolPaid + exps.filter(e => e.fund === 'reimburse').reduce((s, e) => s + Number(e.amount), 0);
+  return { exps, bal, transfers, done, total, poolTotal, poolPaid };
 }
 function moneyHTML(t){
-  const { exps, bal, transfers, done, total } = settle(t);
-  const canAct = x => S.me === x.from.id || S.me === x.to.id || isAdmin();
+  const { exps, bal, transfers, done, total, poolTotal } = settle(t);
   const me = bal.find(b => b.m.id === S.me);
+  const canAct = x => x.pool || S.me === x.from.id || S.me === x.to.id || isAdmin();
   const list = [...exps].sort((a, b) => (b.spent_on || '').localeCompare(a.spent_on || '') || b.id - a.id);
+  const nameOf = id => id == null ? POOL_ACC.name : memName(id);
   return `<div class="money-sum">
       <div><small>총 지출</small><b>${won(total)}</b></div>
-      <div><small>1인 평균</small><b>${won(total / Math.max(1, tripMembers(t).length))}</b></div>
-      <div><small>내 부담</small><b>${me ? won(me.owe) : '–'}</b></div>
+      <div><small>모임통장 부담</small><b class="pool-c">${won(poolTotal)}</b></div>
+      <div><small>내 개인 부담</small><b>${me ? won(me.owe) : '–'}</b></div>
     </div>
     <div class="money-grid">
       <div class="panel"><h3>💸 이렇게 보내면 끝</h3><p class="d">${transfers.length ? '보낸 다음 "보냈어요"를 눌러주세요' : '최소한의 송금으로 정리했어요'}</p>
-        ${transfers.length ? transfers.map(x => `<div class="xfer ${x.from.id === S.me || x.to.id === S.me ? 'mine' : ''}">
+        ${transfers.length ? transfers.map(x => `<div class="xfer ${x.pool ? 'pool' : ''} ${x.from.id === S.me || x.to.id === S.me ? 'mine' : ''}">
             <b>${esc(x.from.name)}</b><span class="arrow">→</span><b>${esc(x.to.name)}</b><span class="amt">${won(x.amount)}</span>
-            ${canAct(x) ? `<button class="btn small xdone" data-act="tvSettle" data-f="${x.from.id}" data-t="${x.to.id}" data-a="${x.amount}">✓ 보냈어요</button>` : ''}</div>`).join('')
+            ${canAct(x) ? `<button class="btn small xdone" data-act="tvSettle" data-f="${x.from.id ?? ''}" data-t="${x.to.id}" data-a="${x.amount}">✓ 보냈어요</button>` : ''}</div>`).join('')
           : `<p class="d">${!exps.length ? '지출을 추가하면 자동으로 계산돼요' : done.length ? '🎉 정산 완료! 모두 보냈어요' : '정산할 게 없어요 👏'}</p>`}
         ${done.length ? `<div class="xdone-h">완료된 송금 ${done.length}건</div>${done.map(x => `<div class="xfer ok">
-            <span class="okmark">✅</span><b>${esc(memName(x.from_id))}</b><span class="arrow">→</span><b>${esc(memName(x.to_id))}</b><span class="amt">${won(x.amount)}</span>
+            <span class="okmark">✅</span><b>${esc(nameOf(x.from_id))}</b><span class="arrow">→</span><b>${esc(memName(x.to_id))}</b><span class="amt">${won(x.amount)}</span>
             <small class="xwhen">${new Date(x.created_at).toLocaleDateString('ko-KR', { month:'numeric', day:'numeric' })}</small>
-            ${S.me === x.from_id || S.me === x.to_id || isAdmin() ? `<button class="icon" data-act="tvUnsettle" data-id="${x.id}" title="완료 취소">↺</button>` : ''}</div>`).join('')}` : ''}
+            ${x.from_id == null || S.me === x.from_id || S.me === x.to_id || isAdmin() ? `<button class="icon" data-act="tvUnsettle" data-id="${x.id}" title="완료 취소">↺</button>` : ''}</div>`).join('')}` : ''}
       </div>
-      <div class="panel"><h3>👥 사람별</h3><p class="d">낸 돈 − 부담할 돈</p>
-        ${bal.map(b => `<div class="pbal"><span>${esc(b.m.name)}</span><small>낸 돈 ${won(b.paid)} · 부담 ${won(b.owe)}${b.sent ? ` · ${b.sent > 0 ? '보낸' : '받은'} 돈 ${won(Math.abs(b.sent))}` : ''}</small>
+      <div class="panel"><h3>👥 사람별</h3><p class="d">개인 결제분만 1/n · 낸 돈 − 부담할 돈</p>
+        ${bal.map(b => `<div class="pbal"><span>${esc(b.m.name)}</span><small>낸 돈 ${won(b.paid)} · 부담 ${won(b.owe)}${b.sent ? ` · ${b.sent > 0 ? '보낸' : '받은'} 돈 ${won(Math.abs(b.sent))}` : ''}${b.poolOwe ? ` · 통장에서 받을 돈 ${won(b.poolOwe - b.poolGot)}` : ''}</small>
           <b class="${b.diff > 0.5 ? 'plus' : b.diff < -0.5 ? 'minus' : ''}">${b.diff > 0.5 ? '+' : ''}${won(b.diff)}</b></div>`).join('')}
+        <p class="note">🏦 모임통장 잔액 <b>${won(poolBalance())}</b> · <button class="link" data-act="goPool">통장 보기</button></p>
       </div>
     </div>
     <div class="toolbar"><h2 class="sec" style="margin:0;flex:1">지출 내역 <small>${exps.length}건</small></h2><button class="btn small primary" data-act="tvExp">+ 지출 추가</button></div>
     <div class="todo-list">${list.map(e => {
+      const fund = e.fund || 'split';
       const split = e.split_ids?.length ? e.split_ids : tripMembers(t).map(m => m.id);
       const all = tripMembers(t).every(m => split.includes(m.id)) && split.length === tripMembers(t).length;
-      return `<div class="todo-row">
-        <div class="todo-main"><div class="todo-meta">${e.spent_on ? fmtDay(e.spent_on) + ' · ' : ''}${esc(memName(e.paid_by))} 결제</div>
+      const sub = fund === 'pool' ? '🏦 모임통장 결제' : fund === 'reimburse' ? `${esc(memName(e.paid_by))} 결제 → 🏦 통장에서 돌려받기` : `${all ? '모두' : split.map(memName).map(esc).join(', ')} · 1인 ${won(Number(e.amount) / split.length)}`;
+      return `<div class="todo-row ${fund !== 'split' ? 'exp-pool' : ''}">
+        <div class="todo-main"><div class="todo-meta">${e.spent_on ? fmtDay(e.spent_on) + ' · ' : ''}${fund === 'pool' ? '모임통장' : esc(memName(e.paid_by))} 결제</div>
           <div class="todo-title">${esc(e.title)}</div>
-          <div class="todo-theme">${all ? '모두' : split.map(memName).map(esc).join(', ')} · 1인 ${won(Number(e.amount) / split.length)}</div></div>
+          <div class="todo-theme">${sub}</div></div>
         <div class="todo-side"><span class="exp-amt">${won(e.amount)}</span><button class="icon" data-act="tvExp" data-id="${e.id}" title="수정">✎</button></div>
       </div>`; }).join('') || '<div class="panel ac-locked">💸<br>아직 지출이 없어요</div>'}</div>`;
+}
+
+// ----- 모임통장 -----
+function poolLedger(){
+  const rows = [];
+  (S.poolTx || []).forEach(x => rows.push({ date:x.tx_date, amt:x.kind === 'in' ? +x.amount : -x.amount, kind:x.kind,
+    title:x.memo || (x.kind === 'in' ? '입금' : '출금'), who:x.member_id, id:x.id, src:'tx', by:x.created_by }));
+  (S.expenses || []).filter(e => e.fund === 'pool').forEach(e => { const t = S.trips.find(z => z.id === e.trip_id);
+    rows.push({ date:e.spent_on || t?.start_date || '', amt:-Number(e.amount), kind:'trip', title:e.title, trip:t, src:'exp' }); });
+  (S.settles || []).filter(x => x.from_id == null).forEach(x => { const t = S.trips.find(z => z.id === x.trip_id);
+    rows.push({ date:(x.created_at || '').slice(0, 10), amt:-Number(x.amount), kind:'reimb', title:`${memName(x.to_id)}에게 돌려줌`, trip:t, src:'settle' }); });
+  rows.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  let run = 0; rows.forEach(r => { run += r.amt; r.bal = run; });
+  return rows.reverse();
+}
+const poolBalance = () => poolLedger()[0]?.bal ?? 0;
+function poolPending(){
+  // 아직 통장에서 안 돌려준 돈 (모든 여행)
+  return (S.trips || []).flatMap(t => settle(t).transfers.filter(x => x.pool).map(x => ({ ...x, trip:t })));
+}
+function renderPool(){
+  if (S.travelErr) return $('#main').innerHTML = travelGuard();
+  if (S.poolErr) return $('#main').innerHTML = `<div class="panel ac-locked">🏦<br>모임통장을 쓰려면 Supabase에서 <b>5_travel.sql</b>을 다시 실행해주세요<br><small>${esc(S.poolErr)}</small></div>`;
+  const rows = poolLedger(), bal = rows[0]?.bal ?? 0;
+  const yr = String(new Date().getFullYear());
+  S.poolYear ??= yr;
+  const ins = (S.poolTx || []).filter(x => x.kind === 'in' && x.member_id);
+  const years = [...new Set([yr, ...ins.map(x => x.tx_date.slice(0, 4))])].sort().reverse();
+  const inY = ins.filter(x => x.tx_date.startsWith(S.poolYear));
+  const per = S.members.map(m => ({ m, sum:inY.filter(x => x.member_id === m.id).reduce((s, x) => s + +x.amount, 0), all:ins.filter(x => x.member_id === m.id).reduce((s, x) => s + +x.amount, 0) }));
+  const maxP = Math.max(1, ...per.map(p => p.sum));
+  const totalIn = rows.filter(r => r.amt > 0).reduce((s, r) => s + r.amt, 0), totalOut = rows.filter(r => r.amt < 0).reduce((s, r) => s - r.amt, 0);
+  const pend = poolPending();
+  const label = { in:'입금', out:'출금', trip:'여행 결제', reimb:'돌려줌' };
+  $('#main').innerHTML = `
+    <div class="pool-hero">
+      <div><div class="ac-kicker" style="color:#9fc3ff">🏦 계모임 통장</div>
+        <div class="pool-bal ${bal < 0 ? 'neg' : ''}">${won(bal)}</div>
+        <p>총 입금 ${won(totalIn)} · 총 사용 ${won(totalOut)}</p></div>
+      <div class="pool-btns"><button class="btn primary" data-act="poolTx" data-k="in">+ 회비 입금</button><button class="btn" data-act="poolTx" data-k="out">− 출금 기록</button></div>
+    </div>
+    ${pend.length ? `<div class="panel pool-pend"><h3>⏳ 통장에서 돌려줄 돈</h3><p class="d">개인이 먼저 내고 통장에서 받기로 한 돈이에요</p>
+      ${pend.map(x => `<div class="xfer pool"><b>${esc(x.to.name)}</b><small class="dim">${esc(x.trip.title)}</small><span class="amt">${won(x.amount)}</span>
+        <button class="btn small xdone" data-act="poolPay" data-trip="${x.trip.id}" data-t="${x.to.id}" data-a="${x.amount}">✓ 보냈어요</button></div>`).join('')}</div>` : ''}
+    <div class="panel"><div class="ac-head"><h3>💰 회비 납부 현황</h3>
+      <div class="chips">${years.map(y => `<button class="chip sm ${S.poolYear === y ? 'on' : ''}" data-act="poolYear" data-k="${y}">${y}</button>`).join('')}</div></div>
+      ${per.map(p => `<div class="bar-row"><span class="bl">${esc(p.m.name)}<small>누적 ${won(p.all)}</small></span>
+        <span class="bt"><span style="width:${p.sum / maxP * 100}%;background:#9fc3ff"></span></span><span class="bv" style="width:auto;white-space:nowrap">${won(p.sum)}</span></div>`).join('')}
+    </div>
+    <div class="toolbar"><h2 class="sec" style="margin:0;flex:1">통장 내역 <small>${rows.length}건</small></h2></div>
+    <div class="todo-list">${rows.map(r => `<div class="todo-row">
+        <div class="todo-main"><div class="todo-meta">${r.date ? fmtDay(r.date) + ' · ' : ''}${label[r.kind]}${r.trip ? ' · ' + esc(r.trip.title) : ''}${r.who ? ' · ' + esc(memName(r.who)) : ''}</div>
+          <div class="todo-title">${esc(r.title)}</div>
+          <div class="todo-theme">잔액 ${won(r.bal)}</div></div>
+        <div class="todo-side"><span class="exp-amt ${r.amt > 0 ? 'in' : 'out'}">${r.amt > 0 ? '+' : '−'}${won(Math.abs(r.amt))}</span>
+          ${r.src === 'tx' && (r.by === S.me || isAdmin()) ? `<button class="icon" data-act="poolTx" data-id="${r.id}" title="수정">✎</button>` : ''}</div>
+      </div>`).join('') || '<div class="panel ac-locked">🏦<br>아직 통장 기록이 없어요<br><small>"+ 회비 입금"으로 시작해보세요. 지금 잔액이 있으면 "기초 잔액"으로 입금 기록하면 돼요.</small></div>'}</div>`;
+}
+function openPoolTx(id, kind){
+  const x = id ? S.poolTx.find(z => z.id === id) : { kind, tx_date:todayStr(), member_id:kind === 'in' ? S.me : null };
+  const isIn = x.kind === 'in';
+  openModal(`<h3>${id ? '통장 기록 수정' : isIn ? '회비 입금' : '출금 기록'}</h3>
+    <div class="form">
+      <label>구분<select id="px-k"><option value="in" ${isIn ? 'selected' : ''}>입금</option><option value="out" ${!isIn ? 'selected' : ''}>출금</option></select></label>
+      <label>날짜<input id="px-d" type="date" value="${x.tx_date || ''}"></label>
+      <label class="full">금액 (원)<input id="px-a" type="number" inputmode="numeric" min="1" value="${x.amount ?? ''}"></label>
+      <label class="full" id="px-wl">누가 냈나요<select id="px-w"><option value="">기타 (이자·기초 잔액 등)</option>${S.members.map(m => `<option value="${m.id}" ${m.id === x.member_id ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
+      <label class="full">메모<input id="px-m" value="${esc(x.memo || '')}" placeholder="${isIn ? '예) 10월 회비, 기초 잔액' : '예) 룩백 단체관람 티켓'}"></label>
+    </div>
+    ${!id && isIn ? '<button type="button" class="link" id="px-all">4명 모두 같은 금액으로 한 번에 입금 기록</button>' : ''}
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  const tog = () => { $('#px-wl').style.display = $('#px-k').value === 'in' ? '' : 'none'; };
+  tog(); $('#px-k').onchange = tog;
+  $('#cancel').onclick = closeModal;
+  const save = async () => {
+    try { await call('tv_save_pool_tx', { p_id:id ?? null, p_d:{ kind:$('#px-k').value, tx_date:$('#px-d').value, amount:$('#px-a').value, member_id:$('#px-k').value === 'in' ? $('#px-w').value : '', memo:$('#px-m').value } });
+      await loadTravel(); closeModal(); render(); toast('통장 기록을 저장했어요'); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  $('#save').onclick = save;
+  if ($('#px-all')) $('#px-all').onclick = async () => {
+    if (!(+$('#px-a').value > 0)){ $('#merr').textContent = '금액을 먼저 입력해주세요.'; return; }
+    if (!confirm(`${S.members.map(m => m.name).join(', ')} 각각 ${won(+$('#px-a').value)} 입금으로 기록할까요?`)) return;
+    try { for (const m of S.members) await call('tv_save_pool_tx', { p_id:null, p_d:{ kind:'in', tx_date:$('#px-d').value, amount:$('#px-a').value, member_id:m.id, memo:$('#px-m').value } });
+      await loadTravel(); closeModal(); render(); toast('4명 입금을 기록했어요'); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (id) $('#del').onclick = async () => { if (!confirm('삭제할까요?')) return; try { await call('tv_delete_pool_tx', { p_id:id }); await loadTravel(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
 }
 
 // 후기
@@ -2066,24 +2203,43 @@ function openPlan(id){
 function openExpense(id){
   const t = S.trips.find(x => x.id === S.tripId);
   const mem = tripMembers(t).map(m => m.id);
-  const e = id ? S.expenses.find(x => x.id === id) : { paid_by:S.me, split_ids:mem, spent_on:todayStr() >= (t.start_date || '') && todayStr() <= (t.end_date || '') ? todayStr() : (t.start_date || '') };
+  const e = id ? S.expenses.find(x => x.id === id) : { fund:'split', paid_by:S.me, split_ids:mem, spent_on:todayStr() >= (t.start_date || '') && todayStr() <= (t.end_date || '') ? todayStr() : (t.start_date || '') };
+  let fund = e.fund || 'split';
   openModal(`<h3>${id ? '지출 수정' : '지출 추가'}</h3>
     <div class="form">
       <label class="full">어디에 썼나요<input id="fe1" value="${esc(e.title || '')}" placeholder="예) 숙소, 저녁, 택시"></label>
       <label>금액 (원)<input id="fe2" type="number" inputmode="numeric" min="0" value="${e.amount ?? ''}" placeholder="0"></label>
       <label>날짜<input id="fe3" type="date" value="${e.spent_on || ''}"></label>
-      <label class="full">누가 냈나요<select id="fe4">${S.members.map(m => `<option value="${m.id}" ${m.id === e.paid_by ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
-      <div class="full"><div class="flabel">누구랑 나누나요</div>${memChecks(e.split_ids?.length ? e.split_ids : mem, 'sp')}</div>
+      <div class="full"><div class="flabel">어떻게 냈나요</div><div class="fund-sel" id="fe-f">
+        <button type="button" data-f="split">👤 개인이 냄<small>1/n로 나누기</small></button>
+        <button type="button" data-f="pool">🏦 모임통장으로 냄<small>통장 잔액에서 빠짐</small></button>
+        <button type="button" data-f="reimburse">↩️ 개인이 내고 통장에서 받기<small>통장이 돌려줌</small></button></div></div>
+      <label class="full" id="fe-pl">누가 냈나요<select id="fe4">${S.members.map(m => `<option value="${m.id}" ${m.id === (e.paid_by ?? S.me) ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
+      <div class="full" id="fe-sl"><div class="flabel">누구랑 나누나요</div>${memChecks(e.split_ids?.length ? e.split_ids : mem, 'sp')}</div>
     </div>
     <p class="note" id="fe5"></p>
     <p class="err" id="merr"></p>
     <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
       <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
-  const hint = () => { const a = +$('#fe2').value || 0, n = checked('sp').length; $('#fe5').textContent = n ? `1인당 ${won(a / n)}` : ''; };
-  $('#fe2').oninput = hint; document.querySelectorAll('input[name="sp"]').forEach(x => x.onchange = hint); hint();
+  const hint = () => {
+    const a = +$('#fe2').value || 0, n = checked('sp').length;
+    $('#fe5').textContent = fund === 'split' ? (n ? `1인당 ${won(a / n)}` : '')
+      : fund === 'pool' ? `🏦 모임통장에서 ${won(a)} 빠져요 (현재 잔액 ${won(poolBalance())})`
+      : `${memName(+$('#fe4').value)}님이 낸 ${won(a)}을 모임통장에서 돌려받아요`;
+  };
+  const setFund = f => {
+    fund = f;
+    document.querySelectorAll('#fe-f [data-f]').forEach(b => b.classList.toggle('on', b.dataset.f === f));
+    $('#fe-pl').style.display = f === 'pool' ? 'none' : '';
+    $('#fe-sl').style.display = f === 'split' ? '' : 'none';
+    hint();
+  };
+  $('#fe-f').onclick = ev => { const b = ev.target.closest('[data-f]'); if (b) setFund(b.dataset.f); };
+  setFund(fund);
+  $('#fe2').oninput = hint; $('#fe4').onchange = hint; document.querySelectorAll('input[name="sp"]').forEach(x => x.onchange = hint);
   $('#cancel').onclick = closeModal;
   $('#save').onclick = async () => {
-    try { await tvCall('tv_save_expense', { p_id:id ?? null, p_trip_id:t.id, p_d:{ title:$('#fe1').value, amount:$('#fe2').value, spent_on:$('#fe3').value, paid_by:+$('#fe4').value, split_ids:checked('sp') } }); tvDone(); }
+    try { await tvCall('tv_save_expense', { p_id:id ?? null, p_trip_id:t.id, p_d:{ title:$('#fe1').value, amount:$('#fe2').value, spent_on:$('#fe3').value, fund, paid_by:fund === 'pool' ? '' : +$('#fe4').value, split_ids:checked('sp') } }); tvDone(); }
     catch(err){ $('#merr').textContent = errMsg(err); }
   };
   if (id) $('#del').onclick = async () => { try { await tvCall('tv_delete_expense', { p_id:id }); tvDone(); } catch(err){ $('#merr').textContent = errMsg(err); } };
