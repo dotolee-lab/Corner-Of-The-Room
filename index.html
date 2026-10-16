@@ -550,6 +550,22 @@ button{font:inherit;color:inherit}
 .wish.fd .wish-bar span{background:#e8b93e}
 .wish.fd .vote.on{background:#e8b93e;border-color:#e8b93e;color:#1a1408}
 .dim{color:var(--sub);font-weight:500}
+.dday{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px;padding:14px 16px;border-radius:18px;background:linear-gradient(120deg,color-mix(in srgb,var(--accent) 16%,var(--card)),var(--card) 70%);border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line))}
+.dday.urgent{background:linear-gradient(120deg,color-mix(in srgb,var(--danger) 22%,var(--card)),var(--card) 70%);border-color:color-mix(in srgb,var(--danger) 50%,var(--line))}
+.dd-badge{font-size:22px;font-weight:900;letter-spacing:-.02em;color:var(--accent);min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
+.dday.urgent .dd-badge{color:var(--danger);animation:ddpulse 1.6s ease-in-out infinite}
+@keyframes ddpulse{50%{opacity:.55}}
+.dd-main{flex:1;min-width:200px;display:flex;flex-direction:column;gap:4px}
+.dd-msg{font-size:16px;font-weight:700}
+.dd-msg b{color:var(--accent)}
+.dday.urgent .dd-msg b{color:var(--danger)}
+.dd-sub{font-size:12px;color:var(--sub)}
+.dd-bar{height:6px;border-radius:99px;background:var(--chip);overflow:hidden;margin-top:2px}
+.dd-bar span{display:block;height:100%;background:var(--accent);border-radius:99px}
+.dday.urgent .dd-bar span{background:var(--danger)}
+.dd-ok{font-size:13px;font-weight:700;color:#7cc4a8}
+.dd-chip{font-size:11px;font-weight:800;padding:2px 9px;border-radius:999px;background:var(--accent);color:var(--accent-ink)}
+.dd-chip.urgent{background:var(--danger);color:#fff}
 .tabcount{display:inline-block;min-width:18px;padding:0 6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:18px;text-align:center;margin-left:2px;vertical-align:1px}
 .sec small{font-weight:600;letter-spacing:0;margin-left:4px}
 .todo-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
@@ -800,7 +816,7 @@ function renderHome(){
           <div class="hc-title">방구석 평론가</div>
           <div class="hc-desc">함께 고른 영화, 별점과 한줄평, 연말 방구석 아카데미</div>
           <ul class="hc-facts">
-            <li><span>기록된 영화</span><b>${S.movies.length}편</b></li>
+            <li><span>${quarterNow().q}분기 남은 기간</span><b class="${quarterNow().left <= 7 ? 'hot' : ''}">${quarterNow().left === 0 ? '오늘 마지막 날!' : quarterNow().left + '일'}</b></li>
             <li><span>내 밀린 평가</span><b class="${todo ? 'hot' : ''}">${todo ? todo + '편' : '없음 🎉'}</b></li>
             ${nextGroup ? `<li><span>단체관람</span><b>${esc(nextGroup.title)}</b></li>` : ''}
           </ul>
@@ -898,6 +914,7 @@ function onMainClick(e){
     case 'tvWish': openWish(b.dataset.id ? id : null); break;
     case 'tvVote': call('tv_toggle_vote', { p_wish_id:id }).then(loadTravel).then(renderWish).catch(e => alert(errMsg(e))); break;
     case 'tvWishTrip': { const w = S.wishes.find(x => x.id === id); S.tab = 'trips'; render(); openTrip(null, { title:`${w.place} 여행`, place:w.place }); break; }
+    case 'ddGo': { const n = quarterNow(); S.year = n.y; S.kind = 'quarter'; renderRecords(); document.getElementById('cur-round')?.scrollIntoView({ behavior:'smooth', block:'start' }); break; }
     case 'todoView': S.todoView = b.dataset.k; renderTodo(); break;
     case 'ayear': S.ayear = id; renderAcademy(); break;
     case 'ayearGo': S.ayear = id; S.acView = 'year'; renderAcademy(); scrollTo({ top:0, behavior:'smooth' }); break;
@@ -921,6 +938,34 @@ function onMainClick(e){
   }
 }
 
+// ----- 이번 분기 D-Day -----
+function quarterNow(){
+  const now = new Date(), y = now.getFullYear(), q = Math.floor(now.getMonth() / 3) + 1;
+  const start = new Date(y, (q - 1) * 3, 1), end = new Date(y, q * 3, 0);
+  const today = new Date(y, now.getMonth(), now.getDate());
+  const left = Math.round((end - today) / 86400000);
+  const total = Math.round((end - start) / 86400000) + 1, passed = total - left;
+  const fmt = d => `${d.getMonth() + 1}.${d.getDate()}`;
+  return { y, q, left, total, passed, range:`${fmt(start)} – ${fmt(end)}`, round:S.rounds.find(r => r.year === y && r.period_type === 'quarter' && r.period === q) };
+}
+function ddayHTML(){
+  const n = quarterNow();
+  const r = n.round;
+  const mv = r ? S.movies.filter(m => m.round_id === r.id) : [];
+  const myLeft = mv.filter(m => !ratingsOf(m.id).some(x => x.member_id === S.me && x.stars != null)).length;
+  const msg = n.left === 0 ? `오늘이 ${n.q}분기 마지막 날이에요!` : `${n.q}분기 기간이 <b>${n.left}일</b> 남았어요!`;
+  const urgent = n.left <= 7;
+  return `<div class="dday ${urgent ? 'urgent' : ''}">
+    <div class="dd-badge">${n.left === 0 ? 'D-DAY' : 'D-' + n.left}</div>
+    <div class="dd-main">
+      <div class="dd-msg">${msg}</div>
+      <div class="dd-sub">${n.y} · ${n.q}분기 (${n.range})${r?.theme ? ` · ${esc(r.theme)}` : ''}${r?.recommender_id ? ` · ${esc(memName(r.recommender_id))} 추천` : ''}</div>
+      <div class="dd-bar"><span style="width:${n.passed / n.total * 100}%"></span></div>
+    </div>
+    ${r ? (myLeft ? `<button class="btn small ${urgent ? 'primary' : ''}" data-act="ddGo">내 평가 ${myLeft}편 남음 →</button>` : '<span class="dd-ok">✅ 이번 분기 평가 완료</span>') : ''}
+  </div>`;
+}
+
 function renderRecords(){
   const inYear = S.rounds.filter(r => r.year === S.year);
   const dir = S.order === 'asc' ? 1 : -1;
@@ -940,6 +985,7 @@ function renderRecords(){
       ? `<div class="tickets">${groups.map(groupHTML).join('')}</div>`
       : quarters.map(roundHTML).join('');
   $('#main').innerHTML = `
+    ${ddayHTML()}
     <div class="toolbar">
       <div class="chips">${yearsList().map(y => `<button class="chip ${y === S.year ? 'on' : ''}" data-act="year" data-id="${y}">${y}</button>`).join('')}</div>
       <button class="btn small" data-act="addRound">+ 회차 추가</button>
@@ -983,9 +1029,10 @@ function monthHTML(r){
 }
 
 function roundHTML(r){
-  return `<section class="round">
+  const qn = quarterNow(), cur = r.period_type === 'quarter' && r.year === qn.y && r.period === qn.q;
+  return `<section class="round" ${cur ? 'id="cur-round"' : ''}>
     <div class="r-head">
-      <span class="period">${r.year} · ${periodLabel(r)}</span>
+      <span class="period">${r.year} · ${periodLabel(r)}</span>${cur ? `<span class="dd-chip ${qn.left <= 7 ? 'urgent' : ''}">${qn.left === 0 ? 'D-DAY' : 'D-' + qn.left} · 진행 중</span>` : ''}
       ${r.recommender_id ? `<span class="badge">추천 ${esc(memName(r.recommender_id))}</span>` : ''}
       <button class="icon" data-act="editRound" data-id="${r.id}" title="회차 수정">✎</button>
     </div>
