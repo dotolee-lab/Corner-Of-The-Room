@@ -511,6 +511,7 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--ink)}
 .leaflet-container a.leaflet-popup-close-button{color:var(--sub)}
 .leaflet-container{font-family:inherit}
+@media (prefers-color-scheme:dark){.osm-tiles{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.9) saturate(.6)}}
 .loc-map{height:210px;border-radius:12px;border:1px solid var(--line);overflow:hidden;margin-top:8px;position:relative;z-index:0;background:var(--bg)}
 .loc-res{display:flex;flex-direction:column;gap:4px;margin-top:6px}
 .loc-res button{text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font:inherit;color:var(--ink);cursor:pointer;display:flex;flex-direction:column}
@@ -2961,8 +2962,8 @@ const loadLeaflet = () => _leaf ??= new Promise((ok, no) => {
   document.head.appendChild(s);
 });
 const isDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
-const baseTiles = L => L.tileLayer(`https://{s}.basemaps.cartocdn.com/${isDark() ? 'dark_all' : 'rastertiles/voyager'}/{z}/{x}/{y}{r}.png`,
-  { attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>', subdomains:'abcd', maxZoom:19 });
+const baseTiles = L => L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  { attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom:19, className:'osm-tiles' });
 const KOREA = [36.2, 127.9];
 const pinIcon = (L, html, cls = '') => L.divIcon({ className:'', html:`<div class="fpin ${cls}"><b>${html}</b></div>`, iconSize:[30, 38], iconAnchor:[15, 36], popupAnchor:[0, -32] });
 
