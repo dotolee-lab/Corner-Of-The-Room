@@ -348,6 +348,15 @@ button{font:inherit;color:inherit}
 .xfer.mine{outline:1.5px solid var(--accent)}
 .xfer .arrow{color:var(--sub)}
 .xfer .amt{margin-left:auto;font-weight:800;color:var(--accent)}
+.xfer{flex-wrap:wrap}
+.xdone{border-color:#7cc4a8;color:#7cc4a8;background:transparent}
+.xdone:hover{background:#7cc4a8;color:#0b1a14}
+.xdone-h{font-size:12px;font-weight:700;color:var(--sub);margin:16px 0 2px}
+.xfer.ok{opacity:.75;outline:0}
+.xfer.ok b{text-decoration:line-through;text-decoration-color:var(--sub)}
+.xfer.ok .amt{color:#7cc4a8;text-decoration:line-through}
+.okmark{font-size:14px}
+.xwhen{color:var(--sub);font-size:12px}
 .pbal{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .pbal:last-child{border-bottom:0}
 .pbal span{font-weight:700}
@@ -854,6 +863,12 @@ function onMainClick(e){
     case 'tvExp': openExpense(b.dataset.id ? id : null); break;
     case 'tvRev': openReview(b.dataset.id ? id : null); break;
     case 'rvKind': S.rvKind = b.dataset.k; renderTrips(); break;
+    case 'tvSettle': {
+      const f = +b.dataset.f, to = +b.dataset.t, a = +b.dataset.a;
+      if (!confirm(`${memName(f)} → ${memName(to)} ${won(a)}\n송금 완료로 표시할까요?`)) break;
+      call('tv_settle', { p_trip_id:S.tripId, p_from:f, p_to:to, p_amount:a }).then(loadTravel).then(() => { renderTrips(); toast('송금 완료로 표시했어요'); }).catch(e => alert(errMsg(e)));
+      break; }
+    case 'tvUnsettle': if (confirm('완료 표시를 취소할까요?')) call('tv_unsettle', { p_id:id }).then(loadTravel).then(renderTrips).catch(e => alert(errMsg(e))); break;
     case 'tvWish': openWish(b.dataset.id ? id : null); break;
     case 'tvVote': call('tv_toggle_vote', { p_wish_id:id }).then(loadTravel).then(renderWish).catch(e => alert(errMsg(e))); break;
     case 'tvWishTrip': { const w = S.wishes.find(x => x.id === id); S.tab = 'trips'; render(); openTrip(null, { title:`${w.place} 여행`, place:w.place }); break; }
@@ -1763,6 +1778,8 @@ async function loadTravel(){
     sb.from('tv_trips').select('*'), sb.from('tv_plans').select('*'), sb.from('tv_expenses').select('*'),
     sb.from('tv_reviews').select('*'), sb.from('tv_wishes').select('*'), sb.from('tv_wish_votes').select('*'),
   ]);
+  const st = await sb.from('tv_settles').select('*');
+  S.settles = st.error ? [] : st.data;
   const bad = res.find(x => x.error);
   if (bad){ S.travelErr = bad.error.message; [S.trips, S.plans, S.expenses, S.reviews, S.wishes, S.wishVotes] = [[], [], [], [], [], []]; return; }
   S.travelErr = null;
@@ -1877,8 +1894,12 @@ function settle(t){
     paid[e.paid_by] = (paid[e.paid_by] || 0) + amt;
     split.forEach(id => { owe[id] = (owe[id] || 0) + amt / split.length; });
   });
-  const people = S.members.filter(m => mem.includes(m) || paid[m.id] || owe[m.id]);
-  const bal = people.map(m => ({ m, paid:paid[m.id], owe:owe[m.id], diff:paid[m.id] - owe[m.id] }));
+  // 완료 처리된 송금 반영 (보낸 사람은 낸 돈↑, 받은 사람은 낸 돈↓)
+  const sent = {};
+  const done = (S.settles || []).filter(x => x.trip_id === t.id).sort((a, b) => a.id - b.id);
+  done.forEach(x => { sent[x.from_id] = (sent[x.from_id] || 0) + Number(x.amount); sent[x.to_id] = (sent[x.to_id] || 0) - Number(x.amount); });
+  const people = S.members.filter(m => mem.includes(m) || paid[m.id] || owe[m.id] || sent[m.id]);
+  const bal = people.map(m => ({ m, paid:paid[m.id], owe:owe[m.id], sent:sent[m.id] || 0, diff:paid[m.id] + (sent[m.id] || 0) - owe[m.id] }));
   const cred = bal.filter(b => b.diff > 0.5).map(b => ({ ...b, left:b.diff })).sort((a, b) => b.left - a.left);
   const debt = bal.filter(b => b.diff < -0.5).map(b => ({ ...b, left:-b.diff })).sort((a, b) => b.left - a.left);
   const transfers = [];
@@ -1890,10 +1911,11 @@ function settle(t){
     if (debt[i].left < 0.5) i++;
     if (cred[j].left < 0.5) j++;
   }
-  return { exps, bal, transfers, total:exps.reduce((s, e) => s + Number(e.amount), 0) };
+  return { exps, bal, transfers, done, total:exps.reduce((s, e) => s + Number(e.amount), 0) };
 }
 function moneyHTML(t){
-  const { exps, bal, transfers, total } = settle(t);
+  const { exps, bal, transfers, done, total } = settle(t);
+  const canAct = x => S.me === x.from.id || S.me === x.to.id || isAdmin();
   const me = bal.find(b => b.m.id === S.me);
   const list = [...exps].sort((a, b) => (b.spent_on || '').localeCompare(a.spent_on || '') || b.id - a.id);
   return `<div class="money-sum">
@@ -1902,13 +1924,18 @@ function moneyHTML(t){
       <div><small>내 부담</small><b>${me ? won(me.owe) : '–'}</b></div>
     </div>
     <div class="money-grid">
-      <div class="panel"><h3>💸 이렇게 보내면 끝</h3><p class="d">최소한의 송금으로 정리했어요</p>
+      <div class="panel"><h3>💸 이렇게 보내면 끝</h3><p class="d">${transfers.length ? '보낸 다음 "보냈어요"를 눌러주세요' : '최소한의 송금으로 정리했어요'}</p>
         ${transfers.length ? transfers.map(x => `<div class="xfer ${x.from.id === S.me || x.to.id === S.me ? 'mine' : ''}">
-            <b>${esc(x.from.name)}</b><span class="arrow">→</span><b>${esc(x.to.name)}</b><span class="amt">${won(x.amount)}</span></div>`).join('')
-          : `<p class="d">${exps.length ? '정산할 게 없어요 👏' : '지출을 추가하면 자동으로 계산돼요'}</p>`}
+            <b>${esc(x.from.name)}</b><span class="arrow">→</span><b>${esc(x.to.name)}</b><span class="amt">${won(x.amount)}</span>
+            ${canAct(x) ? `<button class="btn small xdone" data-act="tvSettle" data-f="${x.from.id}" data-t="${x.to.id}" data-a="${x.amount}">✓ 보냈어요</button>` : ''}</div>`).join('')
+          : `<p class="d">${!exps.length ? '지출을 추가하면 자동으로 계산돼요' : done.length ? '🎉 정산 완료! 모두 보냈어요' : '정산할 게 없어요 👏'}</p>`}
+        ${done.length ? `<div class="xdone-h">완료된 송금 ${done.length}건</div>${done.map(x => `<div class="xfer ok">
+            <span class="okmark">✅</span><b>${esc(memName(x.from_id))}</b><span class="arrow">→</span><b>${esc(memName(x.to_id))}</b><span class="amt">${won(x.amount)}</span>
+            <small class="xwhen">${new Date(x.created_at).toLocaleDateString('ko-KR', { month:'numeric', day:'numeric' })}</small>
+            ${S.me === x.from_id || S.me === x.to_id || isAdmin() ? `<button class="icon" data-act="tvUnsettle" data-id="${x.id}" title="완료 취소">↺</button>` : ''}</div>`).join('')}` : ''}
       </div>
       <div class="panel"><h3>👥 사람별</h3><p class="d">낸 돈 − 부담할 돈</p>
-        ${bal.map(b => `<div class="pbal"><span>${esc(b.m.name)}</span><small>낸 돈 ${won(b.paid)} · 부담 ${won(b.owe)}</small>
+        ${bal.map(b => `<div class="pbal"><span>${esc(b.m.name)}</span><small>낸 돈 ${won(b.paid)} · 부담 ${won(b.owe)}${b.sent ? ` · ${b.sent > 0 ? '보낸' : '받은'} 돈 ${won(Math.abs(b.sent))}` : ''}</small>
           <b class="${b.diff > 0.5 ? 'plus' : b.diff < -0.5 ? 'minus' : ''}">${b.diff > 0.5 ? '+' : ''}${won(b.diff)}</b></div>`).join('')}
       </div>
     </div>
