@@ -399,6 +399,13 @@ button{font:inherit;color:inherit}
 .ticket .movie .scores{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media (min-width:480px){.ticket .movie .scores{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (min-width:760px){.ticket .movie .scores{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.best-card.wide{grid-column:1/-1}
+.b-quote{font-size:19px;font-weight:700;line-height:1.45;letter-spacing:-.01em;word-break:keep-all}
+.b-meta b{color:var(--ink)}
+.b-preview{font-size:14px;line-height:1.5;padding:0 2px;color:var(--ink)}
+.b-preview:empty{display:none}
+.b-preview small{color:var(--sub)}
+.cer-quote{font-size:19px!important;line-height:1.45}
 .best-hero{background:radial-gradient(120% 140% at 100% 0%,rgba(159,195,255,.28),transparent 60%),linear-gradient(160deg,#141b26,#0f1217);border-color:rgba(159,195,255,.35)}
 .best-hero::after{content:"🏅"}
 .best-grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
@@ -2119,16 +2126,34 @@ function themeAvg(r){
   const v = S.movies.filter(m => m.round_id === r.id && m.kind === 'pick').flatMap(m => starVals(ratingsOf(m.id)));
   return { avg:mean(v), n:v.length };
 }
+// 그해 한줄평 목록 (멤버 한줄평 + 작성자 미상 예전 한줄평)
+function commentsOfYear(y){
+  const out = [];
+  moviesOfYear(y).slice().reverse().forEach(m => {
+    S.ratings.filter(r => r.movie_id === m.id && r.comment).forEach(r => out.push({ ref:'r:' + r.id, m, who:r.member_id, text:r.comment }));
+    S.legacy.filter(l => l.movie_id === m.id).forEach(l => out.push({ ref:'l:' + l.id, m, who:null, text:l.body }));
+  });
+  return out;
+}
+function commentByRef(ref){
+  if (!ref) return null;
+  const t = ref.slice(0, 1), n = +ref.slice(2);
+  if (t === 'r'){ const r = S.ratings.find(x => x.id === n); const m = r && S.movies.find(x => x.id === r.movie_id); return r && m ? { ref, m, who:r.member_id, text:r.comment || '(삭제된 한줄평)' } : null; }
+  const l = S.legacy.find(x => x.id === n); const m = l && S.movies.find(x => x.id === l.movie_id);
+  return l && m ? { ref, m, who:null, text:l.body } : null;
+}
+const whoName = c => c.who ? memName(c.who) : '작성자 미상';
+
 function bestTally(y, cat){
   const pub = S.members.filter(m => bBallot(y, m.id)?.is_public);
   const map = new Map();
   (S.bVotes || []).filter(v => v.year === y && v.category === cat && pub.some(m => m.id === v.member_id)).forEach(v => {
-    const k = cat === 'movie' ? v.movie_id : v.round_id;
+    const k = cat === 'movie' ? v.movie_id : cat === 'theme' ? v.round_id : v.ref;
     if (!map.has(k)) map.set(k, []);
     map.get(k).push({ m:S.members.find(x => x.id === v.member_id), comment:v.comment });
   });
   return [...map.entries()].map(([id, voters]) => ({ id, voters }))
-    .sort((a, b) => b.voters.length - a.voters.length || ((cat === 'movie' ? avgOfMovie(b.id) : themeAvg(S.rounds.find(r => r.id === b.id) || {}).avg) ?? 0) - ((cat === 'movie' ? avgOfMovie(a.id) : themeAvg(S.rounds.find(r => r.id === a.id) || {}).avg) ?? 0));
+    .sort((a, b) => b.voters.length - a.voters.length || (cat === 'comment' ? 0 : ((cat === 'movie' ? avgOfMovie(b.id) : themeAvg(S.rounds.find(r => r.id === b.id) || {}).avg) ?? 0) - ((cat === 'movie' ? avgOfMovie(a.id) : themeAvg(S.rounds.find(r => r.id === a.id) || {}).avg) ?? 0)));
 }
 
 async function renderBest(){
@@ -2141,8 +2166,8 @@ async function renderBest(){
     $('#main').innerHTML = '<div class="loading">불러오는 중…</div>';
     try {
       const rows = await call('mv_my_best', { p_year:y }) || [];
-      const mv = rows.find(r => r.category === 'movie'), th = rows.find(r => r.category === 'theme');
-      S.bdraft[y] = { movie:mv?.movie_id ?? '', mcom:mv?.comment ?? '', round:th?.round_id ?? '', rcom:th?.comment ?? '' };
+      const mv = rows.find(r => r.category === 'movie'), th = rows.find(r => r.category === 'theme'), cm = rows.find(r => r.category === 'comment');
+      S.bdraft[y] = { movie:mv?.movie_id ?? '', mcom:mv?.comment ?? '', round:th?.round_id ?? '', rcom:th?.comment ?? '', ref:cm?.ref ?? '', ccom:cm?.comment ?? '' };
     } catch(e){ $('#main').innerHTML = `<div class="loading">${esc(errMsg(e))}</div>`; return; }
     if (S.tab !== 'best' || S.byear !== y) return;
   }
@@ -2158,16 +2183,22 @@ async function renderBest(){
   const groupsOpt = [['월별 추천작', m => roundOfMovie(m)?.period_type === 'month'], ['분기 테마작', m => roundOfMovie(m)?.period_type === 'quarter' && m.kind === 'pick'], ['단체관람', m => m.kind === 'group']]
     .map(([label, f]) => { const ms = movies.filter(f); return ms.length ? `<optgroup label="${label}">${ms.map(m => `<option value="${m.id}" ${+d.movie === m.id ? 'selected' : ''}>${esc(movieLabel(m))}</option>`).join('')}</optgroup>` : ''; }).join('');
 
+  const coms = commentsOfYear(y).filter(c => c.who !== S.me);
+  const comOpt = [...new Set(coms.map(c => c.m.id))].map(mid => { const list = coms.filter(c => c.m.id === mid); const m = list[0].m;
+    return `<optgroup label="${esc(movieLabel(m))}">${list.map(c => `<option value="${c.ref}" ${d.ref === c.ref ? 'selected' : ''}>${esc(whoName(c))}: ${esc(c.text.length > 60 ? c.text.slice(0, 58) + '…' : c.text)}</option>`).join('')}</optgroup>`; }).join('');
   const editor = mine?.is_public
     ? `<div class="ac-mybar"><span>✅ 내 투표는 <b>공개</b>됐어요</span><button class="btn small" data-act="bUnpub">공개 취소하고 수정</button></div>`
     : `<details class="panel ac-editor" ${mine || !pub.length ? 'open' : ''}>
         <summary><span class="ac-head"><h3>✏️ 내 투표</h3><span class="ac-badge ${mine ? 'draft' : 'none'}">${mine ? '🔒 나만 보는 중' : '아직 투표 안 함'}</span></span></summary>
-        <p class="note">${y}년에 함께 본 영화와 테마 중에서 골라요. 공개 전까지는 나만 볼 수 있어요.</p>
+        <p class="note">${y}년에 함께 본 영화, 테마, 한줄평 중에서 골라요. 공개 전까지는 나만 볼 수 있어요.</p>
         <div class="form">
           <label class="full">🎬 올해의 영화<select id="bm"><option value="">선택 안 함</option>${groupsOpt}</select></label>
           <label class="full">이유 한마디<input id="bmc" value="${esc(d.mcom)}" placeholder="왜 이 영화인가요?"></label>
           ${themes.length ? `<label class="full">🎨 올해의 테마<select id="bt"><option value="">선택 안 함</option>${themes.map(r => `<option value="${r.id}" ${+d.round === r.id ? 'selected' : ''}>${periodLabel(r)} · ${esc(r.theme)}${r.recommender_id ? ` (${esc(memName(r.recommender_id))})` : ''}</option>`).join('')}</select></label>
-          <label class="full">이유 한마디<input id="btc" value="${esc(d.rcom)}" placeholder="왜 이 테마인가요?"></label>` : '<p class="note full">이 해에는 분기 테마가 없어서 올해의 영화만 뽑아요.</p>'}
+          <label class="full">이유 한마디<input id="btc" value="${esc(d.rcom)}" placeholder="왜 이 테마인가요?"></label>` : '<p class="note full">이 해에는 분기 테마가 없어서 테마상은 없어요.</p>'}
+          ${coms.length ? `<label class="full">✍️ 올해의 한줄평 <small class="dim">(내 한줄평 제외)</small><select id="bc"><option value="">선택 안 함</option>${comOpt}</select></label>
+          <div class="full b-preview" id="bcp">${d.ref ? (() => { const c = commentByRef(d.ref); return c ? `“${esc(c.text)}” <small>— ${esc(whoName(c))}, ${esc(c.m.title)}</small>` : ''; })() : ''}</div>
+          <label class="full">이유 한마디<input id="bcc" value="${esc(d.ccom)}" placeholder="왜 이 한줄평인가요?"></label>` : ''}
         </div>
         <p class="err" id="berr"></p>
         <div class="row"><span class="sp"></span><button class="btn" data-act="bSave">저장</button><button class="btn primary" data-act="bPub">🏅 공개하기</button></div>
@@ -2178,19 +2209,20 @@ async function renderBest(){
     <div class="ac-hero best-hero">
       <div class="ac-kicker" style="color:#9fc3ff">BEST OF THE YEAR</div>
       <div class="ac-title">올해의 작품 <span style="color:#9fc3ff">${y}</span></div>
-      <p>${y}년에 함께 본 ${movies.length}편과 ${themes.length}개의 테마 중 최고를 뽑아요.</p>
+      <p>${y}년에 함께 본 ${movies.length}편, ${themes.length}개의 테마, ${commentsOfYear(y).length}개의 한줄평 중 최고를 뽑아요.</p>
       <div class="ac-status">${status}</div>
     </div>
     ${editor}
     ${bestResultHTML(y, pub)}
     ${bestDataHTML(y)}`;
-  const keep = () => { const g = id => $(id)?.value ?? ''; Object.assign(d, { movie:g('#bm'), mcom:g('#bmc'), round:g('#bt'), rcom:g('#btc') }); };
-  ['#bm', '#bmc', '#bt', '#btc'].forEach(id => { if ($(id)) $(id).oninput = $(id).onchange = keep; });
+  const keep = () => { const g = id => $(id)?.value ?? ''; Object.assign(d, { movie:g('#bm'), mcom:g('#bmc'), round:g('#bt'), rcom:g('#btc'), ref:g('#bc'), ccom:g('#bcc') });
+    if ($('#bcp')){ const c = commentByRef(d.ref); $('#bcp').innerHTML = c ? `“${esc(c.text)}” <small>— ${esc(whoName(c))}, ${esc(c.m.title)}</small>` : ''; } };
+  ['#bm', '#bmc', '#bt', '#btc', '#bc', '#bcc'].forEach(id => { if ($(id)) $(id).oninput = $(id).onchange = keep; });
 }
 
 function bestResultHTML(y, pub){
   if (!pub.length) return `<div class="panel ac-locked">🔒<br>아직 아무도 공개하지 않았어요<br><small>각자 공개하면 결과가 나타나요</small></div>`;
-  const mv = bestTally(y, 'movie'), th = bestTally(y, 'theme');
+  const mv = bestTally(y, 'movie'), th = bestTally(y, 'theme'), cm = bestTally(y, 'comment');
   const hidden = S.members.filter(m => !pub.includes(m));
   const voterLine = vs => `<div class="aw-who">${vs.map(v => `<i>${esc(shortName(v.m.name))}</i>`).join('')} <em>${vs.length}표</em></div>
     ${vs.filter(v => v.comment).map(v => `<div class="b-com"><b>${esc(v.m.name)}</b> ${esc(v.comment)}</div>`).join('')}`;
@@ -2201,8 +2233,12 @@ function bestResultHTML(y, pub){
   const themeWin = top(th).map(x => { const r = S.rounds.find(z => z.id === x.id); if (!r) return ''; const ms = S.movies.filter(m => m.round_id === r.id && m.kind === 'pick').sort((a, b) => a.slot - b.slot); const ta = themeAvg(r);
     return `<div class="b-win col"><div class="b-posters">${ms.map(m => posterImg(m)).join('')}</div><div class="b-txt"><div class="b-meta">${periodLabel(r)}${r.recommender_id ? ` · ${esc(memName(r.recommender_id))} 추천` : ''}${ta.avg != null ? ` · 평균 ★ ${ta.avg.toFixed(1)}` : ''}</div>
       <div class="b-title">${esc(r.theme)}</div>${voterLine(x.voters)}</div></div>`; }).join('');
+  const comWin = top(cm).map(x => { const c = commentByRef(x.id); if (!c) return '';
+    return `<div class="b-win">${posterImg(c.m)}<div class="b-txt"><div class="b-quote">“${esc(c.text)}”</div>
+      <div class="b-meta">— <b>${esc(whoName(c))}</b> · ${esc(c.m.title)}</div>${voterLine(x.voters)}</div></div>`; }).join('');
   const rest = (arr, cat) => arr.slice(top(arr).length).map(x => {
-    const name = cat === 'movie' ? S.movies.find(z => z.id === x.id)?.title : S.rounds.find(z => z.id === x.id)?.theme;
+    const name = cat === 'movie' ? S.movies.find(z => z.id === x.id)?.title : cat === 'theme' ? S.rounds.find(z => z.id === x.id)?.theme
+      : (() => { const c = commentByRef(x.id); return c ? `“${c.text}” — ${whoName(c)}` : null; })();
     return `<li><span>${esc(name || '?')}</span><b>${x.voters.length}표</b> <small>${x.voters.map(v => esc(shortName(v.m.name))).join('·')}</small></li>`; }).join('');
   return `<div class="ac-reshead"><h2>${hidden.length ? '공개된 투표' : '🎉 최종 결과'}</h2>
       ${hidden.length ? `<span class="note" style="margin:0">🔒 ${hidden.map(m => esc(m.name)).join(', ')} 비공개</span>` : ''}
@@ -2210,6 +2246,7 @@ function bestResultHTML(y, pub){
     <div class="best-grid">
       <div class="best-card"><div class="b-label">🎬 올해의 영화</div>${movieWin || '<p class="d">아직 표가 없어요</p>'}${rest(mv, 'movie') ? `<ul class="b-rest">${rest(mv, 'movie')}</ul>` : ''}</div>
       ${themesOfYear(y).length ? `<div class="best-card"><div class="b-label">🎨 올해의 테마</div>${themeWin || '<p class="d">아직 표가 없어요</p>'}${rest(th, 'theme') ? `<ul class="b-rest">${rest(th, 'theme')}</ul>` : ''}</div>` : ''}
+      ${commentsOfYear(y).length ? `<div class="best-card wide"><div class="b-label">✍️ 올해의 한줄평</div>${comWin || '<p class="d">아직 표가 없어요</p>'}${rest(cm, 'comment') ? `<ul class="b-rest">${rest(cm, 'comment')}</ul>` : ''}</div>` : ''}
     </div>`;
 }
 
@@ -2233,7 +2270,7 @@ function bestDataHTML(y){
 async function bestSave(silent){
   const d = S.bdraft[S.byear];
   try {
-    await call('mv_save_best', { p_year:S.byear, p_movie_id:d.movie ? +d.movie : null, p_movie_comment:d.mcom, p_round_id:d.round ? +d.round : null, p_round_comment:d.rcom });
+    await call('mv_save_best', { p_year:S.byear, p_movie_id:d.movie ? +d.movie : null, p_movie_comment:d.mcom, p_round_id:d.round ? +d.round : null, p_round_comment:d.rcom, p_ref:d.ref || null, p_ref_comment:d.ccom });
     await loadBest();
     if (!silent){ renderBest(); toast('저장했어요 · 아직 나만 볼 수 있어요'); }
     return true;
@@ -2242,7 +2279,7 @@ async function bestSave(silent){
 async function bestPublish(on){
   const d = S.bdraft[S.byear];
   if (on){
-    if (!d.movie && !d.round){ $('#berr').textContent = '하나 이상 골라주세요.'; return; }
+    if (!d.movie && !d.round && !d.ref){ $('#berr').textContent = '하나 이상 골라주세요.'; return; }
     if (!confirm(`${S.byear} 올해의 작품 투표를 공개할까요?\n공개하면 모든 멤버가 볼 수 있어요.`)) return;
     if (!(await bestSave(true))) return;
   } else if (!confirm('공개를 취소할까요?')) return;
@@ -2254,6 +2291,7 @@ async function bestPublish(on){
 function openBestShow(){
   const y = S.byear;
   const steps = [];
+  if (commentsOfYear(y).length) steps.push(['comment', '✍️ 올해의 한줄평']);
   if (themesOfYear(y).length) steps.push(['theme', '🎨 올해의 테마']);
   steps.push(['movie', '🎬 올해의 영화']);
   let i = -1, opened = false;
@@ -2266,6 +2304,8 @@ function openBestShow(){
     return tops.map((x, k) => {
       if (cat === 'movie'){ const m = S.movies.find(z => z.id === x.id);
         return `<div class="cer-pick win" style="animation-delay:${k * .25}s">${posterImg(m, 'cer2')}<div><b>${esc(m.title)}</b><span>${x.voters.length}표 · ${x.voters.map(v => esc(v.m.name)).join(' · ')}</span></div></div>`; }
+      if (cat === 'comment'){ const c = commentByRef(x.id); if (!c) return '';
+        return `<div class="cer-pick win" style="animation-delay:${k * .25}s">${posterImg(c.m, 'cer2')}<div><b class="cer-quote">“${esc(c.text)}”</b><span>— ${esc(whoName(c))} · ${esc(c.m.title)} · ${x.voters.length}표</span></div></div>`; }
       const r = S.rounds.find(z => z.id === x.id);
       return `<div class="cer-pick win" style="animation-delay:${k * .25}s"><div><b>${esc(r.theme)}</b><span>${periodLabel(r)} · ${r.recommender_id ? esc(memName(r.recommender_id)) + ' 추천 · ' : ''}${x.voters.length}표</span></div></div>`;
     }).join('');
