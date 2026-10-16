@@ -300,6 +300,19 @@ button{font:inherit;color:inherit}
 .hc-facts b{text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hc-facts b.hot{color:#f2b33d}
 .hc-go{margin-top:auto;font-weight:700;font-size:14px;color:#f2b33d}
+@media (max-width:699px){
+  .home{padding-top:3vh}
+  .home-hi{font-size:22px}.home-sub{margin-bottom:16px}
+  .home-grid{gap:10px}
+  .home-card{min-height:0;padding:14px 16px 12px;border-radius:18px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;column-gap:10px;row-gap:0}
+  .hc-icon{font-size:22px;line-height:1}
+  .hc-title{font-size:18px}
+  .hc-desc{display:none}
+  .hc-go{grid-column:3;grid-row:1;margin:0;font-size:0}
+  .hc-go::after{content:'→';font-size:18px}
+  .hc-facts{grid-column:1/-1;margin:10px 0 0;padding-top:10px;gap:5px}
+  .hc-facts li{font-size:13px}
+}
 .tv-hero{margin-top:18px;padding:24px 22px;border-radius:22px;background:radial-gradient(120% 140% at 100% 0%,rgba(124,196,168,.3),transparent 60%),linear-gradient(160deg,#10231d,#0f1513);border:1px solid rgba(124,196,168,.35);color:#f4efe2;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
 .tv-hero p{margin:4px 0 0;color:#b9c9c1;font-size:14px}
 .tv-stats{display:flex;gap:18px}
@@ -414,7 +427,7 @@ button{font:inherit;color:inherit}
 .ag-date{width:44px;flex-shrink:0;text-align:center;display:flex;flex-direction:column;line-height:1.15}
 .ag-date b{font-size:16px;letter-spacing:-.02em}
 .ag-date small{font-size:11px;color:var(--sub)}
-.ag-icon{font-size:20px}
+.ag-icon{font-size:20px;width:26px;text-align:center;flex-shrink:0}
 .ag-main{flex:1;min-width:0}
 .ag-title{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ag-sub{font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -3447,7 +3460,15 @@ function openPassword(){
 }
 
 // ---------- 앱(PWA) ----------
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+if ('serviceWorker' in navigator){
+  // 새 버전이 올라오면 앱이 알아서 받아서 한 번 새로고침
+  let reloaded = false;
+  const hadCtrl = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadCtrl && !reloaded){ reloaded = true; location.reload(); } });
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' })
+    .then(r => { r.update(); document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') r.update(); }); })
+    .catch(() => {}));
+}
 let installEvt = null;
 window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; S.canInstall = true; if (S.me) render(); });
 window.addEventListener('appinstalled', () => { S.canInstall = false; installEvt = null; if (S.me) render(); });
