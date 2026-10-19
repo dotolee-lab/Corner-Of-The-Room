@@ -74,6 +74,14 @@ button{font:inherit;color:inherit}
 @media (max-width:700px){.brand .b-full{display:none}.brand .b-short{display:inline}.catsw .cl{display:none}.catsw .cs{display:inline}.me{gap:8px}.me .link{font-size:12px}}
 @media (max-width:480px){.catsw .cs{display:none}.catsw button{padding:4px 9px;font-size:15px}.admin-tag{display:none}}
 .me{display:flex;gap:12px;align-items:center}
+.rfbtn{border:1px solid var(--line);background:var(--card);color:var(--sub);width:30px;height:30px;border-radius:50%;font-size:16px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
+.rfbtn:hover{color:var(--ink)}
+body.refreshing .rfbtn{animation:rfspin .8s linear infinite;color:var(--accent)}
+@keyframes rfspin{to{transform:rotate(360deg)}}
+.ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 8px);z-index:50;width:38px;height:38px;border-radius:50%;background:var(--card);border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--sub);opacity:0;transform:translate(-50%,-50px);transition:opacity .15s;pointer-events:none}
+.ptr.ready{color:var(--accent)}
+.ptr.spin{opacity:1!important;transform:translate(-50%,30px)!important;color:var(--accent)}
+.ptr.spin span{animation:rfspin .8s linear infinite}
 .tabs{max-width:1120px;margin:0 auto;padding:0 16px;display:flex;gap:4px}
 .tabs button{background:none;border:0;padding:8px 12px 10px;cursor:pointer;font-weight:700;color:var(--sub);border-bottom:2px solid transparent}
 .tabs button.on{color:var(--ink);border-color:var(--accent)}
@@ -812,6 +820,7 @@ async function init(){
 }
 
 async function loadAll(){
+  S.lastLoad = Date.now();
   const res = await Promise.all([
     sb.from('mv_rounds').select('*'),
     sb.from('mv_movies').select('*'),
@@ -895,12 +904,13 @@ function render(){
   <header class="top"><div class="top-in">
     <button class="brand" data-nav="home" title="홈으로">${COR_MARK}<span class="b-full">${esc(SITE_TITLE)}</span><span class="b-short">COR</span></button>
     ${home ? '<span class="sp"></span>' : `<span class="catsw">${CATS.map(c => `<button data-nav="${c.k}" class="${S.cat === c.k ? 'on' : ''}">${c.icon}<span class="cl"> ${c.label}</span><span class="cs"> ${c.short}</span></button>`).join('')}</span>`}
-    <div class="me"><button class="link" id="pwbtn">${esc(memName(S.me))}님${isAdmin() ? '<span class="admin-tag">관리자</span>' : ''}</button>${S.canInstall ? '<button class="link" id="instbtn">📲 앱 설치</button>' : ''}<button class="link" id="out">로그아웃</button></div>
+    <div class="me"><button class="rfbtn" id="rfbtn" title="새로고침" aria-label="새로고침">↻</button><button class="link" id="pwbtn">${esc(memName(S.me))}님${isAdmin() ? '<span class="admin-tag">관리자</span>' : ''}</button>${S.canInstall ? '<button class="link" id="instbtn">📲 앱 설치</button>' : ''}<button class="link" id="out">로그아웃</button></div>
   </div>
   ${home ? '' : `<nav class="tabs">${TABS[S.cat]().map(([k, l]) => `<button data-t="${k}" class="${S.tab === k ? 'on' : ''}">${l}</button>`).join('')}</nav>`}
   </header>
   <main class="wrap" id="main"></main>`;
   $('#out').onclick = () => logout();
+  $('#rfbtn').onclick = () => refreshAll();
   $('#pwbtn').onclick = openPassword;
   document.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => goCat(b.dataset.nav));
   document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { S.tab = b.dataset.t; if (S.tab === 'trips') S.tripId = null; if (S.tab === 'tours') S.tourId = null; render(); });
@@ -3561,6 +3571,45 @@ function openPassword(){
 }
 
 // ---------- 앱(PWA) ----------
+// ---------- 새로고침 (버튼 · 당겨서 새로고침 · 다시 열 때 자동) ----------
+let _refreshing = false;
+async function refreshAll(silent){
+  if (_refreshing || !S.token) return;
+  _refreshing = true; document.body.classList.add('refreshing');
+  try {
+    const y = scrollY;
+    await loadAll();
+    if (!$('#modal').classList.contains('open') && !document.querySelector('.cer')){ render(); scrollTo(0, y); }
+    navigator.serviceWorker?.getRegistration().then(r => r?.update()).catch(() => {});
+    if (!silent) toast('최신 내용으로 새로고침했어요');
+  } catch(e){ if (!silent) toast('새로고침 실패 · 인터넷 연결을 확인해 주세요'); }
+  finally { _refreshing = false; document.body.classList.remove('refreshing'); }
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && S.token && Date.now() - (S.lastLoad || 0) > 60000) refreshAll(true);
+});
+(() => {   // 홈 화면 앱(PWA)에서 위에서 아래로 당기면 새로고침
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  if (!standalone) return;
+  const ind = document.createElement('div'); ind.className = 'ptr'; ind.innerHTML = '<span>↻</span>'; document.body.appendChild(ind);
+  let y0 = null, dy = 0;
+  const blocked = () => $('#modal')?.classList.contains('open') || document.querySelector('.cer') || !S.token;
+  addEventListener('touchstart', e => { y0 = scrollY <= 0 && !blocked() && e.touches.length === 1 ? e.touches[0].clientY : null; dy = 0; }, { passive:true });
+  addEventListener('touchmove', e => {
+    if (y0 == null) return;
+    dy = Math.max(0, e.touches[0].clientY - y0);
+    if (scrollY > 0){ y0 = null; dy = 0; }
+    const d = Math.min(dy * 0.5, 90);
+    ind.style.transform = `translate(-50%, ${d - 50}px) rotate(${d * 4}deg)`; ind.style.opacity = Math.min(1, d / 50);
+    ind.classList.toggle('ready', d >= 60);
+  }, { passive:true });
+  addEventListener('touchend', () => {
+    if (y0 != null && dy * 0.5 >= 60){ ind.classList.add('spin'); refreshAll().finally(() => { ind.classList.remove('spin', 'ready'); ind.style.opacity = 0; ind.style.transform = ''; }); }
+    else { ind.style.opacity = 0; ind.style.transform = ''; ind.classList.remove('ready'); }
+    y0 = null; dy = 0;
+  }, { passive:true });
+})();
+
 if ('serviceWorker' in navigator){
   // 새 버전이 올라오면 앱이 알아서 받아서 한 번 새로고침
   let reloaded = false;
