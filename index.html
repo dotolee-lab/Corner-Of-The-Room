@@ -72,7 +72,7 @@ button{font:inherit;color:inherit}
 .catsw button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .catsw .cs{display:none}
 @media (max-width:700px){.brand .b-full{display:none}.brand .b-short{display:inline}.catsw .cl{display:none}.catsw .cs{display:inline}.me{gap:8px}.me .link{font-size:12px}}
-@media (max-width:480px){.catsw .cs{display:none}.catsw button{padding:4px 9px;font-size:15px}.admin-tag{display:none}}
+@media (max-width:480px){.catsw .cs{display:none}.catsw button{padding:4px 8px;font-size:15px}.admin-tag{display:none}#out{display:none}.catsw{gap:3px}}
 .me{display:flex;gap:12px;align-items:center}
 .rfbtn{border:1px solid var(--line);background:var(--card);color:var(--sub);width:30px;height:30px;border-radius:50%;font-size:16px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
 .rfbtn:hover{color:var(--ink)}
@@ -306,7 +306,8 @@ body.refreshing .rfbtn{animation:rfspin .8s linear infinite;color:var(--accent)}
 .home-sub{color:var(--sub);margin:4px 0 22px}
 .home-grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
 @media (min-width:700px){.home-grid{grid-template-columns:1fr 1fr}}
-@media (min-width:980px){.home-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.home{max-width:1080px}}
+@media (min-width:980px){.home{max-width:1080px}}
+@media (min-width:1240px){.home-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.home{max-width:1240px}}
 .home-card{text-align:left;border:1px solid var(--line);border-radius:22px;padding:24px 22px 20px;cursor:pointer;color:#f4efe2;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:6px;transition:transform .2s,border-color .2s;min-height:280px}
 .home-card:hover{transform:translateY(-3px)}
 .hc-movie{background:radial-gradient(120% 120% at 100% 0%,rgba(238,122,69,.35),transparent 55%),linear-gradient(160deg,#2a1a12,#15120f);border-color:rgba(238,122,69,.4)}
@@ -562,6 +563,60 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .b-row{display:flex;gap:6px;align-items:center;font-size:14px;padding:4px 0}
 .b-row b{margin-left:auto;color:var(--star);white-space:nowrap}
 .best-cer{background:radial-gradient(90% 70% at 50% 0%,#1b2a44,#0b0d12 70%)}
+.hc-game{background:radial-gradient(120% 120% at 100% 0%,rgba(155,140,255,.35),transparent 55%),linear-gradient(160deg,#1b1630,#110f17);border-color:rgba(155,140,255,.4)}
+.gm-hero{margin-top:18px;padding:24px 22px;border-radius:22px;background:radial-gradient(120% 140% at 100% 0%,rgba(155,140,255,.3),transparent 60%),linear-gradient(160deg,#1b1630,#110f17);border:1px solid rgba(155,140,255,.38);color:#f4efe2;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.gm-hero p{margin:4px 0 0;color:#c9c3e6;font-size:14px}
+.gm-hero .tv-stats b{color:#a99bff}.gm-hero .tv-stats small{color:#c9c3e6}
+.gm-cover{width:52px;height:52px;border-radius:12px;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;overflow:hidden}
+.gm-cover img{width:100%;height:100%;object-fit:cover}
+.gm-cover.sm{width:42px;height:42px;font-size:20px;border-radius:10px}
+.gm-meta{font-size:12px;color:var(--sub);font-weight:500}
+.gm-st{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--sub)}
+.gm-st.playing{background:color-mix(in srgb,#ee7a45 22%,var(--bg));color:#ee7a45}
+.gm-st.wish{background:color-mix(in srgb,#9b8cff 22%,var(--bg));color:#8f80f0}
+.gm-st.cleared{background:color-mix(in srgb,#7cc4a8 22%,var(--bg));color:#3f9b78}
+.gm-play{font-size:12px;color:var(--sub);font-weight:600}
+.gm-stsel{width:auto!important;font-size:13px!important;padding:5px 8px!important;border-radius:999px!important}
+.wish.gm .wish-place{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.gm-quote{margin:0;font-size:13px;color:var(--ink);background:var(--bg);border-radius:10px;padding:8px 10px}
+.gm-quote small{color:var(--sub)}
+.gm-need{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.gm-dhead{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.gm-dstat{font-size:13px;color:var(--sub);margin-top:2px}
+.gm-revs{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.gm-rev{background:var(--bg);border-radius:12px;padding:10px 12px}
+.gm-rev .gm-rs{font-size:12px;color:var(--sub);margin-left:8px}
+.gm-rev p{margin:4px 0 0;font-size:14px}
+.gm-slist{display:flex;flex-direction:column;gap:8px}
+.gm-sess{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:4px solid #9b8cff;border-radius:14px;padding:10px 12px}
+.gm-sess.future{border-left-color:#ee7a45;background:color-mix(in srgb,#ee7a45 6%,var(--card))}
+.gm-sd{width:44px;text-align:center;display:flex;flex-direction:column;line-height:1.15;flex-shrink:0}
+.gm-sd b{font-size:16px}.gm-sd small{font-size:11px;color:var(--sub)}
+.gm-sm{flex:1;min-width:0}
+.gm-st-t{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.gm-sx{font-size:12px;color:var(--sub)}
+.gm-memo{font-size:13px;margin-top:2px}
+.gm-month{font-weight:800;margin:16px 0 8px}
+.gm-boards{display:grid;gap:12px;margin-top:16px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:760px){.gm-boards{grid-template-columns:1fr 1fr}}
+.gm-boards h3{margin:0 0 10px;font-size:16px}
+.gm-board{display:flex;flex-direction:column;gap:6px}
+.gm-brow{display:flex;align-items:center;gap:10px;font-size:14px}
+.gm-bn{width:22px;height:22px;border-radius:50%;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
+.gm-brow:first-child .gm-bn{background:#e8b93e;color:#1a1206}
+.gm-tbar{display:grid;grid-template-columns:minmax(0,1fr) 1.2fr auto;gap:8px;align-items:center;font-size:13px;cursor:pointer;margin-bottom:6px}
+.gm-tbar span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.gm-tbar i{height:8px;border-radius:99px;background:var(--chip);overflow:hidden}
+.gm-tbar i b{display:block;height:100%;background:#9b8cff;border-radius:99px}
+.gm-tbar em{font-style:normal;font-size:12px;color:var(--sub);white-space:nowrap}
+.gm-card .fd-bar b{background:#9b8cff}
+.wish.gm .wish-bar span{background:#9b8cff}
+.wish.gm.top{border-color:#9b8cff}
+.wish.gm.top .wish-rank{color:#9b8cff}
+.wish.gm .vote.on{background:#9b8cff;border-color:#9b8cff;color:#fff}
+.form label[hidden]{display:none}
+.ag-row.ag-game{border-left-color:#9b8cff}
+.cal-ev.cev-game{background:color-mix(in srgb,#9b8cff 28%,var(--bg))}
 .hc-food{background:radial-gradient(120% 120% at 100% 0%,rgba(232,185,62,.35),transparent 55%),linear-gradient(160deg,#2a2210,#14120d);border-color:rgba(232,185,62,.4)}
 .fd-hero{margin-top:18px;padding:24px 22px;border-radius:22px;background:radial-gradient(120% 140% at 100% 0%,rgba(232,185,62,.3),transparent 60%),linear-gradient(160deg,#2a2210,#14120d);border:1px solid rgba(232,185,62,.38);color:#f4efe2;display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
 .fd-hero p{margin:4px 0 0;color:#d6cbb0;font-size:14px}
@@ -832,7 +887,7 @@ async function loadAll(){
   ]);
   const bad = res.find(x => x.error); if (bad) throw bad.error;
   [S.rounds, S.movies, S.ratings, S.legacy, S.ballots, S.awards, S.aposters] = res.map(x => x.data);
-  await Promise.all([loadTravel(), loadBest(), loadFood()]);
+  await Promise.all([loadTravel(), loadBest(), loadFood(), loadGame()]);
   const years = yearsList();
   if (!years.includes(S.year)) S.year = years[0] ?? new Date().getFullYear();
 }
@@ -876,6 +931,7 @@ const CATS = [
   { k:'movie',  icon:'🎬', label:'방구석 평론가', short:'평론가', first:'records' },
   { k:'travel', icon:'🧳', label:'방구석 여행가', short:'여행가', first:'trips' },
   { k:'food',   icon:'🍽', label:'방구석 미식가', short:'미식가', first:'rank' },
+  { k:'game',   icon:'🎮', label:'방구석 게이머', short:'게이머', first:'games' },
 ];
 const TABS = {
   movie: () => [
@@ -886,6 +942,7 @@ const TABS = {
   ],
   travel: () => [['trips', '🗺 여행 기록'], ['cal', '📅 캘린더'], ['pool', '🏦 모임통장'], ['wish', '📍 가고 싶은 곳']],
   food: () => [['rank', '🏆 맛집 랭킹'], ['tours', '🚶 맛집 투어'], ['fwish', '📍 가볼 곳']],
+  game: () => [['games', '🕹 게임 목록'], ['greviews', '📒 게임 후기'], ['gplays', '🎯 플레이 기록']],
 };
 function goCat(k){
   S.lastTab ??= {};
@@ -917,7 +974,8 @@ function render(){
   $('#main').onclick = onMainClick;
   if (home) return renderHome();
   ({ records:renderRecords, stats:renderStats, pick:renderPick, academy:renderAcademy, todo:renderTodo,
-     trips:renderTrips, wish:renderWish, pool:renderPool, cal:renderCal, best:renderBest, rank:renderRank, tours:renderTours, fwish:renderFwish })[S.tab]();
+     trips:renderTrips, wish:renderWish, pool:renderPool, cal:renderCal, best:renderBest, rank:renderRank, tours:renderTours, fwish:renderFwish,
+     games:renderGames, greviews:renderGReviews, gplays:renderGPlays })[S.tab]();
 }
 
 // 단체관람 메모에서 관람 날짜와 겹치는 앞부분(10월 18일 …)은 빼고 보여줌
@@ -932,6 +990,8 @@ function corEvents(all){
     ev.push({ date:m.event_date, cat:'movie', icon:'🎟', title:`단체관람 · ${m.title}`, sub:schedPlace(m) || (r?.theme ?? ''), act:'evMovie', id:m.id });
   });
   (S.tours || []).filter(t => t.tour_date).forEach(t => ev.push({ date:t.tour_date, cat:'food', icon:'🍽', title:t.title, sub:t.area || '맛집 투어', act:'evTour', id:t.id }));
+  (S.gSessions || []).filter(x => all ? true : x.play_date > today).forEach(x => { const g = gameOf(x.game_id);
+    ev.push({ date:x.play_date, cat:'game', icon:'🎮', title:`게임 날 · ${g ? g.title : '게임 미정'}`, sub:x.memo || ((x.member_ids || []).length === S.members.length ? '4명 모두' : ''), act:'evGame', id:x.id }); });
   const q = quarterNow(), qEnd = ymd(new Date(q.y, q.q * 3, 0));
   ev.push({ date:qEnd, cat:'movie', icon:'⏰', title:`${q.q}분기 마감`, sub:q.round?.theme ? `${q.round.theme} · 밀린 평가 정리` : '분기 테마작 평가 마감', act:'evQuarter' });
   if (q.q === 4) ev.push({ date:`${q.y}-12-31`, cat:'movie', icon:'🏆', title:`${q.y} 방구석 아카데미 · 올해의 작품`, sub:'연말 투표 공개', act:'evAcademy', soft:true });
@@ -1013,6 +1073,23 @@ function renderHome(){
           </ul>
           <span class="hc-go">들어가기 →</span>
         </button>
+        <button class="home-card hc-game" data-act="goCat" data-k="game">
+          <div class="hc-icon">🎮</div>
+          <div class="hc-title">방구석 게이머</div>
+          <div class="hc-desc">같이 하고 싶은 게임 투표, 플레이 기록과 후기</div>
+          <ul class="hc-facts">
+            ${S.gameErr ? '<li><span>준비 중</span><b>11_game.sql 실행 필요</b></li>' : (() => {
+              const playing = (S.games || []).filter(g => g.status === 'playing');
+              const top = (S.games || []).filter(g => g.status === 'wish').sort((a, b) => gVotes(b.id).length - gVotes(a.id).length || b.id - a.id)[0];
+              const ym = todayStr().slice(0, 7), month = (S.gSessions || []).filter(x => x.play_date.startsWith(ym) && x.play_date <= todayStr()).length;
+              const nx = (S.gSessions || []).filter(x => x.play_date > todayStr()).sort((a, b) => a.play_date.localeCompare(b.play_date))[0];
+              return `<li><span>하는 중</span><b class="${playing.length ? 'hot' : ''}">${playing.length ? esc(playing.map(g => g.title).join(', ')) : '없음'}</b></li>
+                ${top ? `<li><span>하고 싶은 게임 1위</span><b>${esc(top.title)}</b></li>` : ''}
+                <li><span>이번 달 같이 한 날</span><b>${month}번</b></li>
+                ${nx ? `<li><span>다음 게임 날</span><b class="hot">${+nx.play_date.slice(5, 7)}/${+nx.play_date.slice(8)} · D-${dDiff(nx.play_date, todayStr())}</b></li>` : ''}`; })()}
+          </ul>
+          <span class="hc-go">들어가기 →</span>
+        </button>
       </div>
       ${agendaHTML()}
     </div>`;
@@ -1081,6 +1158,15 @@ function onMainClick(e){
     case 'evCal': S.cat = 'travel'; S.tab = 'cal'; S.calMode = 'trips'; render(); break;
     case 'evTrip': S.cat = 'travel'; S.tab = 'trips'; S.tripId = id; S.tripTab = 'plan'; render(); scrollTo({ top:0 }); break;
     case 'evMovie': S.cat = 'movie'; gotoMovie(id); break;
+    case 'gPlat': S.gPlat = b.dataset.k; renderGames(); break;
+    case 'gGame': openGame(b.dataset.id ? id : null); break;
+    case 'gVote': call('gm_toggle_vote', { p_game_id:id }).then(loadGame).then(renderGames).catch(e => alert(errMsg(e))); break;
+    case 'gStart': call('gm_set_status', { p_id:id, p_status:'playing' }).then(loadGame).then(() => { renderGames(); toast('🔥 하는 중으로 옮겼어요'); }).catch(e => alert(errMsg(e))); break;
+    case 'gDetail': openGameDetail(id); break;
+    case 'gReview': openGameReview(id); break;
+    case 'gSort': S.gSort = b.dataset.k; renderGReviews(); break;
+    case 'gSess': openSession(b.dataset.id ? id : null, b.dataset.k === 'plan'); break;
+    case 'evGame': S.cat = 'game'; S.tab = 'gplays'; render(); scrollTo({ top:0 }); break;
     case 'evTour': S.cat = 'food'; S.tab = 'tours'; S.tourId = id; render(); scrollTo({ top:0 }); break;
     case 'evQuarter': { const n = quarterNow(); S.cat = 'movie'; S.tab = 'records'; S.year = n.y; S.kind = 'quarter'; render(); document.getElementById('cur-round')?.scrollIntoView({ behavior:'smooth' }); break; }
     case 'evAcademy': S.cat = 'movie'; S.tab = 'best'; render(); break;
@@ -2356,7 +2442,7 @@ function renderCal(){
     return `<div class="${cls.join(' ')}"><span class="cal-d">${d.getDate()}</span>
       ${ts.map(t => { const st = day === t.start_date || dow === 0, en = day === (t.end_date || t.start_date) || dow === 6;
         return `<button class="cal-bar ${st ? 'st' : ''} ${en ? 'en' : ''}" style="--c:${tripColor(t)}" data-act="tvOpenCal" data-id="${t.id}" title="${esc(t.title)}">${st ? esc(t.title) : '&nbsp;'}</button>`; }).join('')}
-      ${others.map(e => `<button class="cal-ev cev-${e.cat}" data-act="${e.act}" data-id="${e.id ?? ''}" title="${esc(e.title)}">${e.icon} ${esc(e.title.replace('단체관람 · ', ''))}</button>`).join('')}</div>`;
+      ${others.map(e => `<button class="cal-ev cev-${e.cat}" data-act="${e.act}" data-id="${e.id ?? ''}" title="${esc(e.title)}">${e.icon} ${esc(e.title.replace('단체관람 · ', '').replace('게임 날 · ', ''))}</button>`).join('')}</div>`;
   };
 
   // 이번 달 4명 다 되는 주말 / 연속 날짜
@@ -2385,7 +2471,7 @@ function renderCal(){
       <button class="icon" data-act="calMove" data-k="1" aria-label="다음 달">›</button>
       <button class="btn small" data-act="calToday">오늘</button>
     </div>
-    ${!avail ? '<div class="cal-legend"><span><i class="lg-t"></i>여행</span><span>🎟 단체관람</span><span>🍽 맛집 투어</span><span>⏰ 분기 마감</span></div>' : ''}
+    ${!avail ? '<div class="cal-legend"><span><i class="lg-t"></i>여행</span><span>🎟 단체관람</span><span>🍽 맛집 투어</span><span>🎮 게임 날</span><span>⏰ 분기 마감</span></div>' : ''}
     ${avail ? `<div class="cal-help">📌 <b>내가 되는 날</b>을 눌러 체크하세요. 체크 안 한 날은 안 되는 걸로 봐요. 4명 모두 되는 날은 초록색으로 보여요. <span class="dim">(이번 달 내 체크 ${myCount}일)</span></div>` : ''}
     <div class="cal ${avail ? 'avail' : ''}">
       ${['일', '월', '화', '수', '목', '금', '토'].map((w, i) => `<div class="cal-w ${i === 0 ? 'sun' : i === 6 ? 'sat' : ''}">${w}</div>`).join('')}
@@ -3284,6 +3370,308 @@ function openFWish(id){
   if (id) $('#del').onclick = async () => { if (!confirm('삭제할까요?')) return; try { await call('fd_delete_wish', { p_id:id }); await loadFood(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
 }
 
+// ================= 🎮 방구석 게이머 =================
+const GM_PLATFORMS = ['Steam·PC', 'PS5', '스위치', 'Xbox', '모바일', '보드게임', '기타'];
+const GM_PICON = { 'Steam·PC':'💻', PS5:'🎮', 스위치:'🕹', Xbox:'🟩', 모바일:'📱', 보드게임:'🎲', 기타:'👾' };
+const GM_STATUS = { playing:['🔥', '하는 중'], wish:['🕹', '하고 싶음'], cleared:['🏁', '클리어'], dropped:['💤', '접음'] };
+const GM_SCORES = [['fun', '재미'], ['coop', '협동'], ['addict', '중독성'], ['value', '가성비']];
+const GM_AGAIN = [[2, '😍', '또 하자'], [1, '🙂', '가끔'], [0, '🙅', '그만']];
+
+async function loadGame(){
+  const res = await Promise.all([
+    sb.from('gm_games').select('*'), sb.from('gm_votes').select('*'),
+    sb.from('gm_reviews').select('*'), sb.from('gm_sessions').select('*'),
+  ]);
+  const bad = res.find(x => x.error);
+  if (bad){ S.gameErr = bad.error.message; [S.games, S.gVotes, S.gReviews, S.gSessions] = [[], [], [], []]; return; }
+  S.gameErr = null;
+  [S.games, S.gVotes, S.gReviews, S.gSessions] = res.map(x => x.data);
+}
+const gameGuard = () => S.gameErr
+  ? `<div class="panel ac-locked">🎮<br>게이머 기능을 쓰려면 Supabase에서 <b>11_game.sql</b>을 먼저 실행해주세요<br><small>${esc(S.gameErr)}</small></div>` : '';
+const gVotes = id => (S.gVotes || []).filter(v => v.game_id === id);
+const gReviewsOf = id => (S.gReviews || []).filter(r => r.game_id === id);
+const gSessionsOf = id => (S.gSessions || []).filter(s => s.game_id === id);
+const gameOf = id => (S.games || []).find(g => g.id === id);
+const hm = m => !m ? '0분' : m < 60 ? `${m}분` : `${Math.floor(m / 60)}시간${m % 60 ? ` ${m % 60}분` : ''}`;
+function gameStats(g){
+  const rs = gReviewsOf(g.id), avg = k => { const v = rs.map(r => r[k]).filter(x => x != null).map(Number); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const scores = {}; GM_SCORES.forEach(([k]) => scores[k] = avg(k));
+  const again = [0, 0, 0]; rs.forEach(r => { if (r.again != null) again[r.again]++; });
+  const ss = gSessionsOf(g.id).filter(s => s.play_date <= todayStr());
+  return { rs, n:rs.length, overall:avg('overall'), scores, again, plays:ss.length, minutes:ss.reduce((a, s) => a + (s.minutes || 0), 0) };
+}
+const gCover = (g, cls = '') => g.cover_url
+  ? `<div class="gm-cover ${cls}"><img src="${esc(g.cover_url)}" alt="" loading="lazy" onerror="this.parentNode.innerHTML='${GM_PICON[g.platform] || '👾'}'"></div>`
+  : `<div class="gm-cover ${cls}">${GM_PICON[g.platform] || '👾'}</div>`;
+function gameHero(){
+  const past = (S.gSessions || []).filter(s => s.play_date <= todayStr());
+  const mins = past.reduce((a, s) => a + (s.minutes || 0), 0);
+  return `<div class="gm-hero">
+      <div><div class="ac-kicker" style="color:#a99bff">CORNER OF THE ROOM</div>
+        <div class="ac-title">방구석 게이머</div>
+        <p>넷이서 같이 할 게임 고르고, 하고 나면 깐깐하게 매기기</p></div>
+      <div class="tv-stats"><div><b>${(S.games || []).length}</b><small>게임</small></div><div><b>${past.length}</b><small>같이 한 날</small></div><div><b>${Math.round(mins / 60)}</b><small>총 시간</small></div></div>
+    </div>`;
+}
+
+// ----- 🕹 게임 목록 -----
+function renderGames(){
+  if (S.gameErr) return $('#main').innerHTML = gameGuard();
+  S.gPlat ??= '전체';
+  const plats = ['전체', ...GM_PLATFORMS.filter(p => S.games.some(g => g.platform === p)), ...new Set(S.games.map(g => g.platform).filter(p => p && !GM_PLATFORMS.includes(p)))];
+  if (!plats.includes(S.gPlat)) S.gPlat = '전체';
+  const list = S.games.filter(g => S.gPlat === '전체' || g.platform === S.gPlat);
+  const by = k => list.filter(g => g.status === k);
+  const wish = by('wish').sort((a, b) => gVotes(b.id).length - gVotes(a.id).length || b.id - a.id);
+  const maxV = Math.max(1, ...wish.map(g => gVotes(g.id).length));
+  const sec = (k, arr, body) => arr.length ? `<h2 class="sec">${GM_STATUS[k][0]} ${GM_STATUS[k][1]} <small class="dim">${arr.length}</small></h2>${body}` : '';
+  $('#main').innerHTML = `${gameHero()}
+    <div class="toolbar">
+      <div class="chips">${plats.map(p => `<button class="chip ${S.gPlat === p ? 'on' : ''}" data-act="gPlat" data-k="${esc(p)}">${p === '전체' ? '전체' : (GM_PICON[p] || '') + ' ' + p}</button>`).join('')}</div>
+      <button class="btn small primary" data-act="gGame">+ 게임 추가</button>
+    </div>
+    ${sec('playing', by('playing'), `<div class="fd-grid">${by('playing').map(g => gameCard(g)).join('')}</div>`)}
+    ${sec('wish', wish, `<p class="note" style="margin:-4px 0 8px">👍 투표 많은 순 · 다음에 같이 할 게임을 골라요</p><div class="wish-list">${wish.map((g, i) => { const vs = gVotes(g.id), mine = vs.some(v => v.member_id === S.me);
+      return `<div class="wish gm ${i === 0 && vs.length ? 'top' : ''}">
+        <div class="wish-rank">${i + 1}</div>${gCover(g, 'sm')}
+        <div class="wish-main">
+          <div class="wish-place">${esc(g.title)} ${gMeta(g)}</div>
+          ${g.note ? `<div class="wish-note">${esc(g.note)}</div>` : ''}
+          <div class="wish-bar"><span style="width:${vs.length / maxV * 100}%"></span></div>
+          <div class="wish-by">${vs.length ? vs.map(v => esc(memName(v.member_id))).join(', ') : '아직 투표 없음'} · ${esc(memName(g.created_by))}님이 올림</div>
+        </div>
+        <div class="wish-act">
+          <button class="vote ${mine ? 'on' : ''}" data-act="gVote" data-id="${g.id}">👍 ${vs.length}</button>
+          <button class="link" data-act="gStart" data-id="${g.id}">🔥 시작!</button>
+          <button class="link" data-act="gGame" data-id="${g.id}">수정</button>
+        </div></div>`; }).join('')}</div>`)}
+    ${sec('cleared', by('cleared'), `<div class="fd-grid">${by('cleared').map(g => gameCard(g)).join('')}</div>`)}
+    ${sec('dropped', by('dropped'), `<div class="fd-grid">${by('dropped').map(g => gameCard(g)).join('')}</div>`)}
+    ${list.length ? '' : '<div class="panel ac-locked">🎮<br>같이 하고 싶은 게임을 올려보세요<br><small>"+ 게임 추가"로 시작해요</small></div>'}`;
+  bindGameSelects();
+}
+const gMeta = g => `<span class="gm-meta">${[g.platform ? (GM_PICON[g.platform] || '') + ' ' + esc(g.platform) : '', g.price ? esc(g.price) : '', g.coop4 ? '👥 4인' : '👥 4인 ✕'].filter(Boolean).join(' · ')}</span>${g.link ? ` <a class="jw" href="${esc(g.link)}" target="_blank" rel="noopener">링크 ↗</a>` : ''}`;
+function gameCard(g){
+  const st = gameStats(g), mine = st.rs.find(r => r.member_id === S.me);
+  return `<article class="fd-card gm-card">
+    <div class="fd-top">
+      ${gCover(g)}
+      <div class="fd-head" data-act="gDetail" data-id="${g.id}">
+        <div class="fd-meta"><span class="gm-st ${g.status}">${GM_STATUS[g.status][0]} ${GM_STATUS[g.status][1]}</span></div>
+        <div class="fd-name">${esc(g.title)}</div>
+        <div>${gMeta(g)}</div>
+      </div>
+      <div class="fd-score">${st.overall != null ? `<strong>${st.overall.toFixed(1)}</strong><small>${st.n}명</small>` : '<small>후기 없음</small>'}</div>
+    </div>
+    ${st.plays ? `<div class="gm-play">🎯 같이 ${st.plays}번 · ⏱ ${hm(st.minutes)}</div>` : ''}
+    ${st.n ? gBars(st) : ''}
+    <div class="m-act">
+      <button class="btn small ${mine ? '' : 'primary'}" data-act="gReview" data-id="${g.id}">${mine ? '내 후기 수정' : '후기 쓰기'}</button>
+      <select class="gm-stsel" data-gs="${g.id}" title="상태 바꾸기">${Object.entries(GM_STATUS).map(([k, [e, l]]) => `<option value="${k}" ${g.status === k ? 'selected' : ''}>${e} ${l}</option>`).join('')}</select>
+      <button class="icon" data-act="gGame" data-id="${g.id}" title="게임 정보 수정">✎</button>
+    </div>
+  </article>`;
+}
+function gBars(st){
+  return `<div class="fd-bars">${GM_SCORES.map(([k, l]) => { const v = st.scores[k];
+    return `<div class="fd-bar"><span>${l}</span><i><b style="width:${v == null ? 0 : v / 5 * 100}%"></b></i><em>${v == null ? '–' : v.toFixed(1)}</em></div>`; }).join('')}</div>
+    ${st.n ? `<div class="fd-tags"><span class="fd-rv">${GM_AGAIN.map(([v, e]) => st.again[v] ? `${e} ${st.again[v]}` : '').filter(Boolean).join(' · ') || '또 할래? –'}</span></div>` : ''}`;
+}
+function bindGameSelects(){
+  document.querySelectorAll('[data-gs]').forEach(s => s.onchange = async () => {
+    try { await call('gm_set_status', { p_id:+s.dataset.gs, p_status:s.value }); await loadGame(); render(); toast(`${GM_STATUS[s.value][0]} ${GM_STATUS[s.value][1]}(으)로 바꿨어요`); } catch(e){ alert(errMsg(e)); }
+  });
+}
+
+function openGame(id){
+  const g = id ? gameOf(id) : { platform:'Steam·PC', coop4:true, status:'wish' };
+  openModal(`<h3>${id ? '게임 정보 수정' : '게임 추가'}</h3>
+    <div class="form">
+      <label class="full">게임 이름<input id="gg-t" value="${esc(g.title || '')}" placeholder="예) 리썰 컴퍼니"></label>
+      <label>플랫폼<select id="gg-p">${GM_PLATFORMS.map(p => `<option ${p === g.platform ? 'selected' : ''}>${p}</option>`).join('')}</select></label>
+      <label>상태<select id="gg-s">${Object.entries(GM_STATUS).map(([k, [e, l]]) => `<option value="${k}" ${g.status === k ? 'selected' : ''}>${e} ${l}</option>`).join('')}</select></label>
+      <label>가격<input id="gg-pr" value="${esc(g.price || '')}" placeholder="예) 무료, ₩11,000"></label>
+      <label>4명이 같이?<select id="gg-c"><option value="1" ${g.coop4 ? 'selected' : ''}>👥 4인 가능</option><option value="0" ${g.coop4 ? '' : 'selected'}>4인은 안 돼요</option></select></label>
+      <label class="full">메모<input id="gg-n" value="${esc(g.note || '')}" placeholder="예) 4인 협동 공포 · 세일 때 사기"></label>
+      <label class="full">링크 (선택)<input id="gg-l" value="${esc(g.link || '')}" placeholder="스팀 상점 페이지 등"></label>
+      <label class="full">표지 이미지 주소 (선택)<input id="gg-cv" value="${esc(g.cover_url || '')}" placeholder="이미지 우클릭 → 이미지 주소 복사"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    try {
+      await call('gm_save_game', { p_id:id ?? null, p_d:{ title:$('#gg-t').value, platform:$('#gg-p').value, status:$('#gg-s').value, price:$('#gg-pr').value,
+        coop4:$('#gg-c').value === '1', note:$('#gg-n').value, link:$('#gg-l').value, cover_url:$('#gg-cv').value } });
+      await loadGame(); closeModal(); render();
+    } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (id) $('#del').onclick = async () => { if (!confirm('게임과 후기가 모두 지워져요. 삭제할까요?')) return; try { await call('gm_delete_game', { p_id:id }); await loadGame(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+function openGameReview(gid){
+  const g = gameOf(gid);
+  const r = gReviewsOf(gid).find(x => x.member_id === S.me) || {};
+  const val = { overall:r.overall != null ? +r.overall : null };
+  GM_SCORES.forEach(([k]) => { val[k] = r[k] != null ? +r[k] : null; });
+  let again = r.again ?? null;
+  const row = (k, size) => [1, 2, 3, 4, 5].map(i => `<span class="pstar st ${size} ${val[k] >= i ? 'on' : val[k] >= i - .5 ? 'half' : ''}">★<button class="hl" data-k="${k}" data-v="${i - .5}"></button><button class="hr" data-k="${k}" data-v="${i}"></button></span>`).join('');
+  openModal(`<h3>${esc(g.title)} 후기</h3><p class="sub" style="margin:0">별 왼쪽 = 반 개, 오른쪽 = 한 개</p>
+    <div class="fd-ov"><span>총점</span><div class="picker" id="pk-overall">${row('overall', '')}</div><b id="v-overall"></b></div>
+    <div class="fd-sub">${GM_SCORES.map(([k, l]) => `<div class="fd-srow"><span>${l}</span><div class="picker sm" id="pk-${k}">${row(k, 'sm')}</div><b id="v-${k}"></b><button class="icon clr" data-clr="${k}" title="지우기">✕</button></div>`).join('')}</div>
+    <div class="flabel" style="margin-top:12px">또 할래?</div>
+    <div class="fd-rvsel">${GM_AGAIN.map(([v, e, l]) => `<button type="button" data-ag="${v}" class="${again === v ? 'on' : ''}">${e} ${l}</button>`).join('')}</div>
+    <div class="form"><label class="full">한줄평<textarea id="gr-c" rows="2" placeholder="예) 공포인데 왜 웃기지">${esc(r.comment || '')}</textarea></label></div>
+    <p class="err" id="merr"></p>
+    <div class="row">${r.overall != null ? '<button class="btn danger" id="del">후기 삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  const redraw = k => { $('#pk-' + k).innerHTML = row(k, k === 'overall' ? '' : 'sm'); $('#v-' + k).textContent = val[k] != null ? val[k].toFixed(1) : (k === 'overall' ? '필수' : '–'); };
+  ['overall', ...GM_SCORES.map(x => x[0])].forEach(redraw);
+  $('.sheet').onclick = e => {
+    const b = e.target.closest('button[data-v]'); if (b){ val[b.dataset.k] = +b.dataset.v; redraw(b.dataset.k); return; }
+    const c = e.target.closest('[data-clr]'); if (c){ val[c.dataset.clr] = null; redraw(c.dataset.clr); return; }
+    const a = e.target.closest('[data-ag]'); if (a){ again = again === +a.dataset.ag ? null : +a.dataset.ag; document.querySelectorAll('[data-ag]').forEach(x => x.classList.toggle('on', +x.dataset.ag === again)); }
+  };
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    if (val.overall == null){ $('#merr').textContent = '총점 별점을 골라주세요.'; return; }
+    try { await call('gm_save_review', { p_game_id:gid, p_d:{ ...val, again, comment:$('#gr-c').value } }); await loadGame(); closeModal(); render(); toast('후기를 저장했어요'); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (r.overall != null) $('#del').onclick = async () => { if (!confirm('내 후기를 삭제할까요?')) return; try { await call('gm_delete_review', { p_game_id:gid }); await loadGame(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+function openGameDetail(gid){
+  const g = gameOf(gid), st = gameStats(g);
+  const ss = gSessionsOf(gid).sort((a, b) => b.play_date.localeCompare(a.play_date));
+  openModal(`<div class="gm-dhead">${gCover(g)}<div><h3 style="margin:0">${esc(g.title)}</h3><div>${gMeta(g)}</div>
+      <div class="gm-dstat">${st.overall != null ? `★ ${st.overall.toFixed(1)} · ${st.n}명` : '후기 없음'}${st.plays ? ` · 같이 ${st.plays}번 · ${hm(st.minutes)}` : ''}</div></div></div>
+    ${g.note ? `<p class="note">${esc(g.note)}</p>` : ''}
+    ${st.n ? gBars(st) : ''}
+    <div class="gm-revs">${st.rs.sort((a, b) => b.overall - a.overall).map(r => `<div class="gm-rev"><b>${esc(memName(r.member_id))}</b><span class="gm-rs">★ ${Number(r.overall).toFixed(1)}${r.again != null ? ' · ' + GM_AGAIN.find(x => x[0] === r.again)[1] + ' ' + GM_AGAIN.find(x => x[0] === r.again)[2] : ''}</span>
+      ${r.comment ? `<p>${esc(r.comment)}</p>` : ''}</div>`).join('') || '<p class="note">아직 후기가 없어요</p>'}</div>
+    ${ss.length ? `<div class="flabel" style="margin-top:14px">🎯 플레이 기록</div><div class="gm-slist">${ss.map(s => sessionRow(s, true)).join('')}</div>` : ''}
+    <div class="row"><button class="btn" id="gd-rv">${st.rs.some(r => r.member_id === S.me) ? '내 후기 수정' : '후기 쓰기'}</button><span class="sp"></span><button class="btn primary" id="cancel">닫기</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#gd-rv').onclick = () => openGameReview(gid);
+}
+
+// ----- 📒 게임 후기 (랭킹) -----
+function renderGReviews(){
+  if (S.gameErr) return $('#main').innerHTML = gameGuard();
+  S.gSort ??= 'score';
+  const rated = S.games.map(g => ({ g, st:gameStats(g) })).filter(x => x.st.n);
+  const sorters = {
+    score:(a, b) => b.st.overall - a.st.overall || b.st.n - a.st.n,
+    again:(a, b) => (b.st.again[2] / b.st.n) - (a.st.again[2] / a.st.n) || b.st.overall - a.st.overall,
+    time:(a, b) => b.st.minutes - a.st.minutes || b.st.overall - a.st.overall,
+  };
+  rated.sort(sorters[S.gSort]);
+  const need = S.games.filter(g => g.status !== 'wish' && !gReviewsOf(g.id).some(r => r.member_id === S.me));
+  $('#main').innerHTML = `${gameHero()}
+    <div class="toolbar">
+      <div class="chips">${[['score', '⭐ 평점순'], ['again', '😍 또 하자 많은순'], ['time', '⏱ 오래 한 순']].map(([k, l]) => `<button class="chip ${S.gSort === k ? 'on' : ''}" data-act="gSort" data-k="${k}">${l}</button>`).join('')}</div>
+    </div>
+    ${need.length ? `<div class="panel gm-need"><b>✍️ 내가 아직 후기 안 쓴 게임</b><div class="chips">${need.map(g => `<button class="chip" data-act="gReview" data-id="${g.id}">${esc(g.title)} +</button>`).join('')}</div></div>` : ''}
+    ${rated.length ? `<div class="fd-grid">${rated.map((x, i) => { const g = x.g, st = x.st;
+      return `<article class="fd-card gm-card">
+        <div class="fd-top">
+          <span class="fd-rank ${i < 3 ? 'r' + (i + 1) : ''}">${i + 1}</span>
+          <div class="fd-head" data-act="gDetail" data-id="${g.id}">
+            <div class="fd-meta"><span class="gm-st ${g.status}">${GM_STATUS[g.status][0]} ${GM_STATUS[g.status][1]}</span> ${g.platform ? esc(g.platform) : ''}</div>
+            <div class="fd-name">${esc(g.title)}</div>
+          </div>
+          <div class="fd-score"><strong>${st.overall.toFixed(1)}</strong><small>${st.n}명</small></div>
+        </div>
+        ${gBars(st)}
+        <div class="fd-who">${st.rs.map(r => `<span><b>${esc(shortName(memName(r.member_id)))}</b> ★${Number(r.overall).toFixed(1)}</span>`).join('')}</div>
+        ${(() => { const c = st.rs.filter(r => r.comment).sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at)))[0]; return c ? `<p class="gm-quote">“${esc(c.comment)}” <small>— ${esc(shortName(memName(c.member_id)))}</small></p>` : ''; })()}
+        <div class="m-act">
+          <button class="btn small" data-act="gReview" data-id="${g.id}">${st.rs.some(r => r.member_id === S.me) ? '내 후기 수정' : '후기 쓰기'}</button>
+          <button class="btn small" data-act="gDetail" data-id="${g.id}">한줄평 ${st.rs.filter(r => r.comment).length}</button>
+        </div>
+      </article>`; }).join('')}</div>`
+    : '<div class="panel ac-locked">📒<br>아직 후기가 없어요<br><small>같이 해본 게임에 별점과 한줄평을 남겨보세요</small></div>'}`;
+}
+
+// ----- 🎯 플레이 기록 -----
+function sessionRow(s, compact){
+  const g = gameOf(s.game_id), future = s.play_date > todayStr();
+  return `<div class="gm-sess ${future ? 'future' : ''}">
+    <div class="gm-sd"><b>${+s.play_date.slice(5, 7)}.${+s.play_date.slice(8)}</b><small>${['일', '월', '화', '수', '목', '금', '토'][new Date(s.play_date + 'T00:00:00').getDay()]}</small></div>
+    <div class="gm-sm">
+      ${compact ? '' : `<div class="gm-st-t">${g ? esc(g.title) : '<span class="dim">게임 미정</span>'}${future ? ` <span class="ag-d hot">D-${dDiff(s.play_date, todayStr())}</span>` : ''}</div>`}
+      <div class="gm-sx">${s.minutes ? `⏱ ${hm(s.minutes)} · ` : ''}👥 ${(s.member_ids || []).length === S.members.length ? '4명 모두' : (s.member_ids || []).map(id => esc(shortName(memName(id)))).join('·') || '–'}
+        ${s.mvp_id ? ` · 🏅 MVP ${esc(shortName(memName(s.mvp_id)))}` : ''}${s.worst_id ? ` · 🐢 꼴찌 ${esc(shortName(memName(s.worst_id)))}` : ''}</div>
+      ${s.memo ? `<div class="gm-memo">${esc(s.memo)}</div>` : ''}
+    </div>
+    ${compact ? '' : `<button class="icon" data-act="gSess" data-id="${s.id}" title="수정">✎</button>`}
+  </div>`;
+}
+function renderGPlays(){
+  if (S.gameErr) return $('#main').innerHTML = gameGuard();
+  const today = todayStr();
+  const all = [...S.gSessions].sort((a, b) => b.play_date.localeCompare(a.play_date) || b.id - a.id);
+  const next = all.filter(s => s.play_date > today).reverse();
+  const past = all.filter(s => s.play_date <= today);
+  const board = S.members.map(m => ({ m, mvp:past.filter(s => s.mvp_id === m.id).length, worst:past.filter(s => s.worst_id === m.id).length,
+    plays:past.filter(s => (s.member_ids || []).includes(m.id)).length })).sort((a, b) => b.mvp - a.mvp || a.worst - b.worst);
+  const byGame = S.games.map(g => ({ g, st:gameStats(g) })).filter(x => x.st.plays).sort((a, b) => b.st.minutes - a.st.minutes || b.st.plays - a.st.plays);
+  const maxMin = Math.max(1, ...byGame.map(x => x.st.minutes));
+  const months = {}; past.forEach(s => (months[s.play_date.slice(0, 7)] ??= []).push(s));
+  $('#main').innerHTML = `${gameHero()}
+    <div class="toolbar" style="justify-content:flex-end">
+      <button class="btn small" data-act="gSess" data-k="plan">📅 게임 날 잡기</button>
+      <button class="btn small primary" data-act="gSess">+ 플레이 기록</button></div>
+    ${next.length ? `<h2 class="sec">📅 다음 게임 날</h2><div class="gm-slist">${next.map(s => sessionRow(s)).join('')}</div>` : ''}
+    <div class="gm-boards">
+      <div class="panel"><h3>🏅 MVP 순위</h3>
+        ${past.some(s => s.mvp_id || s.worst_id) ? `<div class="gm-board">${board.map((x, i) => `<div class="gm-brow"><span class="gm-bn">${i + 1}</span><b>${esc(x.m.name)}</b><span class="sp"></span>
+          <span title="MVP">🏅 ${x.mvp}</span><span title="꼴찌" class="dim">🐢 ${x.worst}</span><span class="dim" title="참여">🎮 ${x.plays}</span></div>`).join('')}</div>`
+          : '<p class="note">플레이 기록에 MVP·꼴찌를 뽑으면 여기 쌓여요</p>'}</div>
+      <div class="panel"><h3>⏱ 게임별 플레이 시간</h3>
+        ${byGame.length ? byGame.map(x => `<div class="gm-tbar" data-act="gDetail" data-id="${x.g.id}"><span>${esc(x.g.title)}</span><i><b style="width:${x.st.minutes / maxMin * 100}%"></b></i><em>${hm(x.st.minutes)} · ${x.st.plays}번</em></div>`).join('')
+          : '<p class="note">아직 기록이 없어요</p>'}</div>
+    </div>
+    <h2 class="sec">🎯 같이 한 날</h2>
+    ${past.length ? Object.entries(months).map(([ym, ss]) => `<div class="gm-month">${+ym.slice(0, 4)}년 ${+ym.slice(5)}월 <small class="dim">${ss.length}번 · ${hm(ss.reduce((a, s) => a + (s.minutes || 0), 0))}</small></div>
+      <div class="gm-slist">${ss.map(s => sessionRow(s)).join('')}</div>`).join('')
+      : '<div class="panel ac-locked">🎯<br>같이 게임한 날을 기록해보세요</div>'}`;
+}
+function openSession(id, plan){
+  const s = id ? S.gSessions.find(x => x.id === id) : { play_date:plan ? '' : todayStr(), member_ids:S.members.map(m => m.id) };
+  const games = [...S.games].sort((a, b) => (a.status === 'playing' ? 0 : a.status === 'wish' ? 1 : 2) - (b.status === 'playing' ? 0 : b.status === 'wish' ? 1 : 2) || a.title.localeCompare(b.title));
+  const sel = new Set(s.member_ids || []);
+  const memOpts = cur => `<option value="">없음</option>${S.members.map(m => `<option value="${m.id}" ${cur === m.id ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}`;
+  openModal(`<h3>${id ? '플레이 기록 수정' : plan ? '📅 게임 날 잡기' : '🎯 플레이 기록'}</h3>
+    ${plan ? '<p class="sub" style="margin:0">미래 날짜로 저장하면 홈 일정과 COR 달력에 떠요</p>' : ''}
+    <div class="form">
+      <label class="full">게임<select id="gs-g"><option value="">미정</option>${games.map(g => `<option value="${g.id}" ${s.game_id === g.id ? 'selected' : ''}>${GM_STATUS[g.status][0]} ${esc(g.title)}</option>`).join('')}</select></label>
+      <label ${plan ? 'class="full"' : ''}>날짜<input id="gs-d" type="date" value="${s.play_date || ''}"></label>
+      <label ${plan ? 'hidden' : ''}>플레이 시간 (시간)<input id="gs-m" type="number" min="0" step="0.5" value="${s.minutes ? s.minutes / 60 : ''}" placeholder="예) 2.5"></label>
+      <div class="full"><div class="flabel">같이 한 사람</div><div class="fd-rvsel" id="gs-w">${S.members.map(m => `<button type="button" data-mid="${m.id}" class="${sel.has(m.id) ? 'on' : ''}">${esc(m.name)}</button>`).join('')}</div></div>
+      <label ${plan ? 'hidden' : ''}>🏅 MVP<select id="gs-mvp">${memOpts(s.mvp_id)}</select></label>
+      <label ${plan ? 'hidden' : ''}>🐢 꼴찌<select id="gs-w2">${memOpts(s.worst_id)}</select></label>
+      <label class="full">한마디<input id="gs-n" value="${esc(s.memo || '')}" placeholder="예) 할당량 3번 연속 성공 · 토요일 밤 9시 디코"></label>
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span>
+      <button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#gs-w').onclick = e => { const b = e.target.closest('[data-mid]'); if (!b) return; const m = +b.dataset.mid; sel.has(m) ? sel.delete(m) : sel.add(m); b.classList.toggle('on', sel.has(m)); };
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    const h = parseFloat($('#gs-m').value);
+    try {
+      await call('gm_save_session', { p_id:id ?? null, p_d:{ game_id:$('#gs-g').value, play_date:$('#gs-d').value, minutes:isNaN(h) ? '' : Math.round(h * 60),
+        member_ids:[...sel].sort((a, b) => a - b), mvp_id:$('#gs-mvp').value, worst_id:$('#gs-w2').value, memo:$('#gs-n').value } });
+      await loadGame(); closeModal(); render(); toast('저장했어요');
+    } catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+  if (id) $('#del').onclick = async () => { if (!confirm('이 기록을 삭제할까요?')) return; try { await call('gm_delete_session', { p_id:id }); await loadGame(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
 // ---------- 통계 ----------
 function renderStats(){
   const rated = S.ratings.filter(x => x.stars != null);
@@ -3558,7 +3946,8 @@ function openPassword(){
       <label class="full">새 비밀번호 확인<input id="pn2" type="password" autocomplete="new-password"></label>
     </div>
     <p class="err" id="merr"></p>
-    <div class="row"><span class="sp"></span><button class="btn" id="cancel">취소</button><button class="btn primary" id="save">변경</button></div>`);
+    <div class="row"><button class="btn" id="pout">로그아웃</button><span class="sp"></span><button class="btn" id="cancel">취소</button><button class="btn primary" id="save">변경</button></div>`);
+  $('#pout').onclick = () => logout();
   $('#cancel').onclick = closeModal;
   $('#save').onclick = async () => {
     if ($('#pn').value !== $('#pn2').value){ $('#merr').textContent = '새 비밀번호가 서로 달라요.'; return; }
