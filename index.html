@@ -615,6 +615,72 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .wish.gm.top .wish-rank{color:#9b8cff}
 .wish.gm .vote.on{background:#9b8cff;border-color:#9b8cff;color:#fff}
 .form label[hidden]{display:none}
+.trip-st.rt-tag{top:42px;left:12px;background:#9b8cff;color:#fff}
+.rt-mode{flex-direction:row!important;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.rt-mode span{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--ink);font-weight:700}
+.rt-mode input{width:auto!important}
+.rt-mode small{color:var(--sub);font-weight:500}
+.rt-tabs{margin:14px 0 4px}
+.rt-days{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.rt-day{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:var(--ink);font:inherit}
+.rt-day small{font-size:11px;font-weight:800;color:var(--sub);letter-spacing:.05em}
+.rt-day b{font-size:20px;letter-spacing:-.02em}
+.rt-day em{font-style:normal;font-size:11px;color:var(--sub);text-align:center;line-height:1.3}
+.rt-day.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.rt-day.done b{color:var(--accent)}
+.rt-band{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+.rt-cands{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+.rt-cands span{background:var(--chip);border-radius:10px;padding:5px 10px;font-size:13px;font-weight:700;display:flex;flex-direction:column;line-height:1.25}
+.rt-cands small{font-size:10px;color:var(--sub);font-weight:500}
+.rt-go{display:block;width:100%;font-size:16px;padding:13px}
+.rt-result{text-align:center;padding:22px 16px}
+.rt-r-kicker{font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.12em}
+.rt-r-city{font-size:40px;font-weight:800;letter-spacing:-.03em;margin:4px 0}
+.rt-manage{margin-top:14px}
+.rt-manage summary{cursor:pointer;font-weight:700}
+.rt-cgroup{margin-top:12px}.rt-cgroup b{font-size:13px;color:var(--sub)}
+.rt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.rt-chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 11px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.rt-chips button.off{opacity:.45;text-decoration:line-through}
+.rt-manage .btn{margin-top:12px}
+.rt-ov .cer-in{max-width:520px}
+.rt-slot{font-size:64px;font-weight:900;letter-spacing:-.03em;margin:22px 0 10px;min-height:84px;color:#f4efe2;transition:transform .3s}
+.rt-slot.hit{color:#f2b33d;transform:scale(1.15);animation:cerPick .5s ease}
+.rt-hand{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.rt-card{background:linear-gradient(160deg,color-mix(in srgb,#9b8cff 22%,var(--card)),var(--card));border:1px solid color-mix(in srgb,#9b8cff 50%,var(--line));border-radius:16px;padding:14px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.rt-card b{font-size:16px}.rt-card p{margin:0;font-size:12px;color:var(--sub);flex:1}
+.rt-card .btn{margin-top:6px}
+.rt-card.used{opacity:.5;filter:grayscale(.6)}
+.rt-card small{font-size:11px;color:var(--sub)}
+.rt-ce{font-size:30px;line-height:1}.rt-ce.big{font-size:52px}
+.rt-board{display:flex;flex-direction:column;gap:8px}
+.rt-brow{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.rt-left{font-size:20px;letter-spacing:2px;color:#9b8cff;display:flex;align-items:center;gap:6px}
+.rt-left small{font-size:12px;letter-spacing:0;color:var(--sub)}
+.rt-usedlist{flex-basis:100%;display:flex;flex-direction:column;gap:2px}
+.rt-usedlist span{font-size:13px}.rt-usedlist small{color:var(--sub);font-size:11px}
+.rt-deal{text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px;padding:24px 16px}
+.rt-types{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.rt-type{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:12px;padding:8px 10px}
+.rt-type div{flex:1;display:flex;flex-direction:column}.rt-type small{color:var(--sub);font-size:12px}
+.rt-type.off{opacity:.45}
+.rt-steps{display:flex;align-items:center;gap:6px;margin:14px 0 10px;font-size:13px;color:var(--sub);flex-wrap:wrap}
+.rt-steps span.on{color:var(--accent);font-weight:800}
+.rt-steps i{font-style:normal;opacity:.5}
+.rt-mypool{display:flex;flex-direction:column;gap:4px;margin-top:10px}
+.rt-mypool div{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:10px;padding:6px 10px;font-size:14px}
+.rt-poolcnt{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:13px;color:var(--sub);margin:12px 0}
+.rt-poolcnt b{margin-left:auto;color:var(--ink)}
+.rt-secret{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.rt-mcard{background:#1b1630;color:#f4efe2;border:1px dashed #9b8cff;border-radius:16px;padding:22px 16px;font-size:17px;font-weight:700;cursor:pointer;user-select:none}
+.rt-mlist{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.rt-mres p{margin:6px 0;font-size:15px;font-weight:600}
+.rt-mres.ok{border-color:#3f9b78}.rt-mres.no{border-color:var(--danger)}
+.rt-mh{display:flex;align-items:center;gap:6px}
+.rt-badge{margin-left:auto;font-size:12px;font-weight:800;padding:2px 8px;border-radius:999px}
+.rt-badge.ok{background:color-mix(in srgb,#7cc4a8 25%,var(--bg));color:#3f9b78}
+.rt-badge.no{background:color-mix(in srgb,var(--danger) 18%,var(--bg));color:var(--danger)}
+.rt-vote{display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap}
 .ag-row.ag-game{border-left-color:#9b8cff}
 .cal-ev.cev-game{background:color-mix(in srgb,#9b8cff 28%,var(--bg))}
 .hc-food{background:radial-gradient(120% 120% at 100% 0%,rgba(232,185,62,.35),transparent 55%),linear-gradient(160deg,#2a2210,#14120d);border-color:rgba(232,185,62,.4)}
@@ -917,7 +983,7 @@ function renderLogin(sel){
 // 계정이 바뀔 때 이전 사람의 화면 기록(작성 중인 아카데미 투표 등)을 모두 비움
 function resetUserState(){
   S.adraft = {}; S.bdraft = {}; S.bBallots = []; S.bVotes = []; S.pickResult = null; S.tab = 'records'; S.cat = 'home'; S.lastTab = {}; S.tripId = null; S.tourId = null;
-  S.ballots = []; S.awards = [];
+  S.ballots = []; S.awards = []; S.rt = null; S.rtPeek = false;
 }
 
 async function logout(silent){
@@ -1098,6 +1164,7 @@ function renderHome(){
 function onMainClick(e){
   const b = e.target.closest('[data-act]'); if (!b) return;
   const id = +b.dataset.id;
+  if (/^rt[A-Z]/.test(b.dataset.act)) return rtAct(b.dataset.act, b, id);
   switch (b.dataset.act){
     case 'year': S.year = id; S.kind = 'quarter'; renderRecords(); break;
     case 'pmode': S.pickMode = b.dataset.k; S.pickResult = null; renderPick(); break;
@@ -2212,7 +2279,7 @@ async function loadTravel(){
   S.poolErr = px.error ? px.error.message : null; S.poolTx = px.error ? [] : px.data;
   const bad = res.find(x => x.error);
   if (bad){ S.travelErr = bad.error.message; [S.trips, S.plans, S.expenses, S.reviews, S.wishes, S.wishVotes] = [[], [], [], [], [], []]; return; }
-  S.travelErr = null;
+  S.travelErr = null; S.rt = null;
   [S.trips, S.plans, S.expenses, S.reviews, S.wishes, S.wishVotes] = res.map(x => x.data);
 }
 const travelGuard = () => S.travelErr
@@ -2249,7 +2316,7 @@ function tripCard(t){
   const n = nights(t);
   return `<button class="trip-card" data-act="tvOpen" data-id="${t.id}">
     <div class="trip-cover" style="${coverStyle(t)}">
-      <span class="trip-st ${st.k}">${st.label}</span>
+      <span class="trip-st ${st.k}">${st.label}</span>${t.is_random ? '<span class="trip-st rt-tag">🎲 랜덤</span>' : ''}
       <div class="trip-cv-txt"><b>${esc(t.title)}</b><span>${esc(t.place || '')}</span></div>
     </div>
     <div class="trip-body">
@@ -2263,12 +2330,13 @@ function tripCard(t){
 function renderTrip(){
   const t = S.trips.find(x => x.id === S.tripId);
   S.tripTab ??= 'plan';
+  if (S.tripTab === 'random' && !t.is_random) S.tripTab = 'plan';
   const st = tripStatus(t), n = nights(t);
-  const body = { plan:planHTML, money:moneyHTML, review:reviewHTML }[S.tripTab](t);
+  const body = { plan:planHTML, money:moneyHTML, review:reviewHTML, random:randomHTML }[S.tripTab](t);
   $('#main').innerHTML = `
     <button class="link" data-act="tvBack" style="margin-top:16px">← 여행 기록</button>
     <div class="trip-head" style="${coverStyle(t)}">
-      <span class="trip-st ${st.k}">${st.label}</span>
+      <span class="trip-st ${st.k}">${st.label}</span>${t.is_random ? '<span class="trip-st rt-tag">🎲 랜덤 여행</span>' : ''}
       <button class="icon trip-edit" data-act="tvEditTrip" data-id="${t.id}" title="여행 정보 수정">✎</button>
       <div class="trip-head-txt">
         <div class="trip-place">${esc(t.place || '')}</div>
@@ -2282,6 +2350,7 @@ function renderTrip(){
       <button class="${S.tripTab === 'plan' ? 'on' : ''}" data-act="tvTab" data-k="plan">🗓 일정</button>
       <button class="${S.tripTab === 'money' ? 'on' : ''}" data-act="tvTab" data-k="money">💸 정산</button>
       <button class="${S.tripTab === 'review' ? 'on' : ''}" data-act="tvTab" data-k="review">⭐ 후기</button>
+      ${t.is_random ? `<button class="${S.tripTab === 'random' ? 'on' : ''}" data-act="tvTab" data-k="random">🎲 랜덤</button>` : ''}
     </div></div>
     ${body}`;
 }
@@ -2644,6 +2713,7 @@ function openTrip(id, preset = {}){
       <label>출발<input id="ft3" type="date" value="${t.start_date || ''}"></label>
       <label>도착<input id="ft4" type="date" value="${t.end_date || ''}"></label>
       <div class="full"><div class="flabel">함께 가는 사람</div>${memChecks(t.member_ids || [], 'tm')}</div>
+      <label class="full rt-mode"><span><input type="checkbox" id="ft-rnd" ${t.is_random ? 'checked' : ''}> 🎲 랜덤 여행 모드</span><small>목적지 룰렛 · 찬스 카드 · 시크릿 미션 탭이 생겨요</small></label>
       <label class="full">대표 사진 주소 (선택)<input id="ft5" value="${esc(t.cover_url || '')}" placeholder="https://… 이미지 링크, 비우면 색으로 표시"></label>
       <label class="full">메모 (선택)<textarea id="ft6" rows="2">${esc(t.memo || '')}</textarea></label>
     </div>
@@ -2655,6 +2725,8 @@ function openTrip(id, preset = {}){
     try {
       const nid = await tvCall('tv_save_trip', { p_id:id ?? null, p_d:{ title:$('#ft1').value, place:$('#ft2').value,
         start_date:$('#ft3').value, end_date:$('#ft4').value || $('#ft3').value, member_ids:checked('tm'), cover_url:$('#ft5').value, memo:$('#ft6').value } });
+      const rnd = $('#ft-rnd').checked;
+      if (rnd !== !!t.is_random){ try { await tvCall('rt_set_random', { p_trip:nid, p_on:rnd }); if (rnd) S.tripTab = 'random'; } catch(e){ alert('랜덤 여행 모드를 켜려면 Supabase에서 12_random_trip.sql을 먼저 실행해주세요.'); } }
       S.tripId = nid; S.tripTab = S.tripTab || 'plan'; tvDone();
     } catch(e){ $('#merr').textContent = errMsg(e); }
   };
@@ -3670,6 +3742,258 @@ function openSession(id, plan){
     } catch(e){ $('#merr').textContent = errMsg(e); }
   };
   if (id) $('#del').onclick = async () => { if (!confirm('이 기록을 삭제할까요?')) return; try { await call('gm_delete_session', { p_id:id }); await loadGame(); closeModal(); render(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+// ================= 🎲 랜덤 여행 모드 =================
+const RT_START = { name:'신림역', lat:37.4842, lng:126.9297 };
+const RT_SEOUL = { lat:37.5665, lng:126.978 };
+// 룰렛 Day 2·3 후보를 찾을 때 쓰는 시·군 좌표 (대략)
+const KR_PLACES = {
+  강화:[37.747,126.488], 양평:[37.491,127.488], 이천:[37.272,127.435], 여주:[37.298,127.637], 횡성:[37.492,127.985], 인제:[38.070,128.170],
+  철원:[38.147,127.313], 화천:[38.106,127.708], 양구:[38.110,127.990], 고성:[38.381,128.468], 동해:[37.525,129.114], 삼척:[37.450,129.165],
+  영월:[37.184,128.462], 태백:[37.164,128.986], 제천:[37.133,128.191], 괴산:[36.815,127.787], 청주:[36.642,127.489], 보은:[36.489,127.729],
+  아산:[36.790,127.002], 서산:[36.785,126.450], 당진:[36.890,126.628], 부여:[36.276,126.910], 서천:[36.080,126.692], 논산:[36.187,127.099],
+  예산:[36.683,126.845], 홍성:[36.601,126.661], 청양:[36.459,126.802], 금산:[36.109,127.488], 옥천:[36.306,127.571], 영동:[36.175,127.783],
+  대구:[35.871,128.601], 울산:[35.538,129.311], 부산:[35.180,129.075], 문경:[36.586,128.187], 상주:[36.411,128.159], 봉화:[36.893,128.733],
+  청송:[36.436,129.057], 의성:[36.353,128.697], 예천:[36.658,128.452], 영양:[36.667,129.112], 구미:[36.120,128.344], 김천:[36.140,128.114],
+  영천:[35.973,128.939], 청도:[35.647,128.734], 밀양:[35.504,128.746], 창원:[35.228,128.682], 진주:[35.180,128.108], 거제:[34.880,128.621],
+  남해:[34.838,127.892], 사천:[35.004,128.064], 산청:[35.416,127.874], 함양:[35.520,127.725], 거창:[35.687,127.910], 합천:[35.567,128.166],
+  광주:[35.160,126.852], 목포:[34.812,126.392], 보성:[34.771,127.080], 광양:[34.940,127.696], 구례:[35.202,127.463], 곡성:[35.282,127.292],
+  고흥:[34.611,127.285], 해남:[34.573,126.599], 강진:[34.642,126.767], 완도:[34.311,126.755], 무주:[36.007,127.661], 진안:[35.792,127.425],
+  부안:[35.732,126.733], 고창:[35.436,126.702], 정읍:[35.570,126.856], 익산:[35.948,126.958], 임실:[35.618,127.289], 장수:[35.647,127.521],
+  춘천:[37.881,127.730], 가평:[37.831,127.510], 홍천:[37.697,127.889], 원주:[37.342,127.920], 충주:[36.991,127.926], 단양:[36.985,128.366],
+  천안:[36.815,127.114], 공주:[36.447,127.119], 보령:[36.333,126.613], 태안:[36.746,126.298], 강릉:[37.752,128.876], 속초:[38.207,128.592],
+  양양:[38.075,128.619], 평창:[37.371,128.390], 정선:[37.381,128.661], 안동:[36.568,128.730], 영주:[36.806,128.624], 전주:[35.824,127.148],
+  군산:[35.968,126.737], 대전:[36.351,127.385], 경주:[35.856,129.225], 포항:[36.019,129.343], 영덕:[36.415,129.365], 울진:[36.993,129.400],
+  여수:[34.760,127.662], 순천:[34.951,127.487], 담양:[35.321,126.988], 남원:[35.416,127.390], 통영:[34.854,128.433], 하동:[35.067,127.751],
+};
+const geoKm = (a, b) => { const R = 6371, r = x => x * Math.PI / 180, dLa = r(b.lat - a.lat), dLo = r(b.lng - a.lng);
+  return 2 * R * Math.asin(Math.sqrt(Math.sin(dLa / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLo / 2) ** 2)); };
+const driveMin = km => Math.round((km * 0.8 + 15) / 10) * 10;   // 직선거리로 어림잡은 차 이동 시간
+const fmtMin = m => m < 60 ? `${m}분` : `${Math.floor(m / 60)}시간${m % 60 ? ` ${m % 60}분` : ''}`;
+const RT_BANDS = [2, 3, 4];
+
+async function loadRandom(tid){
+  const pub = await Promise.all([
+    sb.from('rt_cities').select('*').order('id'), sb.from('rt_spins').select('*').eq('trip_id', tid),
+    sb.from('rt_card_types').select('*').order('sort'), sb.from('rt_cards').select('*').eq('trip_id', tid),
+    sb.from('rt_missions').select('*').eq('trip_id', tid), sb.from('rt_mission_votes').select('*'),
+    sb.from('rt_state').select('*').eq('trip_id', tid),
+    sb.rpc('rt_card_counts', { p_trip:tid }), sb.rpc('rt_pool_counts', { p_trip:tid }), sb.rpc('rt_mission_count', { p_trip:tid }),
+  ]);
+  const bad = pub.find(x => x.error);
+  if (bad){ S.rt = { err:bad.error.message }; return; }
+  const [cities, spins, types, used, missions, votes, state, counts, pool, mcount] = pub.map(x => x.data);
+  const priv = await Promise.all([call('rt_my_cards', { p_trip:tid }), call('rt_my_pool', { p_trip:tid }), call('rt_my_mission', { p_trip:tid })]);
+  S.rt = { tid, cities, spins, types, used, missions, votes, revealed:!!state[0]?.missions_revealed, counts, pool, mcount,
+    myCards:priv[0] || [], myPool:priv[1] || [], myMission:(priv[2] || [])[0] || null };
+}
+function randomHTML(t){
+  if (!S.rt || S.rt.tid !== t.id){ loadRandom(t.id).then(() => { if (S.tripTab === 'random' && S.tripId === t.id) renderTrips(); }); return '<div class="panel ac-locked">🎲<br>불러오는 중…</div>'; }
+  if (S.rt.err) return `<div class="panel ac-locked">🎲<br>랜덤 여행 기능을 쓰려면 Supabase에서 <b>12_random_trip.sql</b>을 먼저 실행해주세요<br><small>${esc(S.rt.err)}</small></div>`;
+  S.rtTab ??= 'roulette';
+  const tabs = [['roulette', '🗺 목적지 룰렛'], ['cards', '🃏 찬스 카드'], ['mission', '🕵️ 시크릿 미션']];
+  const body = { roulette:rtRoulette, cards:rtCards, mission:rtMission }[S.rtTab](t);
+  return `<div class="chips rt-tabs">${tabs.map(([k, l]) => `<button class="chip ${S.rtTab === k ? 'on' : ''}" data-act="rtTab" data-k="${k}">${l}</button>`).join('')}</div>${body}`;
+}
+
+// ----- 🗺 목적지 룰렛 -----
+function rtCandidates(t, day){
+  const R = S.rt, spin = d => R.spins.find(s => s.day === d);
+  const off = new Set(R.cities.filter(c => !c.active).map(c => c.name));
+  const taken = new Set(R.spins.map(s => s.city));
+  if (day === 1){
+    const band = S.rtBand ?? 0;
+    return { list:R.cities.filter(c => c.active && (!band || c.band === band)).map(c => ({ name:c.name, lat:c.lat, lng:c.lng, note:`${c.band}시간권` })) };
+  }
+  const prev = spin(day - 1);
+  if (!prev) return { need:`먼저 Day ${day - 1} 목적지를 정해주세요` };
+  if (prev.lat == null) return { need:`${prev.city}의 위치 정보가 없어서 주변 도시를 찾을 수 없어요` };
+  const pool = new Map();
+  Object.entries(KR_PLACES).forEach(([n, [lat, lng]]) => pool.set(n, { name:n, lat, lng }));
+  R.cities.filter(c => c.lat != null).forEach(c => pool.set(c.name, { name:c.name, lat:c.lat, lng:c.lng }));
+  const all = [...pool.values()].filter(c => !off.has(c.name) && !taken.has(c.name));
+  if (day === 2) return { list:all.map(c => ({ ...c, km:geoKm(prev, c) })).filter(c => driveMin(c.km) <= 90).sort((a, b) => a.km - b.km)
+    .map(c => ({ name:c.name, lat:c.lat, lng:c.lng, note:`약 ${fmtMin(driveMin(c.km))}` })) };
+  const home = geoKm(prev, RT_SEOUL);
+  return { list:all.map(c => ({ ...c, a:geoKm(prev, c), b:geoKm(c, RT_SEOUL) }))
+    .filter(c => c.b < home - 30 && c.a > 25 && driveMin(c.a) <= 120 && c.a + c.b <= home * 1.15).sort((x, y) => x.a - y.a)
+    .map(c => ({ name:c.name, lat:c.lat, lng:c.lng, note:`+${fmtMin(driveMin(c.a))} · 서울까지 ${fmtMin(driveMin(c.b))}` })) };
+}
+function rtRoulette(t){
+  const R = S.rt, spin = d => R.spins.find(s => s.day === d);
+  S.rtDay ??= [1, 2, 3].find(d => !spin(d)) || 1;
+  const day = S.rtDay, done = spin(day), c = done ? null : rtCandidates(t, day);
+  const dayLabel = { 1:'메인 목적지', 2:'1시간 30분 안의 다른 곳', 3:'서울 가는 길 경유지' };
+  const from = day === 1 ? RT_START : spin(day - 1);
+  return `
+    <div class="rt-days">${[1, 2, 3].map(d => { const s = spin(d);
+      return `<button class="rt-day ${day === d ? 'on' : ''} ${s ? 'done' : ''}" data-act="rtDay" data-k="${d}"><small>Day ${d}</small><b>${s ? esc(s.city) : '?'}</b><em>${dayLabel[d]}</em></button>`; }).join('')}</div>
+    ${done ? `<div class="panel rt-result">
+        <div class="rt-r-kicker">Day ${day} 목적지</div>
+        <div class="rt-r-city">${esc(done.city)}</div>
+        ${from?.lat != null && done.lat != null ? `<div class="dim">${day === 1 ? '신림역' : esc(from.city)}에서 차로 약 ${fmtMin(driveMin(geoKm(from, done)))}</div>` : ''}
+        <div class="row" style="justify-content:center;margin-top:12px">
+          <a class="btn small" href="${naverMap(done.city)}" target="_blank" rel="noopener">네이버 지도 ↗</a>
+          ${isAdmin() ? `<button class="btn small danger" data-act="rtReset" data-k="${day}">되돌리기</button>` : ''}
+        </div>
+        <p class="note">🙅 룰렛 결과에는 거부권을 쓸 수 없어요 · 일정 탭에 자동으로 기록됐어요</p></div>`
+    : `<div class="panel">
+        ${day === 1 ? `<div class="rt-band"><span class="fd-fl">시간권</span>${[[0, '전체'], ...RT_BANDS.map(b => [b, `${b}시간권`])].map(([b, l]) => `<button class="chip sm ${(S.rtBand ?? 0) === b ? 'on' : ''}" data-act="rtBand" data-k="${b}">${l}</button>`).join('')}
+            <button class="chip sm" data-act="rtDice">🎲 시간 주사위</button></div>` : ''}
+        ${c.need ? `<p class="note">${esc(c.need)}</p>` : `
+          <div class="rt-cands">${c.list.map(x => `<span title="${esc(x.note)}">${esc(x.name)}<small>${esc(x.note)}</small></span>`).join('') || '<p class="note">조건에 맞는 후보가 없어요</p>'}</div>
+          <button class="btn primary rt-go" data-act="rtSpin" ${c.list.length ? '' : 'disabled'}>🎰 Day ${day} 룰렛 돌리기 <small>(${c.list.length}곳)</small></button>
+          <p class="note" style="text-align:center">한 번 돌리면 바로 확정돼요 · 거부권 사용 불가</p>`}
+      </div>`}
+    <details class="panel rt-manage" ${S.rtCityOpen ? 'open' : ''}><summary data-act="rtCityOpen">⚙️ 후보 도시 관리 <small class="dim">눌러서 빼기·넣기</small></summary>
+      ${RT_BANDS.concat([...new Set(R.cities.map(x => x.band))].filter(b => !RT_BANDS.includes(b)).sort()).map(b => `<div class="rt-cgroup"><b>${b}시간권</b>
+        <div class="rt-chips">${R.cities.filter(x => x.band === b).map(x => `<button class="${x.active ? '' : 'off'}" data-act="rtCity" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div></div>`).join('')}
+      <button class="btn small" data-act="rtAddCity">+ 도시 추가</button>
+    </details>`;
+}
+async function rtDoSpin(t){
+  const day = S.rtDay, c = rtCandidates(t, day);
+  if (!c.list?.length) return;
+  let pick;
+  try { pick = await call('rt_spin', { p_trip:t.id, p_day:day, p_cands:c.list.map(({ name, lat, lng }) => ({ name, lat, lng })) }); }
+  catch(e){ alert(errMsg(e)); await loadTravel(); await loadRandom(t.id); return renderTrips(); }
+  const ov = document.createElement('div'); ov.className = 'cer rt-ov';
+  ov.innerHTML = `<div class="cer-in"><div class="cer-kicker">DAY ${day} 목적지</div><div class="rt-slot"><span id="rt-slot">?</span></div><div class="cer-sub" id="rt-sub">두구두구두구…</div></div>`;
+  document.body.appendChild(ov);
+  const names = c.list.map(x => x.name), el = ov.querySelector('#rt-slot');
+  let i = 0, delay = 50;
+  await new Promise(res => { const tick = () => { el.textContent = names[i++ % names.length]; delay *= 1.09; if (delay < 420) setTimeout(tick, delay); else res(); }; tick(); });
+  el.textContent = pick.name; el.parentNode.classList.add('hit');
+  ov.querySelector('#rt-sub').innerHTML = `🎉 이번 여행 Day ${day}는 <b>${esc(pick.name)}</b>!`;
+  ov.querySelector('.cer-in').insertAdjacentHTML('beforeend', `<div class="row" style="justify-content:center;margin-top:20px"><a class="btn" href="${naverMap(pick.name)}" target="_blank" rel="noopener">네이버 지도 ↗</a><button class="btn primary" id="rt-ok">확인</button></div>`);
+  await loadTravel(); await loadRandom(t.id);
+  ov.querySelector('#rt-ok').onclick = () => { ov.remove(); renderTrips(); };
+}
+function rtAddCity(){
+  openModal(`<h3>후보 도시 추가</h3>
+    <div class="form">
+      <label class="full">도시 이름<input id="rc-n" list="rc-list" placeholder="예) 삼척"></label>
+      <datalist id="rc-list">${Object.keys(KR_PLACES).filter(n => !S.rt.cities.some(c => c.name === n)).map(n => `<option value="${n}">`).join('')}</datalist>
+      <label class="full">신림역에서 차로<select id="rc-b">${[1, 2, 3, 4, 5, 6].map(b => `<option value="${b}" ${b === 3 ? 'selected' : ''}>${b}시간권</option>`).join('')}</select></label>
+    </div>
+    <p class="note" id="rc-h">목록에 있는 시·군을 고르면 거리를 보고 시간권을 자동으로 골라줘요</p>
+    <p class="err" id="merr"></p>
+    <div class="row"><span class="sp"></span><button class="btn" id="cancel">취소</button><button class="btn primary" id="save">추가</button></div>`);
+  $('#rc-n').oninput = () => { const p = KR_PLACES[$('#rc-n').value.trim()]; if (!p) return;
+    const m = driveMin(geoKm(RT_START, { lat:p[0], lng:p[1] })); $('#rc-b').value = Math.min(6, Math.max(1, Math.round(m / 60)));
+    $('#rc-h').textContent = `신림역에서 차로 약 ${fmtMin(m)} (직선거리로 어림잡은 값)`; };
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => { const n = $('#rc-n').value.trim(), p = KR_PLACES[n];
+    try { await call('rt_save_city', { p_id:null, p_d:{ name:n, band:+$('#rc-b').value, lat:p?.[0] ?? '', lng:p?.[1] ?? '' } }); await loadRandom(S.tripId); closeModal(); renderTrips(); }
+    catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+// ----- 🃏 찬스 카드 -----
+function rtCards(t){
+  const R = S.rt, dealt = R.counts.length > 0, mems = tripMembers(t);
+  const cnt = id => R.counts.find(c => c.member_id === id) || { total:0, used:0 };
+  return `
+    ${dealt ? `<h2 class="sec">🃏 내 카드 <small class="dim">나만 볼 수 있어요</small></h2>
+      ${R.myCards.length ? `<div class="rt-hand">${R.myCards.map(c => `<div class="rt-card ${c.used_at ? 'used' : ''}">
+          <div class="rt-ce">${esc(c.emoji || '🃏')}</div><b>${esc(c.name)}</b><p>${esc(c.descr || '')}</p>
+          ${c.used_at ? `<small>사용함 · ${esc(c.used_note || '')}</small>` : `<button class="btn small primary" data-act="rtUse" data-id="${c.id}">사용하기</button>`}</div>`).join('')}</div>`
+        : '<p class="note">이 여행 멤버가 아니라서 받은 카드가 없어요</p>'}
+      <h2 class="sec">👥 모두의 카드</h2>
+      <div class="rt-board">${mems.map(m => { const c = cnt(m.id), us = R.used.filter(u => u.member_id === m.id);
+        return `<div class="rt-brow"><b>${esc(m.name)}</b><span class="rt-left">${'🂠'.repeat(c.total - c.used)}<small>남은 ${c.total - c.used}장</small></span>
+          <div class="rt-usedlist">${us.map(u => `<span>${esc(u.emoji || '')} ${esc(u.name)}${u.used_note ? ` · ${esc(u.used_note)}` : ''} <small>${new Date(u.used_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })}</small></span>`).join('')}</div></div>`; }).join('')}</div>
+      ${isAdmin() ? '<button class="link" data-act="rtRedeal" style="margin-top:10px">카드 다시 나누기 (관리자)</button>' : ''}`
+    : `<div class="panel rt-deal"><div class="rt-ce big">🃏</div><b>아직 카드를 안 나눠줬어요</b>
+        <p class="note">여행 출발할 때 누르면 ${mems.length}명에게 2장씩 랜덤으로 나눠줘요. 받은 카드는 본인만 볼 수 있어요.</p>
+        <button class="btn primary" data-act="rtDeal">🃏 카드 나눠주기 (1인 2장)</button></div>`}
+    <details class="panel rt-manage" ${S.rtTypeOpen ? 'open' : ''}><summary data-act="rtTypeOpen">⚙️ 카드 종류 관리 <small class="dim">${R.types.filter(x => x.active).length}종 사용 중</small></summary>
+      <div class="rt-types">${R.types.map(x => `<div class="rt-type ${x.active ? '' : 'off'}"><span class="rt-ce">${esc(x.emoji)}</span><div><b>${esc(x.name)}</b><small>${esc(x.descr || '')}</small></div>
+        <button class="icon" data-act="rtType" data-id="${x.id}" title="수정">✎</button></div>`).join('')}</div>
+      <button class="btn small" data-act="rtType">+ 카드 종류 추가</button>
+      ${dealt ? '<p class="note">이미 나눠준 카드는 바뀌지 않아요. 다음 여행부터 적용돼요.</p>' : ''}
+    </details>`;
+}
+function rtEditType(id){
+  const x = id ? S.rt.types.find(y => y.id === id) : { emoji:'🃏', active:true };
+  openModal(`<h3>${id ? '카드 종류 수정' : '카드 종류 추가'}</h3>
+    <div class="form">
+      <label>이모지<input id="ct-e" value="${esc(x.emoji || '')}" maxlength="4"></label>
+      <label>이름<input id="ct-n" value="${esc(x.name || '')}" placeholder="예) 운전 면제권"></label>
+      <label class="full">설명<input id="ct-d" value="${esc(x.descr || '')}" placeholder="예) 내 운전 차례 1번 건너뛰기"></label>
+      ${id ? `<label class="full">상태<select id="ct-a"><option value="1" ${x.active ? 'selected' : ''}>사용 중 (나눠줄 때 포함)</option><option value="0" ${x.active ? '' : 'selected'}>쉬는 중 (나눠줄 때 제외)</option></select></label>` : ''}
+    </div>
+    <p class="err" id="merr"></p>
+    <div class="row">${id ? '<button class="btn danger" id="del">삭제</button>' : ''}<span class="sp"></span><button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => { try { await call('rt_save_card_type', { p_id:id ?? null, p_d:{ emoji:$('#ct-e').value, name:$('#ct-n').value, descr:$('#ct-d').value, active:id ? $('#ct-a').value === '1' : true } }); await loadRandom(S.tripId); closeModal(); renderTrips(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+  if (id) $('#del').onclick = async () => { if (!confirm('이 카드 종류를 지울까요? 이미 나눠준 카드는 그대로 남아요.')) return; try { await call('rt_delete_card_type', { p_id:id }); await loadRandom(S.tripId); closeModal(); renderTrips(); } catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+
+// ----- 🕵️ 시크릿 미션 (틀) -----
+function rtMission(t){
+  const R = S.rt, mems = tripMembers(t), total = R.pool.reduce((a, p) => a + p.n, 0), assigned = R.mcount > 0;
+  const steps = [['모으기', !assigned], ['배정', assigned && !R.revealed], ['공개 · 투표', R.revealed]];
+  let body;
+  if (!assigned) body = `
+    <div class="panel"><b>1단계 · 미션 모으기</b>
+      <p class="note">미션을 써서 넣으면 쓴 사람만 볼 수 있어요. ${mems.length}개 이상 모이면 랜덤으로 한 명씩 배정해요. 가능하면 자기가 쓴 미션은 자기가 안 받아요.</p>
+      <div style="display:flex;gap:6px"><input id="rm-t" placeholder="예) 친구가 '대박'이라는 말을 5번 하게 만들기"><button class="btn small primary" data-act="rtAddMission">넣기</button></div>
+      ${R.myPool.length ? `<div class="rt-mypool"><small class="dim">내가 넣은 미션</small>${R.myPool.map(p => `<div>${esc(p.text)} <button class="icon" data-act="rtDelPool" data-id="${p.id}" title="삭제">✕</button></div>`).join('')}</div>` : ''}
+      <div class="rt-poolcnt">${mems.map(m => `<span>${esc(shortName(m.name))} ${(R.pool.find(p => p.author_id === m.id)?.n) || 0}개</span>`).join('')}<b>모인 미션 ${total} / ${mems.length}</b></div>
+      <button class="btn primary rt-go" data-act="rtAssign" ${total >= mems.length ? '' : 'disabled'}>🎲 미션 랜덤 배정</button>
+    </div>`;
+  else if (!R.revealed) body = `
+    <div class="panel rt-secret"><b>🕵️ 내 시크릿 미션</b>
+      ${R.myMission ? `<div class="rt-mcard" data-act="rtPeek">${S.rtPeek ? esc(R.myMission.text) : '👆 눌러서 몰래 보기'}</div>` : '<p class="note">이 여행 멤버가 아니라서 받은 미션이 없어요</p>'}
+      <p class="note">다른 사람 미션은 공개 전까지 아무도 볼 수 없어요. 마지막 날 다 같이 공개해요.</p>
+      <button class="btn primary rt-go" data-act="rtReveal">📢 미션 공개</button>
+      ${isAdmin() ? '<button class="link" data-act="rtResetMission">미션 다시 배정 (관리자)</button>' : ''}
+    </div>`;
+  else body = `
+    <div class="rt-mlist">${R.missions.map(m => { const vs = R.votes.filter(v => v.mission_id === m.id), ok = vs.filter(v => v.ok).length, others = mems.length - 1;
+      const res = ok > others / 2 ? 'ok' : vs.length - ok >= others / 2 && vs.length - ok > 0 ? 'no' : '';
+      const mine = vs.find(v => v.voter_id === S.me);
+      return `<div class="panel rt-mres ${res}"><div class="rt-mh"><b>${esc(memName(m.member_id))}</b><span class="dim">의 미션</span>${res === 'ok' ? '<span class="rt-badge ok">🎉 성공</span>' : res === 'no' ? '<span class="rt-badge no">💥 실패</span>' : ''}</div>
+        <p>${esc(m.text)}</p><small class="dim">쓴 사람 · ${esc(memName(m.author_id))}</small>
+        <div class="rt-vote">${m.member_id === S.me ? `<span class="dim">내 미션 · 다른 사람들이 판정해요</span>` : `<button class="chip sm ${mine?.ok === true ? 'on' : ''}" data-act="rtVote" data-id="${m.id}" data-k="1">✅ 성공</button><button class="chip sm ${mine?.ok === false ? 'on' : ''}" data-act="rtVote" data-id="${m.id}" data-k="0">❌ 실패</button>`}
+          <span class="dim">✅ ${ok} · ❌ ${vs.length - ok}</span></div></div>`; }).join('')}</div>
+    <p class="note">나머지 사람 과반이 ✅면 성공이에요</p>
+    ${isAdmin() ? '<button class="link" data-act="rtHide">공개 취소 (관리자)</button>' : ''}`;
+  return `<div class="rt-steps">${steps.map(([l, on], i) => `<span class="${on ? 'on' : ''}">${i + 1}. ${l}</span>`).join('<i>›</i>')}</div>${body}`;
+}
+
+async function rtAct(act, b, id){
+  const t = S.trips.find(x => x.id === S.tripId);
+  const done = async () => { await loadRandom(t.id); renderTrips(); };
+  try {
+    switch (act){
+      case 'rtTab': S.rtTab = b.dataset.k; return renderTrips();
+      case 'rtDay': S.rtDay = +b.dataset.k; return renderTrips();
+      case 'rtBand': S.rtBand = +b.dataset.k; return renderTrips();
+      case 'rtDice': { S.rtBand = RT_BANDS[Math.floor(Math.random() * RT_BANDS.length)]; renderTrips(); return toast(`🎲 주사위 결과: ${S.rtBand}시간권!`); }
+      case 'rtSpin': if (!confirm(`Day ${S.rtDay} 룰렛을 돌릴까요?\n한 번 돌리면 바로 확정돼요.`)) return; return rtDoSpin(t);
+      case 'rtReset': if (!confirm(`Day ${b.dataset.k} 결과를 지우고 다시 돌릴 수 있게 할까요?`)) return; await call('rt_reset_spin', { p_trip:t.id, p_day:+b.dataset.k }); await loadTravel(); return done();
+      case 'rtCityOpen': S.rtCityOpen = !b.parentNode.open; return;
+      case 'rtTypeOpen': S.rtTypeOpen = !b.parentNode.open; return;
+      case 'rtCity': { const c = S.rt.cities.find(x => x.id === id); await call('rt_toggle_city', { p_id:id, p_on:!c.active }); S.rtCityOpen = true; return done(); }
+      case 'rtAddCity': return rtAddCity();
+      case 'rtDeal': if (!confirm('카드를 나눠줄까요? 한 번 나눠주면 다시 못 바꿔요.')) return; await call('rt_deal', { p_trip:t.id, p_n:2 }); toast('🃏 카드를 나눠줬어요!'); return done();
+      case 'rtRedeal': if (!confirm('나눠준 카드와 사용 기록을 모두 지울까요?')) return; await call('rt_reset_cards', { p_trip:t.id }); return done();
+      case 'rtUse': { const c = S.rt.myCards.find(x => x.id === id); const note = prompt(`${c.emoji} ${c.name}을(를) 사용할까요?\n어디에 썼는지 한마디 (선택)`, ''); if (note === null) return;
+        await call('rt_use_card', { p_card:id, p_note:note }); toast(`${c.emoji} ${c.name} 사용!`); return done(); }
+      case 'rtType': return rtEditType(b.dataset.id ? id : null);
+      case 'rtAddMission': { const v = $('#rm-t').value; await call('rt_add_mission', { p_trip:t.id, p_text:v }); toast('미션을 넣었어요 🤫'); return done(); }
+      case 'rtDelPool': await call('rt_delete_pool', { p_id:id }); return done();
+      case 'rtAssign': if (!confirm('모인 미션을 랜덤으로 배정할까요?')) return; await call('rt_assign_missions', { p_trip:t.id }); S.rtPeek = false; toast('🕵️ 미션을 배정했어요. 몰래 확인하세요!'); return done();
+      case 'rtPeek': S.rtPeek = !S.rtPeek; return renderTrips();
+      case 'rtReveal': if (!confirm('모두의 미션을 공개할까요?')) return; await call('rt_reveal', { p_trip:t.id, p_on:true }); return done();
+      case 'rtHide': await call('rt_reveal', { p_trip:t.id, p_on:false }); return done();
+      case 'rtResetMission': if (!confirm('배정된 미션을 모두 지우고 다시 배정할 수 있게 할까요?')) return; await call('rt_reset_missions', { p_trip:t.id }); return done();
+      case 'rtVote': { const m = S.rt.votes.find(v => v.mission_id === id && v.voter_id === S.me), ok = b.dataset.k === '1';
+        await call('rt_vote_mission', { p_mission:id, p_ok:m?.ok === ok ? null : ok }); return done(); }
+    }
+  } catch(e){ alert(errMsg(e)); }
 }
 
 // ---------- 통계 ----------
