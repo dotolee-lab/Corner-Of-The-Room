@@ -4356,12 +4356,33 @@ const CAR_DECKS = {
     '주장 완장 vs 등번호 10번', '은퇴 후 감독 vs 은퇴 후 해설가', '승부차기 마지막 키커 vs 승부차기 골키퍼' ] },
 };
 // 우리끼리 점수판 (이 폰에만 저장)
+// 이미 나온 문제 (서버에 저장해서 모든 폰·모든 여행 공통 · 서버가 안 되면 이 폰에만)
+const qzId = (deck, i) => { const c = CAR_DECKS[deck].cards[i]; return typeof c === 'string' ? c : c.a; };
+const qzSeenSet = deck => (S.qzSeen ??= {})[deck] ??= new Set();
+function qzLocalSave(){ try { localStorage.setItem('cor-qz-seen', JSON.stringify(Object.fromEntries(Object.entries(S.qzSeen || {}).map(([k, v]) => [k, [...v]])))); } catch(e){} }
+async function loadQzSeen(){
+  S.qzSeen = {};
+  try { Object.entries(JSON.parse(localStorage.getItem('cor-qz-seen') || '{}')).forEach(([k, v]) => S.qzSeen[k] = new Set(v)); } catch(e){}
+  const { data, error } = await sb.from('qz_seen').select('deck,qid');
+  if (!error){ S.qzServer = true; S.qzSeen = {}; data.forEach(r => qzSeenSet(r.deck).add(r.qid)); qzLocalSave(); }
+  else S.qzServer = false;
+}
+function qzMark(deck, i){
+  const id = qzId(deck, i); qzSeenSet(deck).add(id); qzLocalSave();
+  if (S.qzServer) call('qz_mark', { p_deck:deck, p_qid:id }).catch(() => {});
+}
+async function qzReset(deck){
+  S.qzSeen[deck] = new Set(); qzLocalSave();
+  if (S.qzServer) await call('qz_reset', { p_deck:deck }).catch(() => {});
+}
 const carScoreKey = t => `cor-car-score-${t.id}`;
 function carScore(t){ try { return JSON.parse(localStorage.getItem(carScoreKey(t)) || '{}'); } catch(e){ return {}; } }
 function setCarScore(t, v){ try { localStorage.setItem(carScoreKey(t), JSON.stringify(v)); } catch(e){} S.rtScoreMem = v; }
 const qzPts = (deck, card, n) => deck === 'chosung' ? (n <= 0 ? 2 : 1) : Math.max(1, Math.min(deck === 'club' ? 3 : 4, card.h.length - n + 1));
 function rtCar(t){
   if (!CAR_DECKS[S.rtDeck]) S.rtDeck = 'hint';
+  if (!S.qzSeen){ loadQzSeen().then(() => { if (S.rtTab === 'car') renderTrips(); }); S.qzSeen = {}; }
+  const left = k => CAR_DECKS[k].cards.filter((c, i) => !qzSeenSet(k).has(qzId(k, i))).length;
   const d = CAR_DECKS[S.rtDeck], q = S.qz?.deck === S.rtDeck ? S.qz : null, mems = tripMembers(t);
   const sc = S.rtScoreMem ?? carScore(t);
   let body = '<div class="car-card empty">👇 카드를 뽑아주세요</div>', judge = '';
@@ -4389,13 +4410,14 @@ function rtCar(t){
         <button class="link" data-act="rtQzGive">아무도 모름 · 정답 공개</button></div>`;
     }
   }
-  return `<div class="chips car-decks">${Object.entries(CAR_DECKS).map(([k, x]) => `<button class="chip ${S.rtDeck === k ? 'on' : ''}" data-act="rtDeck" data-k="${k}">${x.icon} ${x.name}${k === 'balance' ? '' : ` <small>${x.cards.length}</small>`}</button>`).join('')}</div>
-    <p class="note" style="margin:-4px 0 10px">${esc(d.how)}</p>
+  return `<div class="chips car-decks">${Object.entries(CAR_DECKS).map(([k, x]) => `<button class="chip ${S.rtDeck === k ? 'on' : ''}" data-act="rtDeck" data-k="${k}">${x.icon} ${x.name} <small>${left(k)}/${x.cards.length}</small></button>`).join('')}</div>
+    <p class="note" style="margin:-4px 0 10px">${esc(d.how)} · 남은 문제 ${left(S.rtDeck)}개 ${qzSeenSet(S.rtDeck).size ? '<button class="link" data-act="rtQzResetDeck">처음부터</button>' : ''}</p>
     ${body}${judge}
     <button class="btn primary rt-go" data-act="rtCarDraw">🎴 ${q && !(q.winner || q.revealed) && S.rtDeck !== 'balance' ? '다음 문제 (이번 문제 넘기기)' : `${d.name} 카드 뽑기`}</button>
     <div class="car-score"><b>🏆 점수판</b>${mems.map(m => `<div class="${q?.host === m.id && S.rtDeck !== 'balance' ? 'host' : ''}"><span>${q?.host === m.id && S.rtDeck !== 'balance' ? '🎙' : ''}${esc(shortName(m.name))}</span><button class="icon" data-act="rtScore" data-id="${m.id}" data-k="-1">−</button><b>${sc[m.id] || 0}</b><button class="icon" data-act="rtScore" data-id="${m.id}" data-k="1">＋</button></div>`).join('')}
       <button class="link" data-act="rtScoreReset">초기화</button></div>
-    <p class="note" style="text-align:center">진행자는 문제마다 돌아가며 바뀌어요 · 진행자 폰은 진행자만 보기 · 운전자는 듣고 외치기만!<br>점수판은 이 폰에만 있어요 · 선수 정보는 2025년 기준</p>`;
+    <p class="note" style="text-align:center">진행자는 문제마다 돌아가며 바뀌어요 · 진행자 폰은 진행자만 보기 · 운전자는 듣고 외치기만!<br>
+      한 번 나온 문제는 ${S.qzServer === false ? '이 폰에서' : '어느 폰에서든'} 다시 안 나와요 · 점수판은 이 폰에만 · 선수 정보는 2025년 기준</p>`;
 }
 
 // ----- 🚗 운전 당번표 -----
@@ -4493,13 +4515,18 @@ async function rtAct(act, b, id){
       case 'rtBingoItem': { const x = S.rt.bingoItems.find(y => y.id === id); await call('rt_save_bingo_item', { p_id:id, p_text:x.text, p_active:!x.active }); S.rtBingoOpen = true; return done(); }
       case 'rtBingoItemAdd': await call('rt_save_bingo_item', { p_id:null, p_text:$('#bi-t').value, p_active:true }); S.rtBingoOpen = true; return done();
       case 'rtDeck': S.rtDeck = b.dataset.k; return renderTrips();
-      case 'rtCarDraw': { const d = CAR_DECKS[S.rtDeck], prev = S.qz?.deck === S.rtDeck ? S.qz.i : -1;
-        S.rtSeen ??= {}; const seen = S.rtSeen[S.rtDeck] ??= new Set(); if (seen.size >= d.cards.length) seen.clear();
-        let i; do { i = Math.floor(Math.random() * d.cards.length); } while ((seen.has(i) || i === prev) && d.cards.length > 1);
-        seen.add(i);
+      case 'rtCarDraw': { const d = CAR_DECKS[S.rtDeck], seen = qzSeenSet(S.rtDeck);
+        let pool = d.cards.map((c, i) => i).filter(i => !seen.has(qzId(S.rtDeck, i)));
+        if (!pool.length){
+          if (!confirm(`${d.name} ${d.cards.length}문제를 전부 풀었어요! 🎉\n처음부터 다시 할까요?`)) return;
+          await qzReset(S.rtDeck); pool = d.cards.map((c, i) => i);
+        }
+        const i = pool[Math.floor(Math.random() * pool.length)];
+        qzMark(S.rtDeck, i);
         const mems = tripMembers(t); S.qzHost = ((S.qzHost ?? -1) + 1) % (mems.length || 1);
         S.qz = { deck:S.rtDeck, i, n:S.rtDeck === 'chosung' ? 0 : 1, host:mems[S.qzHost]?.id, locked:[], winner:null, won:0, revealed:false, peek:false };
         return renderTrips(); }
+      case 'rtQzResetDeck': { const d = CAR_DECKS[S.rtDeck]; if (!confirm(`${d.name}의 "이미 나온 문제" 기록을 지우고 처음부터 할까요?\n(모든 폰 공통)`)) return; await qzReset(S.rtDeck); S.qz = null; toast('처음부터 다시!'); return renderTrips(); }
       case 'rtCarHint': S.qz.n++; S.qz.peek = false; return renderTrips();
       case 'rtQzPeek': S.qz.peek = !S.qz.peek; return renderTrips();
       case 'rtQzNo': { S.qz.locked.push(id); const left = tripMembers(t).filter(m => m.id !== S.qz.host && !S.qz.locked.includes(m.id));
