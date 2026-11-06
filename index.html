@@ -707,6 +707,19 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .car-card b.chosung{font-size:56px;letter-spacing:.15em}
 .car-card em{font-style:normal;font-size:20px;font-weight:800;color:#f2b33d}
 .car-card .link{color:#c9c3e6}
+.car-hints{display:flex;flex-direction:column;gap:6px;align-items:center}
+.car-hints span{font-size:18px;font-weight:700;background:rgba(255,255,255,.07);padding:6px 14px;border-radius:12px;animation:cerPick .35s ease}
+.car-hints.path{flex-direction:row;flex-wrap:wrap;justify-content:center}
+.car-hints.path span{font-size:16px}
+.car-hints.path i{font-style:normal;color:#a99bff;align-self:center}
+.car-pts{margin:0;font-size:12px;color:#f2b33d;font-weight:800}
+.car-card .btn{background:rgba(255,255,255,.1);color:#f4efe2;border-color:rgba(255,255,255,.2)}
+.car-score{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.car-score > b{flex-basis:100%;font-size:14px}
+.car-score div{display:flex;align-items:center;gap:4px;background:var(--bg);border-radius:10px;padding:4px 6px}
+.car-score div span{font-size:13px;font-weight:700;margin-right:2px}
+.car-score div b{min-width:22px;text-align:center;font-size:16px}
+.car-score .link{margin-left:auto}
 .drive-card .gate-mission{font-size:30px}
 .drive-next{font-size:15px}
 .rt-tagx{font-size:11px;font-weight:800;background:color-mix(in srgb,var(--danger) 25%,transparent);color:#ff9a9a;padding:2px 8px;border-radius:999px}
@@ -3883,7 +3896,7 @@ function randomHTML(t){
   if (S.rtTab === 'mission') S.rtTab = 'gate';
   const g = openGate();
   const tabs = [['roulette', '🗺', '목적지 룰렛'], ['gate', '🔓', '관문 미션', g || S.rt.gates.some(x => x.culprit_status === 'voting')], ['cards', '🃏', '찬스 카드'],
-    ['meal', '🍽', '식사 룰렛'], ['bingo', '📸', '포토 빙고'], ['car', '🎤', '차 안 게임'], ['drive', '🚗', '운전 당번', S.rt.drives?.some(l => !l.ended_at) && false]];
+    ['meal', '🍽', '식사 룰렛'], ['bingo', '📸', '포토 빙고'], ['car', '⚽', '축구 퀴즈'], ['drive', '🚗', '운전 당번', S.rt.drives?.some(l => !l.ended_at) && false]];
   const needEx = ['meal', 'bingo', 'drive'].includes(S.rtTab) && S.rt.exErr;
   const body = needEx ? `<div class="panel ac-locked">🎲<br>이 기능을 쓰려면 Supabase에서 <b>16_trip_extras.sql</b>을 실행해주세요<br><small>${esc(S.rt.exErr)}</small></div>`
     : { roulette:rtRoulette, cards:rtCards, gate:rtGate, meal:rtMeal, bingo:rtBingo, car:rtCar, drive:rtDrive }[S.rtTab](t);
@@ -4312,48 +4325,127 @@ function rtBingoCell(t, idx){
   f.click();
 }
 
-// ----- 🎤 차 안 게임 카드 (폰에서만 뽑아요) -----
+// ----- ⚽ 차 안 축구 퀴즈 (폰에서만 뽑아요 · 선수 정보는 2025년 기준) -----
 const CAR_DECKS = {
-  balance:{ icon:'⚖️', name:'밸런스 게임', cards:[
-    '평생 라면 금지 vs 평생 치킨 금지', '여름에 히터 틀린 차 vs 겨울에 에어컨 틀린 차', '말 안 하는 친구와 2박 3일 vs 말 너무 많은 친구와 2박 3일',
-    '여행 내내 비 vs 여행 내내 폭염', '휴게소 없는 고속도로 4시간 vs 신호등 100개 국도 2시간', '모든 사진이 흔들림 vs 모든 사진에 눈 감음',
-    '숙소 최고 + 음식 최악 vs 숙소 최악 + 음식 최고', '운전 6시간 vs 뒷자리 가운데 6시간', '노래방 100점 실력 vs 춤 100점 실력',
-    '10년 전으로 1일 vs 10년 후로 1일', '평생 같은 노래만 듣기 vs 평생 노래 못 듣기', '전 애인과 같은 여행 팀 vs 직장 상사와 같은 여행 팀',
-    '바다 근처에서 살기 vs 산 근처에서 살기', '1억 받고 친구들과 10년 연락 끊기 vs 그냥 지금처럼', '매운 음식만 먹기 vs 단 음식만 먹기',
-    '지도 앱 없이 여행 vs 카드 없이 현금만 여행', '여행 계획 담당 vs 여행 정산 담당', '아침형 친구와 여행 vs 올빼미형 친구와 여행',
-    '내 휴대폰 사진첩 공개 vs 내 검색 기록 공개', '1년 동안 여행 금지 vs 1년 동안 배달 금지' ] },
-  chosung:{ icon:'🔤', name:'초성 퀴즈', cards:[
-    ['ㄱㄱㅂㅂ', '음식', '김치볶음밥'], ['ㅎㄱㅅ', '장소', '휴게소'], ['ㄷㅍㅁ', '여행', '도파민'], ['ㅌㅂㅅㄷ', '여행', '통영 바다'], ['ㅊㅋ', '음식', '치킨'],
-    ['ㄱㄹㄱ', '음식', '갈비구이'], ['ㅂㅂㅂ', '음식', '비빔밥'], ['ㅅㅇㅎ', '날씨', '소나기'], ['ㄱㅅㄷㄹ', '장소', '고속도로'], ['ㅁㄱㄹ', '음식', '물갈비'],
-    ['ㄴㅂㄱㅇ', '앱', '내비게이션'], ['ㅅㅈ', '장소', '시장'], ['ㅎㅅㅂ', '장소', '해수욕장'], ['ㄷㄹㅇㅂ', '여행', '드라이브'], ['ㅇㄷㅇ', '음식', '오뎅'],
-    ['ㅂㄹㅇ', '취미', '볼링'], ['ㅊㅅ', '음식', '찹쌀'], ['ㄱㅈ', '도시', '경주'], ['ㄱㄹ', '도시', '강릉'], ['ㅇㅅ', '도시', '여수'],
-    ['ㅈㅈ', '도시', '전주'], ['ㅅㅊ', '도시', '속초'], ['ㅌㅇ', '도시', '통영'], ['ㄷㅇ', '도시', '단양'] ] },
-  who:{ icon:'👉', name:'이 중에 누구?', cards:[
-    '여행 중 제일 먼저 잠들 사람은?', '길 잃으면 끝까지 지도 안 볼 사람은?', '휴게소에서 제일 많이 사 먹을 사람은?', '사진 제일 많이 찍을 사람은?',
-    '복권 당첨되면 제일 먼저 연락할 사람은?', '좀비 사태에서 제일 오래 살아남을 사람은?', '오늘 제일 많이 웃은 사람은?', '숙소에서 제일 늦게 씻을 사람은?',
-    '제일 먼저 결혼할 사람은? (또는 했던 사람)', '연애할 때 제일 다정할 것 같은 사람은?', '술 마시면 제일 많이 변하는 사람은?', '몰래 제일 많이 검색해볼 사람은?',
-    '노래방에서 마이크 안 놓을 사람은?', '여행 경비 제일 많이 쓸 사람은?', '10년 뒤 제일 많이 변해 있을 사람은?', '무인도에 하나만 데려간다면?',
-    '이 여행 계획 중 제일 투덜댄 사람은?', '오늘 운전 제일 잘한 사람은?', '거짓말 제일 못하는 사람은?', '비밀 제일 잘 지킬 사람은?' ] },
-  song:{ icon:'🎵', name:'노래 맞히기', cards:[
-    '제목에 "사랑"이 들어간 노래 → 순서대로 한 소절씩', '2000년대 댄스곡 전주만 듣고 맞히기 (DJ: 조수석)', '드라마 OST만 틀기 → 무슨 드라마인지 맞히기',
-    '각자 노래 1곡씩 몰래 틀기 → 누가 고른 노래인지 맞히기', '가사에 "바다"가 들어간 노래 이어 부르기', '아이돌 노래 1절 가사 이어 부르기 — 틀리면 탈락',
-    '흥얼거리기만으로 노래 맞히기 (가사 금지)', '첫 소절 듣고 가수 맞히기 — 3초 컷', '영어 노래를 한국어로 번역해서 부르기 → 제목 맞히기',
-    '지금 지나가는 지역 이름 들어간 노래 찾기', '초등학생 때 노래 1곡씩 틀기', '각자 인생곡 1곡 → 이유 한 줄' ] },
+  hint:{ icon:'🕵️', name:'선수 스무고개', how:'힌트를 하나씩 열어요 · 빨리 맞힐수록 높은 점수 (4→1점)', type:'hint', cards:[
+    { h:['아르헨티나', '키 170cm 왼발잡이', '발롱도르 8회 수상', '2022 카타르 월드컵 우승 주장'], a:'리오넬 메시' },
+    { h:['포르투갈', '챔피언스리그 역대 최다 득점', '골 세리머니 "SIUUU"', '맨유 → 레알 → 유벤투스 → 알나스르'], a:'크리스티아누 호날두' },
+    { h:['노르웨이', '아버지도 프리미어리거', '잘츠부르크 → 도르트문트', '맨시티 첫 시즌 EPL 36골'], a:'엘링 홀란' },
+    { h:['이집트', '왼발 윙어', '첼시에서 실패 → 로마에서 부활', '별명 "이집트 왕"'], a:'모하메드 살라' },
+    { h:['대한민국', '함부르크 → 레버쿠젠', '2021-22 EPL 공동 득점왕', '2025 유로파리그 우승 주장'], a:'손흥민' },
+    { h:['프랑스', '2018 월드컵 우승 당시 10대', '2022 월드컵 결승 해트트릭', 'PSG → 레알 마드리드'], a:'킬리안 음바페' },
+    { h:['크로아티아', '2018 발롱도르', '토트넘 → 레알 마드리드', '2018 월드컵 준우승 주장'], a:'루카 모드리치' },
+    { h:['잉글랜드', '토트넘 역대 최다 득점', '오랫동안 "무관" 꼬리표', '바이에른에서 첫 우승 트로피'], a:'해리 케인' },
+    { h:['네덜란드', '흐로닝언 → 셀틱 → 사우샘프턴', '중앙 수비수', '리버풀 주장'], a:'버질 반 다이크' },
+    { h:['프랑스', '1998 월드컵 결승 헤딩 2골', '2006 월드컵 결승 박치기 퇴장', '감독으로 레알 챔스 3연패'], a:'지네딘 지단' },
+    { h:['잉글랜드', '오른발 프리킥 장인', '아내는 스파이스 걸스 멤버', '인터 마이애미 구단주'], a:'데이비드 베컴' },
+    { h:['대한민국', '교토 → PSV', '별명 "두 개의 심장"', '맨유에서 7시즌'], a:'박지성' },
+    { h:['코트디부아르', '마르세유에서 1시즌', '2012 챔스 결승 동점골·결승 PK', '첼시 레전드 공격수'], a:'디디에 드로그바' },
+    { h:['프랑스', '모나코 → 유벤투스', '아스널 역대 최다 득점', '무패 우승 "인빈시블스"의 에이스'], a:'티에리 앙리' },
+    { h:['스페인', '바르셀로나 유스 라 마시아 출신', '2010 월드컵 결승 연장 결승골', '비셀 고베에서도 뜀'], a:'안드레스 이니에스타' },
+    { h:['잉글랜드', '에버턴에서 데뷔', '맨유 역대 최다 득점 (253골)', '현재는 감독·해설가'], a:'웨인 루니' },
+    { h:['스웨덴', '말뫼 → 아약스 → 유벤투스', '태권도 유단자 · 아크로바틱 골', '"즐라탄은 즐라탄이다"'], a:'즐라탄 이브라히모비치' },
+    { h:['대한민국', '전북 → 베이징 → 페네르바체', '나폴리 33년 만의 우승 주역', '별명 "괴물 수비수"'], a:'김민재' },
+    { h:['잉글랜드', '버밍엄 시티에서 16살 데뷔', '도르트문트 → 레알 마드리드', '등번호 5번 미드필더'], a:'주드 벨링엄' },
+    { h:['폴란드', '도르트문트에서 득점왕', '분데스 한 시즌 41골 기록', '바이에른 → 바르셀로나'], a:'로베르트 레반도프스키' },
+    { h:['브라질', '2005 발롱도르', '항상 웃는 얼굴 · 엘라스티코', '바르셀로나 시절 베르나베우 기립박수'], a:'호나우지뉴' },
+    { h:['이탈리아', '골키퍼', '2006 월드컵 우승', '유벤투스에서 20년 가까이'], a:'잔루이지 부폰' },
+    { h:['벨기에', '헹크 → 첼시 → 볼프스부르크', '맨시티 10년 · 도움왕 여러 번', '2025년 나폴리 이적'], a:'케빈 더브라위너' },
+    { h:['우루과이', '흐로닝언 → 아약스 → 리버풀', '바르셀로나 "MSN" 트리오', '월드컵에서 깨물기 사건'], a:'루이스 수아레스' },
+  ] },
+  path:{ icon:'🧭', name:'커리어 경로', how:'뛰었던 팀이 하나씩 열려요 · 누구일까?', type:'hint', cards:[
+    { h:['스포르팅', '맨유', '레알 마드리드', '유벤투스', '맨유', '알나스르'], a:'크리스티아누 호날두' },
+    { h:['말뫼', '아약스', '유벤투스', '인테르', '바르셀로나', 'AC밀란', 'PSG', '맨유', 'LA 갤럭시', 'AC밀란'], a:'즐라탄 이브라히모비치' },
+    { h:['산투스', '바르셀로나', 'PSG', '알힐랄', '산투스'], a:'네이마르' },
+    { h:['함부르크', '레버쿠젠', '토트넘', 'LAFC'], a:'손흥민' },
+    { h:['디나모 자그레브', '토트넘', '레알 마드리드', 'AC밀란'], a:'루카 모드리치' },
+    { h:['헹크', '첼시', '볼프스부르크', '맨시티', '나폴리'], a:'케빈 더브라위너' },
+    { h:['교토 퍼플상가', 'PSV', '맨유', 'QPR', 'PSV'], a:'박지성' },
+    { h:['아틀레티코', '리버풀', '첼시', 'AC밀란', '아틀레티코', '사간 도스'], a:'페르난도 토레스' },
+    { h:['모나코', '유벤투스', '아스널', '바르셀로나', '뉴욕 레드불스'], a:'티에리 앙리' },
+    { h:['나시오날', '흐로닝언', '아약스', '리버풀', '바르셀로나', '아틀레티코', '인터 마이애미'], a:'루이스 수아레스' },
+    { h:['모나코', 'PSG', '레알 마드리드'], a:'킬리안 음바페' },
+    { h:['몰데', '잘츠부르크', '도르트문트', '맨시티'], a:'엘링 홀란' },
+    { h:['바젤', '첼시', '피오렌티나', '로마', '리버풀'], a:'모하메드 살라' },
+    { h:['리옹', '레알 마드리드', '알이티하드'], a:'카림 벤제마' },
+    { h:['사우샘프턴', '토트넘', '레알 마드리드', '토트넘', 'LAFC'], a:'가레스 베일' },
+    { h:['릴', '첼시', '레알 마드리드'], a:'에덴 아자르' },
+    { h:['안더레흐트', '첼시', '에버턴', '맨유', '인테르', '첼시', '로마', '나폴리'], a:'로멜루 루카쿠' },
+    { h:['전북', '베이징 궈안', '페네르바체', '나폴리', '바이에른'], a:'김민재' },
+    { h:['발렌시아', '마요르카', 'PSG'], a:'이강인' },
+    { h:['버밍엄', '도르트문트', '레알 마드리드'], a:'주드 벨링엄' },
+    { h:['레흐 포즈난', '도르트문트', '바이에른', '바르셀로나'], a:'로베르트 레반도프스키' },
+    { h:['레알 소시에다드', '아틀레티코', '바르셀로나', '아틀레티코'], a:'앙투안 그리즈만' },
+    { h:['그레미우', 'PSG', '바르셀로나', 'AC밀란', '플라멩구'], a:'호나우지뉴' },
+    { h:['갱강', '마르세유', '첼시', '상하이 선화', '갈라타사라이', '첼시'], a:'디디에 드로그바' },
+  ] },
+  chosung:{ icon:'🔤', name:'선수 초성', how:'초성 보고 선수 이름 맞히기 · 힌트는 국적·포지션', type:'chosung', cards:[
+    ['ㅁㅅ', '아르헨티나 · 공격수', '메시'], ['ㅎㄴㄷ', '포르투갈 · 공격수', '호날두'], ['ㅅㅎㅁ', '대한민국 · 공격수', '손흥민'], ['ㅇㅂㅍ', '프랑스 · 공격수', '음바페'],
+    ['ㅁㄷㄹㅊ', '크로아티아 · 미드필더', '모드리치'], ['ㅂㅈㅅ', '대한민국 · 미드필더', '박지성'], ['ㄷㄹㄱㅂ', '코트디부아르 · 공격수', '드로그바'], ['ㅈㄷ', '프랑스 · 미드필더', '지단'],
+    ['ㄹㄴ', '잉글랜드 · 공격수', '루니'], ['ㅂㅋ', '잉글랜드 · 미드필더', '베컴'], ['ㅇㄹ', '프랑스 · 공격수', '앙리'], ['ㅅㄹ', '이집트 · 공격수', '살라'],
+    ['ㅋㅇ', '잉글랜드 · 공격수', '케인'], ['ㄱㅁㅈ', '대한민국 · 수비수', '김민재'], ['ㅇㄱㅇ', '대한민국 · 미드필더', '이강인'], ['ㅂㄹㅇ', '잉글랜드 · 미드필더', '벨링엄'],
+    ['ㄹㅂㄷㅍㅅㅋ', '폴란드 · 공격수', '레반도프스키'], ['ㅇㄴㅇㅅㅌ', '스페인 · 미드필더', '이니에스타'], ['ㅍㄹㄹ', '이탈리아 · 미드필더', '피를로'], ['ㅂㅍ', '이탈리아 · 골키퍼', '부폰'],
+    ['ㅅㅇㄹㅅ', '우루과이 · 공격수', '수아레스'], ['ㄴㅇㅁㄹ', '브라질 · 공격수', '네이마르'], ['ㅂㄷㅇㅋ', '네덜란드 · 수비수', '반다이크'], ['ㅎㅇㅊ', '대한민국 · 공격수', '황희찬'],
+    ['ㅋㅋ', '브라질 · 미드필더', '카카'], ['ㅍㅇ', '스페인 · 수비수', '푸욜'], ['ㅅㅂ', '스페인 · 미드필더', '사비'], ['ㄹㅍㄷ', '잉글랜드 · 미드필더', '램파드'],
+  ] },
+  club:{ icon:'🏟', name:'클럽 맞히기', how:'설명 보고 어느 팀인지 맞히기', type:'hint', cards:[
+    { h:['홈구장 안필드', '응원가 "You\'ll Never Walk Alone"'], a:'리버풀' },
+    { h:['홈구장 별명 "꿈의 극장"', '퍼거슨 감독 27년'], a:'맨체스터 유나이티드' },
+    { h:['홈구장 캄프 누', '"클럽 그 이상"', '유스 라 마시아'], a:'바르셀로나' },
+    { h:['홈구장 산티아고 베르나베우', '별명 "로스 블랑코스"', '챔스 최다 우승'], a:'레알 마드리드' },
+    { h:['홈 관중석 "노란 벽"', '홈구장 지그날 이두나 파크', '분데스리가'], a:'보루시아 도르트문트' },
+    { h:['홈구장 알리안츠 아레나', '분데스리가 최다 우승', '2025년 김민재 소속'], a:'바이에른 뮌헨' },
+    { h:['별명 "거너스"', '홈구장 에미레이츠', '2003-04 무패 우승'], a:'아스널' },
+    { h:['홈구장 스탬퍼드 브리지', '런던 서부', '2012 챔스 첫 우승'], a:'첼시' },
+    { h:['홈구장 에티하드', '하늘색 유니폼', '2022-23 트레블'], a:'맨체스터 시티' },
+    { h:['엠블럼에 수탉', '"스퍼스"', '2025 유로파리그 우승'], a:'토트넘 홋스퍼' },
+    { h:['흑백 줄무늬 "비앙코네리"', '이탈리아 토리노', '세리에A 최다 우승'], a:'유벤투스' },
+    { h:['검정·파랑 "네라주리"', '밀라노', '산 시로를 라이벌과 같이 씀'], a:'인테르' },
+    { h:['빨강·검정 "로소네리"', '밀라노', '2025년 모드리치 이적'], a:'AC 밀란' },
+    { h:['홈구장 파르크 데 프랑스', '파리', '이강인 소속'], a:'파리 생제르맹' },
+    { h:['별명 "노란 잠수함"', '스페인 소도시 클럽'], a:'비야레알' },
+    { h:['별명 "여우군단"', '2015-16 기적의 EPL 우승 (배당 5000:1)'], a:'레스터 시티' },
+    { h:['별명 "토피스"', '리버풀 도시 라이벌', '구디슨 파크'], a:'에버턴' },
+    { h:['홈구장 메스타야', '스페인 동부', '이강인 데뷔 팀'], a:'발렌시아' },
+    { h:['마라도나의 팀', '이탈리아 남부', '2022-23 33년 만의 우승'], a:'나폴리' },
+    { h:['네덜란드 암스테르담', '토탈 풋볼 · 크루이프', '유스 명가'], a:'아약스' },
+  ] },
+  balance:{ icon:'⚖️', name:'축구 밸런스', how:'하나씩 고르고 이유 대기!', type:'text', cards:[
+    '메시 vs 호날두', '월드컵 우승 1번 vs 챔스 우승 5번', '평생 맨유 팬 vs 평생 리버풀 팬', '퍼거슨 감독 밑에서 뛰기 vs 과르디올라 밑에서 뛰기',
+    'EPL 강등권 팀 주전 vs 레알 마드리드 벤치', '한국 월드컵 8강 vs 손흥민 EPL 득점왕 한 번 더', '발롱도르 1번 vs 월드컵 우승 1번',
+    '전성기 호나우두(브라질) vs 전성기 앙리', '프리킥 장인 vs 1:1 드리블 장인', '역대 최고 골키퍼 vs 역대 최고 수비수',
+    '자국 리그 레전드 vs 해외 리그 저니맨', 'EPL 직관 1번 vs 라리가 엘클라시코 직관 1번', '평생 무승부만 vs 이기거나 크게 지거나',
+    '주장 완장 vs 등번호 10번', '은퇴 후 감독 vs 은퇴 후 해설가', '승부차기 마지막 키커 vs 승부차기 골키퍼',
+  ] },
 };
-function rtCar(){
-  S.rtDeck ??= 'balance';
+// 우리끼리 점수판 (이 폰에만 저장)
+const carScoreKey = t => `cor-car-score-${t.id}`;
+function carScore(t){ try { return JSON.parse(localStorage.getItem(carScoreKey(t)) || '{}'); } catch(e){ return {}; } }
+function setCarScore(t, v){ try { localStorage.setItem(carScoreKey(t), JSON.stringify(v)); } catch(e){} S.rtScoreMem = v; }
+function rtCar(t){
+  if (!CAR_DECKS[S.rtDeck]) S.rtDeck = 'hint';
   const d = CAR_DECKS[S.rtDeck], c = S.rtCarCard;
   let body = '<div class="car-card empty">👇 카드를 뽑아주세요</div>';
   if (c && c.deck === S.rtDeck){
     const v = d.cards[c.i];
-    body = S.rtDeck === 'chosung'
-      ? `<div class="car-card"><small>${esc(v[1])}</small><b class="chosung">${esc(v[0])}</b>${S.rtReveal ? `<em>${esc(v[2])}</em>` : '<button class="link" data-act="rtCarReveal">정답 보기</button>'}</div>`
-      : `<div class="car-card"><small>${d.icon} ${d.name}</small><b>${esc(v)}</b>${S.rtDeck === 'balance' ? '<em>하나씩 고르고 이유 대기!</em>' : S.rtDeck === 'who' ? '<em>하나 둘 셋 하면 동시에 손가락으로 지목!</em>' : ''}</div>`;
+    if (d.type === 'hint'){
+      const n = Math.min(S.rtHint || 1, v.h.length), pts = Math.max(1, (S.rtDeck === 'hint' ? 5 : v.h.length + 1) - n);
+      body = `<div class="car-card"><small>${d.icon} ${d.name} · ${n}/${v.h.length}</small>
+        <div class="car-hints ${S.rtDeck === 'path' ? 'path' : ''}">${v.h.slice(0, n).map((x, i) => `<span>${S.rtDeck === 'path' ? '' : `${i + 1}. `}${esc(x)}</span>`).join(S.rtDeck === 'path' ? '<i>→</i>' : '')}</div>
+        ${S.rtReveal ? `<em>${esc(v.a)}</em>` : `<div class="row" style="justify-content:center;gap:10px">${n < v.h.length ? `<button class="btn small" data-act="rtCarHint">힌트 더 보기</button>` : ''}<button class="link" data-act="rtCarReveal">정답 보기</button></div>
+          ${S.rtDeck !== 'club' ? `<p class="car-pts">지금 맞히면 ${pts}점</p>` : ''}`}</div>`;
+    } else if (d.type === 'chosung'){
+      body = `<div class="car-card"><small>${esc(v[1])}</small><b class="chosung">${esc(v[0])}</b>${S.rtReveal ? `<em>${esc(v[2])}</em>` : '<button class="link" data-act="rtCarReveal">정답 보기</button>'}</div>`;
+    } else body = `<div class="car-card"><small>${d.icon} ${d.name}</small><b>${esc(v)}</b><em>${esc(d.how)}</em></div>`;
   }
+  const sc = S.rtScoreMem ?? carScore(t), mems = tripMembers(t);
   return `<div class="chips car-decks">${Object.entries(CAR_DECKS).map(([k, x]) => `<button class="chip ${S.rtDeck === k ? 'on' : ''}" data-act="rtDeck" data-k="${k}">${x.icon} ${x.name}</button>`).join('')}</div>
+    <p class="note" style="margin:-4px 0 10px">${esc(d.how)}</p>
     ${body}
     <button class="btn primary rt-go" data-act="rtCarDraw">🎴 ${d.name} 카드 뽑기</button>
-    <p class="note" style="text-align:center">운전자는 화면 보지 말고 듣기만! · 카드는 각자 폰에서 뽑혀요</p>`;
+    <div class="car-score"><b>🏆 점수판</b>${mems.map(m => `<div><span>${esc(shortName(m.name))}</span><button class="icon" data-act="rtScore" data-id="${m.id}" data-k="-1">−</button><b>${sc[m.id] || 0}</b><button class="icon" data-act="rtScore" data-id="${m.id}" data-k="1">＋</button></div>`).join('')}
+      <button class="link" data-act="rtScoreReset">초기화</button></div>
+    <p class="note" style="text-align:center">운전자는 화면 보지 말고 듣기만! · 카드와 점수판은 이 폰에만 있어요 · 선수 정보는 2025년 기준</p>`;
 }
 
 // ----- 🚗 운전 당번표 -----
@@ -4454,8 +4546,11 @@ async function rtAct(act, b, id){
       case 'rtCarDraw': { const d = CAR_DECKS[S.rtDeck], prev = S.rtCarCard?.deck === S.rtDeck ? S.rtCarCard.i : -1;
         S.rtSeen ??= {}; const seen = S.rtSeen[S.rtDeck] ??= new Set(); if (seen.size >= d.cards.length) seen.clear();
         let i; do { i = Math.floor(Math.random() * d.cards.length); } while ((seen.has(i) || i === prev) && d.cards.length > 1);
-        seen.add(i); S.rtCarCard = { deck:S.rtDeck, i }; S.rtReveal = false; return renderTrips(); }
+        seen.add(i); S.rtCarCard = { deck:S.rtDeck, i }; S.rtReveal = false; S.rtHint = 1; return renderTrips(); }
       case 'rtCarReveal': S.rtReveal = true; return renderTrips();
+      case 'rtCarHint': S.rtHint = (S.rtHint || 1) + 1; return renderTrips();
+      case 'rtScore': { const sc = { ...(S.rtScoreMem ?? carScore(t)) }; sc[id] = Math.max(0, (sc[id] || 0) + +b.dataset.k); setCarScore(t, sc); return renderTrips(); }
+      case 'rtScoreReset': if (!confirm('점수판을 0으로 돌릴까요?')) return; setCarScore(t, {}); return renderTrips();
       case 'rtDriveOpen': S.rtDriveOpen = !b.parentNode.open; return;
       case 'rtDrvPick': { S.rtDrvSel ??= [...(S.rt.state.drive_members || [])]; S.rtDrvSel = S.rtDrvSel.includes(id) ? S.rtDrvSel.filter(x => x !== id) : [...S.rtDrvSel, id]; S.rtDriveOpen = true; return renderTrips(); }
       case 'rtDriveCfg': await call('rt_save_drive_cfg', { p_trip:t.id, p_members:S.rtDrvSel ?? S.rt.state.drive_members ?? [], p_every:+$('#dv-e').value }); S.rtDrvSel = null; S.rtDriveOpen = false; toast('운전 순서를 저장했어요'); return done();
