@@ -668,7 +668,7 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .pp-item span{flex:1}
 .pp-item small{font-size:11px;color:var(--sub)}
 .pp-item.added{opacity:.5;cursor:default}
-.rt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:14px 0 6px}
+.rt-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin:14px 0 6px}
 .rt-grid button{position:relative;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:8px 4px;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
 .rt-grid button i{font-style:normal;font-size:20px;line-height:1.2}
 .rt-grid button span{font-size:12px;font-weight:700;white-space:nowrap}
@@ -756,6 +756,34 @@ a.btn{text-decoration:none;color:var(--ink)}
 .cs-m input{padding:5px 8px;font-size:13px}
 .cs-row select{width:auto;flex:0 0 auto;padding:5px 4px}
 .cs-k{width:28px;text-align:center;opacity:.5;font-size:12px}
+.dart-panel{margin-top:12px}
+.dart-top{display:flex;justify-content:space-between;align-items:center;font-size:15px}.dart-top span{font-size:13px;font-weight:800;color:var(--accent);background:var(--soft);padding:3px 10px;border-radius:999px}
+.dart-board{position:relative;margin:10px auto 12px;max-width:520px;border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#2c6f95,#1f5577);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.kr-map{display:block;width:100%;height:auto;touch-action:manipulation}
+.kr-land path{fill:#f3ead2;stroke:#b9a77c;stroke-width:.8;stroke-linejoin:round}
+.kr-city circle{fill:#5d4a2c}.kr-city text{font-size:10px;fill:#5d4a2c;font-weight:700;paint-order:stroke;stroke:#f3ead2;stroke-width:2.5px}
+.kr-home circle{fill:#b4441b;stroke:#fff;stroke-width:1.5}
+.dart-lb{font-size:11px;font-weight:800;fill:#1e1b17;paint-order:stroke;stroke:#fff;stroke-width:3px}
+.dart-web polygon{fill:rgba(242,179,61,.18);stroke:none}.dart-web line{stroke:#f2b33d;stroke-width:1.6;stroke-dasharray:4 4}
+.dart-ring{fill:rgba(242,179,61,.35);stroke:#f2b33d;stroke-width:2;animation:dartPulse 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes dartPulse{50%{transform:scale(1.35);opacity:.6}}
+#dart-aim circle{fill:none;stroke:#e5331e;stroke-width:2.4}#dart-aim circle:last-of-type{fill:#e5331e}#dart-aim line{stroke:#e5331e;stroke-width:1.6}
+#dart-fly.hit text{animation:dartHit .6s cubic-bezier(.2,.8,.3,1.2) both;transform-box:fill-box;transform-origin:center}
+@keyframes dartHit{0%{transform:scale(4) translateY(-30px);opacity:0}70%{transform:scale(.9);opacity:1}100%{transform:scale(1)}}
+.dart-msg{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:rgba(20,18,15,.85);color:#fff;font-weight:800;font-size:14px;padding:8px 14px;border-radius:999px;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none}
+.dart-msg.on{opacity:1}
+.dart-who{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin-bottom:10px}
+.dart-who > span{font-size:13px;color:var(--sub);font-weight:700;margin-right:2px}
+.dart-who .chip i,.dart-row i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.dart-panel .rt-go{display:block;margin:0 auto;max-width:420px;width:100%}
+.dart-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:12px}
+.dart-row{display:flex;align-items:center;gap:6px;background:var(--bg);border-radius:12px;padding:8px 10px;font-size:13px;flex-wrap:wrap}
+.dart-row span{color:var(--sub)}.dart-row small{flex-basis:100%;font-size:11px}
+.dart-row .x{margin-left:auto;border:0;background:none;color:var(--sub);cursor:pointer;font-size:15px}
+.dart-res{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,#fff4d6,#ffe7b0);border:1px solid #f2b33d;border-radius:16px;padding:12px 16px;margin:4px 0 10px;color:#3a2a10}
+.dart-res-e{font-size:34px}.dart-res-m{display:flex;flex-direction:column;gap:2px}.dart-res-m b{font-size:20px}.dart-res-m small{font-size:12px;opacity:.75}
+.dart-panel .gate-btns{justify-content:center}
+@media (max-width:600px){.dart-list{grid-template-columns:1fr}}
 .bg-list{display:flex;flex-direction:column;gap:6px;margin:12px 0 4px}
 .bg-row{display:flex;gap:6px;align-items:center}
 .card-log{display:flex;flex-direction:column;gap:4px;font-size:13px}
@@ -2843,7 +2871,7 @@ function openTrip(id, preset = {}){
       <label>출발<input id="ft3" type="date" value="${t.start_date || ''}"></label>
       <label>도착<input id="ft4" type="date" value="${t.end_date || ''}"></label>
       <div class="full"><div class="flabel">함께 가는 사람</div>${memChecks(t.member_ids || [], 'tm')}</div>
-      <label class="full rt-mode"><span><input type="checkbox" id="ft-rnd" ${t.is_random ? 'checked' : ''}> 🎲 랜덤 여행 모드</span><small>운명의 시계 · 찬스 카드 · 운명의 질문 · 축구 퀴즈 탭이 생겨요</small></label>
+      <label class="full rt-mode"><span><input type="checkbox" id="ft-rnd" ${t.is_random ? 'checked' : ''}> 🎲 랜덤 여행 모드</span><small>다트 던지기 · 운명의 시계 · 찬스 카드 · 운명의 질문 · 축구 퀴즈 탭이 생겨요</small></label>
       <label class="full">대표 사진 주소 (선택)<input id="ft5" value="${esc(t.cover_url || '')}" placeholder="https://… 이미지 링크, 비우면 색으로 표시"></label>
       <label class="full">메모 (선택)<textarea id="ft6" rows="2">${esc(t.memo || '')}</textarea></label>
     </div>
@@ -3897,24 +3925,25 @@ async function loadRandom(tid){
   const sl = await sb.from('rt_sleeps').select('*').eq('trip_id', tid);
   const ft = await sb.from('rt_fates').select('*').eq('trip_id', tid);
   const ck = await sb.from('rt_clock_spins').select('*').eq('trip_id', tid);
+  const dt = await sb.from('rt_darts').select('*').eq('trip_id', tid);
   const cardLog = cl.error ? [] : cl.data;
   const gids = new Set(gates.map(g => g.id));
   S.rt = { tid, cities, spins, types, used, gates, gateVotes:gateVotes.filter(v => gids.has(v.gate_id)), penalties, counts, poolStats,
     state:state[0] || { gate_trigger:'move', gate_every:120, gate_from:10, gate_to:20, gate_limit:30, gate_fail:'penalty', gate_verify:'either' },
     myCards:priv[0] || [], myPool:priv[1] || [], culprit:priv[2] || [],
-    mealCats, meals, cardLog, sleeps:sl.error ? [] : sl.data, fates:ft.error ? [] : ft.data, clock:ck.error ? [] : ck.data, clockErr:ck.error?.message || null, exErr:exBad?.error.message || null };
+    mealCats, meals, cardLog, sleeps:sl.error ? [] : sl.data, fates:ft.error ? [] : ft.data, clock:ck.error ? [] : ck.data, darts:dt.error ? [] : dt.data, dartErr:dt.error?.message || null, clockErr:ck.error?.message || null, exErr:exBad?.error.message || null };
 }
 function randomHTML(t){
   if (!S.rt || S.rt.tid !== t.id){ loadRandom(t.id).then(() => { if (S.tripTab === 'random' && S.tripId === t.id) renderTrips(); }); return '<div class="panel ac-locked">🎲<br>불러오는 중…</div>'; }
   if (S.rt.err) return `<div class="panel ac-locked">🎲<br>랜덤 여행 기능을 쓰려면 Supabase에서 <b>12_random_trip.sql</b>과 <b>13_gate_mission.sql</b>을 실행해주세요<br><small>${esc(S.rt.err)}</small></div>`;
-  if (!['clock', 'cards', 'fate', 'car'].includes(S.rtTab)) S.rtTab = 'clock';
+  if (!['dart', 'clock', 'cards', 'fate', 'car'].includes(S.rtTab)) S.rtTab = dartDone(t) ? 'clock' : 'dart';
   const pend = clockPending();
-  const tabs = [['clock', '⏰', '운명의 시계', pend], ['cards', '🃏', '찬스 카드'], ['fate', '🎱', '운명의 질문'], ['car', '⚽', '축구 퀴즈']];
+  const tabs = [['dart', '🎯', '다트 던지기'], ['clock', '⏰', '운명의 시계', pend], ['cards', '🃏', '찬스 카드'], ['fate', '🎱', '운명의 질문'], ['car', '⚽', '축구 퀴즈']];
   const needEx = S.rtTab === 'meal' && S.rt.exErr;
   const body = S.rtTab === 'clock' && (S.rt.clockErr || S.rt.state.clock_every == null) ? `<div class="panel ac-locked">⏰<br>운명의 시계를 쓰려면 Supabase에서 <b>22_fate_clock.sql</b>을 실행해주세요${S.rt.clockErr ? `<br><small>${esc(S.rt.clockErr)}</small>` : ''}</div>`
     : pend && S.rt.state.clock_lock && S.rtTab === 'fate' ? clockLockHTML()
     : needEx ? `<div class="panel ac-locked">🎲<br>이 기능을 쓰려면 Supabase에서 <b>16_trip_extras.sql</b>을 실행해주세요<br><small>${esc(S.rt.exErr)}</small></div>`
-    : { cards:rtCards, clock:rtClock, fate:rtFate, car:rtCar }[S.rtTab](t);
+    : { dart:rtDart, cards:rtCards, clock:rtClock, fate:rtFate, car:rtCar }[S.rtTab](t);
   setTimeout(bindGate);
   return `<div class="rt-grid">${tabs.map(([k, e, l, dot]) => `<button class="${S.rtTab === k ? 'on' : ''}" data-act="rtTab" data-k="${k}"><i>${e}</i><span>${l}</span>${dot ? '<b class="gate-dot"></b>' : ''}</button>`).join('')}</div>${body}`;
 }
@@ -3962,6 +3991,7 @@ const clockActive = () => clockSlots().filter(x => x.on !== false && (+x.w || 0)
 const clockPending = () => (S.rt?.clock || []).find(c => !c.spun_at);
 function clockBase(t){
   const last = [...(S.rt.clock || [])].filter(c => c.spun_at && !c.vetoed_by && c.slot?.k === 'dest' && c.sub).sort((a, b) => b.id - a.id)[0];
+  if (!last?.sub){ const m = dartDone(t); if (m) return { name:'다트 중간 지점', ...m }; }
   const name = last?.sub || Object.keys(KR_PLACES).find(n => `${t.place || ''} ${t.title || ''}`.includes(n));
   return name && KR_PLACES[name] ? { name, lat:KR_PLACES[name][0], lng:KR_PLACES[name][1] } : null;
 }
@@ -4064,6 +4094,179 @@ function openClockSlots(t){
 }
 const clockLockHTML = () => `<div class="panel ac-locked">🔒<br><b>운명의 시계부터 돌려주세요!</b><br><small>돌릴 차례가 지나면 운명의 질문은 잠겨요</small><br><button class="btn primary" data-act="rtTab" data-k="clock" style="margin-top:12px">⏰ 운명의 시계로</button></div>`;
 
+// ----- 🎯 다트 던지기 (대한민국 지도) -----
+const DART_PLACES = { ...KR_PLACES, 서울:[37.566,126.978], 인천:[37.456,126.705], 수원:[37.263,127.029], 파주:[37.760,126.780], 포천:[37.895,127.200],
+  평택:[36.992,127.113], 세종:[36.480,127.289], 김해:[35.229,128.889], 양산:[35.335,129.037], 고령:[35.726,128.263], 영암:[34.800,126.697],
+  함평:[35.066,126.517], 영광:[35.277,126.512], 장흥:[34.682,126.907], 진도:[34.487,126.263], 제주:[33.499,126.531], 서귀포:[33.254,126.560],
+  울릉도:[37.484,130.906], 용인:[37.241,127.178], 안성:[37.008,127.280], 음성:[36.940,127.690], 진천:[36.855,127.436], 증평:[36.785,127.581],
+  칠곡:[35.995,128.402], 군위:[36.243,128.573], 경산:[35.825,128.741], 의령:[35.322,128.262], 함안:[35.272,128.406], 창녕:[35.544,128.492],
+  '고성(경남)':[34.973,128.322], 장성:[35.302,126.785], 화순:[35.064,126.987], 나주:[35.016,126.711], 무안:[34.990,126.482], 순창:[35.374,127.137],
+  김제:[35.804,126.881], 완주:[35.905,127.162], 울주:[35.562,129.243], 기장:[35.244,129.222] };
+const DART_HOME = { name:'신림역', lat:37.4842, lng:126.9297 };
+const DART_MAJOR = ['서울', '인천', '대전', '대구', '광주', '부산', '울산', '강릉', '전주', '제주', '포항', '청주'];
+// 지도를 못 불러올 때 쓰는 간단한 윤곽 [경도, 위도]
+const KR_FALLBACK = [
+  [[126.60,37.78],[126.70,37.83],[126.85,37.93],[126.98,38.03],[127.10,38.27],[127.30,38.32],[127.55,38.32],[127.80,38.33],[128.05,38.30],[128.28,38.43],[128.36,38.62],
+   [128.47,38.45],[128.63,38.22],[128.70,38.05],[128.83,37.88],[128.95,37.72],[129.08,37.58],[129.22,37.42],[129.28,37.25],[129.43,37.05],[129.45,36.80],[129.43,36.55],
+   [129.40,36.30],[129.38,36.10],[129.57,36.08],[129.50,35.92],[129.47,35.70],[129.45,35.50],[129.33,35.33],[129.24,35.20],[129.10,35.08],[128.98,35.05],[128.85,35.07],
+   [128.72,35.12],[128.60,35.05],[128.52,34.95],[128.45,34.80],[128.30,34.86],[128.05,34.92],[127.88,34.95],[127.78,34.85],[127.68,34.72],[127.48,34.70],[127.35,34.55],
+   [127.20,34.58],[127.05,34.60],[126.90,34.48],[126.75,34.38],[126.58,34.30],[126.45,34.40],[126.33,34.55],[126.37,34.72],[126.32,34.90],[126.30,35.08],[126.40,35.28],
+   [126.45,35.48],[126.55,35.62],[126.68,35.78],[126.70,35.98],[126.62,36.15],[126.53,36.33],[126.45,36.50],[126.30,36.60],[126.15,36.72],[126.20,36.88],[126.40,36.95],
+   [126.55,36.98],[126.75,36.97],[126.85,37.00],[126.80,37.12],[126.70,37.22],[126.62,37.35],[126.60,37.48],[126.58,37.62]],
+  [[126.16,33.30],[126.25,33.43],[126.45,33.51],[126.70,33.55],[126.92,33.50],[126.95,33.42],[126.80,33.30],[126.55,33.23],[126.30,33.22]],
+  [[130.80,37.50],[130.85,37.55],[130.92,37.52],[130.90,37.46],[130.83,37.46]],
+  [[128.48,34.98],[128.62,35.02],[128.73,34.90],[128.68,34.73],[128.55,34.75],[128.50,34.85]],
+  [[127.82,34.88],[127.98,34.85],[128.05,34.75],[127.92,34.70],[127.82,34.77]],
+  [[126.15,34.53],[126.32,34.55],[126.35,34.42],[126.20,34.38]],
+  [[126.38,37.78],[126.53,37.77],[126.55,37.62],[126.40,37.60]],
+  [[126.65,34.35],[126.80,34.36],[126.78,34.28],[126.66,34.28]],
+];
+const MAP_K = 100, MAP_CX = Math.cos(36 * Math.PI / 180), MAP_W0 = 124.6, MAP_N = 38.75;
+const MAP_W = Math.round((131.15 - MAP_W0) * MAP_CX * MAP_K), MAP_H = Math.round((MAP_N - 33.05) * MAP_K);
+const mapXY = (lat, lng) => [(lng - MAP_W0) * MAP_CX * MAP_K, (MAP_N - lat) * MAP_K];
+let KR_MAP = null, _krLoading = false;
+function krMapSet(polys, detailed){
+  KR_MAP = { detailed, polys:polys.map(p => ({ ...p, d:p.rings.map(r => 'M' + r.map(([lng, lat]) => mapXY(lat, lng).map(v => v.toFixed(1)).join(',')).join('L') + 'Z').join('') })) };
+}
+function topoDecode(tp){
+  const q = tp.transform, [sx, sy] = q?.scale || [1, 1], [tx, ty] = q?.translate || [0, 0];
+  const arcs = tp.arcs.map(a => { let x = 0, y = 0; return a.map(([dx, dy]) => { if (q){ x += dx; y += dy; } else { x = dx; y = dy; } return [x * sx + tx, y * sy + ty]; }); });
+  const ring = idx => { const out = []; idx.forEach((i, k) => { let a = i < 0 ? arcs[~i].slice().reverse() : arcs[i]; if (k) a = a.slice(1); out.push(...a); }); return out; };
+  return Object.values(tp.objects)[0].geometries.flatMap(g => {
+    const polys = g.type === 'Polygon' ? [g.arcs] : g.type === 'MultiPolygon' ? g.arcs : [];
+    return polys.map(p => ({ name:g.properties?.name || '', rings:p.map(ring) }));
+  });
+}
+const KR_TOPO = 'https://cdn.jsdelivr.net/gh/southkorea/southkorea-maps@master/kostat/2018/json/skorea-provinces-2018-topo-simple.json';
+async function loadKrMap(){
+  if (!KR_MAP) krMapSet(KR_FALLBACK.map(r => ({ name:'', rings:[r] })), false);
+  if (KR_MAP.detailed || _krLoading) return;
+  _krLoading = true;
+  try {
+    let txt = null; try { txt = localStorage.getItem('cor_krmap1'); } catch(e){}
+    if (!txt){ const r = await fetch(KR_TOPO); if (!r.ok) throw new Error('map'); txt = await r.text(); }
+    const polys = topoDecode(JSON.parse(txt)); if (polys.length < 10) throw new Error('map');
+    try { localStorage.setItem('cor_krmap1', txt); } catch(e){}
+    krMapSet(polys, true);
+    if (S.tripTab === 'random' && S.rtTab === 'dart' && !S.dartBusy) renderTrips();
+  } catch(e){ _krLoading = 'fail'; return; }
+  _krLoading = false;
+}
+function inRing(r, lat, lng){ let c = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++){ const [xi, yi] = r[i], [xj, yj] = r[j];
+  if ((yi > lat) !== (yj > lat) && lng < (xj - xi) * (lat - yi) / (yj - yi) + xi) c = !c; } return c; }
+const landAt = (lat, lng) => (KR_MAP?.polys || []).find(p => p.rings.reduce((c, r) => inRing(r, lat, lng) ? !c : c, false));
+const provShort = n => { n = n.replace(/특별자치시|특별자치도|특별시|광역시/, ''); return n.length === 4 && n.endsWith('도') ? n[0] + n[2] : n.replace(/도$/, ''); };
+function nearPlace(lat, lng){ let best = null;
+  for (const [n, [a, b]] of Object.entries(DART_PLACES)){ const d = geoKm({ lat, lng }, { lat:a, lng:b }); if (!best || d < best.d) best = { n, d }; } return best; }
+function dartName(lat, lng){ const p = landAt(lat, lng), nb = nearPlace(lat, lng), pv = p?.name ? provShort(p.name) : '';
+  return `${pv && !['서울', '부산', '대구', '인천', '광주', '대전', '울산', '세종', '제주'].includes(pv) ? pv + ' ' : ''}${nb.n.replace(/\(.+\)/, '')}${nb.d > 10 ? ' 근처' : ''}`; }
+const dartMid = ds => ({ lat:ds.reduce((a, d) => a + d.lat, 0) / ds.length, lng:ds.reduce((a, d) => a + d.lng, 0) / ds.length });
+const dartColor = id => `hsl(${(S.members.findIndex(m => m.id === id) * 87 + 12) % 360} 75% 52%)`;
+function dartRounds(){ const by = {}; (S.rt.darts || []).forEach(d => (by[d.round] ||= []).push(d)); return by; }
+function dartDone(t){ const R = S.rt, round = R.state.dart_round || 1, mems = tripMembers(t), cur = (R.darts || []).filter(d => d.round === round);
+  return mems.length && mems.every(m => cur.some(d => d.member_id === m.id)) ? dartMid(cur) : null; }
+function rtDart(t){
+  if (!S.dartBusy){ cancelAnimationFrame(_dartRaf); S.dartAim = false; }
+  loadKrMap();
+  const R = S.rt, round = R.state.dart_round || 1, mems = tripMembers(t), cur = (R.darts || []).filter(d => d.round === round);
+  const left = mems.filter(m => !cur.some(d => d.member_id === m.id)), done = !!mems.length && !left.length;
+  if (!left.some(m => m.id === S.dartWho)) S.dartWho = (left.find(m => m.id === S.me) || left[0])?.id;
+  const mid = done ? dartMid(cur) : null, midLand = mid && landAt(mid.lat, mid.lng);
+  const midName = mid ? (S.dartMidName?.[`${t.id}-${round}`] || dartName(mid.lat, mid.lng)) : '';
+  if (mid) dartMidLookup(t, round, mid);
+  const km = mid ? geoKm(DART_HOME, mid) : 0;
+  const pin = d => { const [x, y] = mapXY(d.lat, d.lng), m = S.members.find(z => z.id === d.member_id);
+    return `<g class="dart-pin" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><line x1="0" y1="0" x2="9" y2="-16" stroke="#3a2a1a" stroke-width="2.4"/><path d="M9,-16 l7,-6 l-2,8 z" fill="${dartColor(d.member_id)}"/><circle r="4.5" fill="${dartColor(d.member_id)}" stroke="#fff" stroke-width="1.6"/><text x="13" y="-22" class="dart-lb">${esc(shortName(m?.name || ''))}</text></g>`; };
+  const [mx, my] = mid ? mapXY(mid.lat, mid.lng) : [0, 0];
+  const svg = `<svg viewBox="0 0 ${MAP_W} ${MAP_H}" class="kr-map" id="kr-map" preserveAspectRatio="xMidYMid meet">
+    <defs><pattern id="kr-wave" width="18" height="10" patternUnits="userSpaceOnUse"><path d="M0 6 q4.5 -4 9 0 t9 0" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1"/></pattern></defs>
+    <rect width="100%" height="100%" fill="url(#kr-wave)"/>
+    <g class="kr-land">${KR_MAP.polys.map(p => `<path d="${p.d}"/>`).join('')}</g>
+    <g class="kr-city">${DART_MAJOR.map(n => { const [x, y] = mapXY(...DART_PLACES[n]); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2"/><text x="${(x + 4).toFixed(1)}" y="${(y + 3.5).toFixed(1)}">${n}</text>`; }).join('')}
+      <g class="kr-home"><circle cx="${mapXY(DART_HOME.lat, DART_HOME.lng)[0].toFixed(1)}" cy="${mapXY(DART_HOME.lat, DART_HOME.lng)[1].toFixed(1)}" r="3.2"/></g></g>
+    ${mid ? `<g class="dart-web">${cur.length > 2 ? `<polygon points="${cur.map(d => mapXY(d.lat, d.lng).map(v => v.toFixed(1)).join(',')).join(' ')}"/>` : ''}${cur.map(d => { const [x, y] = mapXY(d.lat, d.lng); return `<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${my.toFixed(1)}"/>`; }).join('')}</g>` : ''}
+    ${cur.map(pin).join('')}
+    ${mid ? `<g class="dart-mid" transform="translate(${mx.toFixed(1)},${my.toFixed(1)})"><circle r="16" class="dart-ring"/><text y="7" text-anchor="middle" font-size="22">⭐</text></g>` : ''}
+    <g id="dart-aim" style="display:none"><circle r="15"/><circle r="3"/><line x1="-22" x2="22" y1="0" y2="0"/><line y1="-22" y2="22" x1="0" x2="0"/></g>
+    <g id="dart-fly" style="display:none"><text text-anchor="middle" y="8" font-size="26">🎯</text></g>
+  </svg>`;
+  const who = left.length ? `<div class="dart-who"><span>누가 던지나요?</span>${left.map(m => `<button class="chip ${S.dartWho === m.id ? 'on' : ''}" data-act="rtDartWho" data-id="${m.id}"><i style="background:${dartColor(m.id)}"></i>${esc(shortName(m.name))}${m.id === S.me ? ' (나)' : ''}</button>`).join('')}</div>` : '';
+  const list = cur.length ? `<div class="dart-list">${cur.map(d => `<div class="dart-row"><i style="background:${dartColor(d.member_id)}"></i><b>${esc(shortName(memName(d.member_id)))}</b><span>${esc(d.place || '')}</span>${d.thrown_by && d.thrown_by !== d.member_id ? `<small class="dim">${esc(shortName(memName(d.thrown_by)))}이(가) 대신</small>` : ''}${isAdmin() && !done ? `<button class="x" data-act="rtDartDel" data-id="${d.id}" title="다시 던지게 지우기">×</button>` : ''}</div>`).join('')}</div>` : '';
+  const rounds = dartRounds(), past = Object.keys(rounds).map(Number).filter(r => r !== round && mems.every(m => rounds[r].some(d => d.member_id === m.id))).sort((a, b) => b - a);
+  return `<div class="panel dart-panel">
+    <div class="dart-top"><b>🎯 다트 던지기 · ${round}번째 판</b><span>${cur.length}/${mems.length} 던짐</span></div>
+    <div class="dart-board ${S.dartBusy ? 'busy' : ''}">${svg}<div class="dart-msg" id="dart-msg"></div></div>
+    ${done ? `<div class="dart-res">
+        <div class="dart-res-e">⭐</div>
+        <div class="dart-res-m"><small>${cur.length}개 다트의 중간 지점</small><b>${esc(midName)}</b>
+          <small>${midLand ? '' : '🌊 바다 위예요! 가장 가까운 육지로 가요 · '}${DART_HOME.name}에서 직선 ${Math.round(km)}km · 차로 약 ${fmtMin(driveMin(km))}</small></div>
+      </div>
+      <div class="gate-btns">
+        <a class="btn small primary" href="https://map.kakao.com/link/to/${encodeURIComponent(midName.replace(/ 근처$/, ''))},${mid.lat.toFixed(5)},${mid.lng.toFixed(5)}" target="_blank" rel="noopener">🚗 카카오맵 길찾기 ↗</a>
+        <a class="btn small" href="https://map.naver.com/p/search/${encodeURIComponent(midName.replace(/ 근처$/, ''))}" target="_blank" rel="noopener">🗺 네이버 지도 ↗</a>
+        <button class="btn small" data-act="rtDartNew">🔄 새 판</button>
+      </div>`
+    : `${who}<button class="btn primary rt-go" data-act="rtDartThrow" id="dart-btn" ${S.dartWho ? '' : 'disabled'}>${S.dartAim ? '🛑 지금 던져!' : '🎯 조준 시작'}</button>
+      <p class="note">조준점이 지도 위를 정신없이 돌아다녀요. 원하는 순간에 던지면 그 근처에 꽂혀요 · 바다에 빠지면 다시 던져요 🌊</p>`}
+    ${list}
+  </div>
+  ${past.length ? `<h2 class="sec">🗂 지난 판</h2><div class="gate-hist">${past.map(r => { const m = dartMid(rounds[r]); return `<div class="gate-h"><span class="gate-hs">🎯</span><div class="gate-hm"><b>${r}번째 판 · ${esc(S.dartMidName?.[`${t.id}-${r}`] || dartName(m.lat, m.lng))}</b><small>${rounds[r].map(d => esc(d.place || '')).join(' · ')}</small></div></div>`; }).join('')}</div>` : ''}`;
+}
+// 중간 지점 읍·면 이름 (실패하면 가까운 도시 이름 그대로)
+async function dartMidLookup(t, round, mid){
+  const key = `${t.id}-${round}`; S.dartMidName ||= {}; S._dartLook ||= {};
+  if (S._dartLook[key] || !landAt(mid.lat, mid.lng)) return; S._dartLook[key] = 1;
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${mid.lat}&lon=${mid.lng}&zoom=14&accept-language=ko`);
+    const a = (await r.json()).address || {};
+    const big = a.city || a.county || a.town, small = a.town !== big && a.town || a.village || a.suburb || a.borough || a.quarter || '';
+    if (big){ S.dartMidName[key] = `${(a.province || a.state) ? provShort(a.province || a.state) + ' ' : ''}${big}${small ? ' ' + small : ''}`.trim();
+      if (S.tripTab === 'random' && S.rtTab === 'dart' && !S.dartBusy) renderTrips(); }
+  } catch(e){}
+}
+// 조준 → 던지기
+let _dartRaf = 0;
+function dartAimStart(){
+  const aim = document.getElementById('dart-aim'); if (!aim) return;
+  S.dartAim = true; aim.style.display = '';
+  const ph = Array.from({ length:4 }, () => Math.random() * 6.28), t0 = performance.now();
+  const step = now => {
+    const s = (now - t0) / 1000;
+    const lat = 36.0 + 1.6 * Math.sin(2.3 * s + ph[0]) + 1.15 * Math.sin(3.7 * s + ph[1]);
+    const lng = 127.85 + 1.15 * Math.sin(2.9 * s + ph[2]) + 0.8 * Math.sin(4.3 * s + ph[3]);
+    S.dartPos = { lat, lng }; const [x, y] = mapXY(lat, lng);
+    const el = document.getElementById('dart-aim'); if (!el) return;
+    el.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+    _dartRaf = requestAnimationFrame(step);
+  };
+  _dartRaf = requestAnimationFrame(step);
+  const btn = document.getElementById('dart-btn'); if (btn) btn.textContent = '🛑 지금 던져!';
+}
+async function dartThrow(t){
+  cancelAnimationFrame(_dartRaf); S.dartAim = false; S.dartBusy = true;
+  const p = { lat:S.dartPos.lat + (Math.random() - .5) * 0.3, lng:S.dartPos.lng + (Math.random() - .5) * 0.36 };
+  const aim = document.getElementById('dart-aim'), fly = document.getElementById('dart-fly'), msg = document.getElementById('dart-msg'), btn = document.getElementById('dart-btn');
+  if (btn){ btn.disabled = true; btn.textContent = '🎯 날아가는 중…'; }
+  if (aim) aim.style.display = 'none';
+  const [x, y] = mapXY(p.lat, p.lng);
+  if (fly){ fly.style.display = ''; fly.setAttribute('transform', `translate(${x.toFixed(1)},${y.toFixed(1)})`); fly.classList.remove('hit'); void fly.getBBox(); fly.classList.add('hit'); }
+  await new Promise(r => setTimeout(r, 650));
+  const land = landAt(p.lat, p.lng);
+  if (!land){
+    if (msg){ msg.textContent = '🌊 풍덩! 바다에 빠졌어요. 다시 던지세요'; msg.classList.add('on'); }
+    if (fly) fly.querySelector('text').textContent = '🌊';
+    await new Promise(r => setTimeout(r, 1300));
+    S.dartBusy = false; return renderTrips();
+  }
+  const name = dartName(p.lat, p.lng), who = S.dartWho;
+  try { await call('rt_dart_throw', { p_trip:t.id, p_member:who, p_lat:+p.lat.toFixed(5), p_lng:+p.lng.toFixed(5), p_place:name }); }
+  catch(e){ S.dartBusy = false; toast(e.message || '저장 실패'); return renderTrips(); }
+  if (msg){ msg.textContent = `🎯 ${shortName(memName(who))} → ${name}`; msg.classList.add('on'); }
+  await new Promise(r => setTimeout(r, 900));
+  S.dartBusy = false; await loadRandom(t.id); renderTrips();
+  const mid = dartDone(t);
+  toast(mid ? `⭐ 중간 지점: ${dartName(mid.lat, mid.lng)}!` : `🎯 ${name}에 꽂혔어요!`);
+}
 // ----- 🃏 찬스 카드 -----
 function rtCards(t){
   const R = S.rt, dealt = R.state.cards_dealt ?? R.counts.length > 0, mems = tripMembers(t);
@@ -4338,13 +4541,13 @@ setInterval(async () => {
   }
   if (S.cat === 'travel' && S.tripTab === 'random' && S.rt?.tid === S.tripId && !S.rt.err && Date.now() - _gateTickAt > 30000 && !_gateBusy){
     _gateTickAt = Date.now();
-    const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.sleeps, S.rt.fates, S.rt.clock, S.rt.state, S.rt.counts, S.rt.cardLog]);
+    const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.sleeps, S.rt.fates, S.rt.clock, S.rt.darts, S.rt.state, S.rt.counts, S.rt.cardLog]);
     const myBefore = (S.rt.myCards || []).filter(c => !c.used_at).length;
     const before = sig();
     try {
       await loadRandom(S.rt.tid);
       const typing = document.activeElement?.matches('input,textarea,select') || $('#modal')?.classList.contains('open');
-      if (!typing && before !== sig()){
+      if (!typing && !S.dartBusy && !S.dartAim && before !== sig()){
         const pc = clockPending(); renderTrips(); if (pc && !before.includes(`"id":${pc.id},`)) toast('🔔 운명의 시계를 돌릴 시간이에요!');
         const myAfter = (S.rt.myCards || []).filter(c => !c.used_at).length;
         if (myAfter > myBefore) toast(`🎁 찬스 카드 ${myAfter - myBefore}장을 받았어요!`); else if (myAfter < myBefore) toast(`🏴‍☠️ 내 찬스 카드를 뺏겼어요!`);
@@ -4629,6 +4832,10 @@ async function rtAct(act, b, id){
       case 'rtBudget': { const k = b.dataset.k; S.rtBudgets = S.rtBudgets.includes(k) ? S.rtBudgets.filter(x => x !== k) : [...S.rtBudgets, k]; return renderTrips(); }
       case 'rtMealSpin': return rtMealSpin(t);
       case 'rtBudgetEdit': return openBudgetEdit(t);
+      case 'rtDartThrow': if (S.dartBusy) return; return S.dartAim ? dartThrow(t) : dartAimStart();
+      case 'rtDartWho': S.dartWho = id; return renderTrips();
+      case 'rtDartNew': if (!confirm('새 판을 시작할까요? 지금 판은 "지난 판"에 남아요.')) return; await call('rt_dart_new_round', { p_trip:t.id }); return done();
+      case 'rtDartDel': if (!confirm('이 다트를 지울까요? 지운 사람은 다시 던질 수 있어요.')) return; await call('rt_dart_delete', { p_id:id }); return done();
       case 'rtClockSpin': return rtClockSpin(t);
       case 'rtClockOpen': S.rtClockOpen = !b.parentNode.open; return;
       case 'rtClockSlots': return openClockSlots(t);
