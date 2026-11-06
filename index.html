@@ -679,13 +679,14 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .pp-item span{flex:1}
 .pp-item small{font-size:11px;color:var(--sub)}
 .pp-item.added{opacity:.5;cursor:default}
-.rt-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;margin:14px 0 6px}
+.rt-grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px;margin:14px 0 6px}
 .rt-grid button{position:relative;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:8px 4px;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
 .rt-grid button i{font-style:normal;font-size:20px;line-height:1.2}
 .rt-grid button span{font-size:12px;font-weight:700;white-space:nowrap}
 .rt-grid button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .rt-grid .gate-dot{position:absolute;top:6px;right:8px;margin:0}
-@media (max-width:600px){.rt-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.rt-grid button span{font-size:11px}}
+@media (max-width:900px){.rt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:600px){.rt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.rt-grid button span{font-size:11px}}
 .meal-panel .rt-band small{flex-basis:100%;font-size:11px}
 .gate-h.meal.latest{border-left-color:var(--accent)}
 .bingo-head{display:flex;align-items:baseline;justify-content:space-between;margin:14px 0 8px}
@@ -742,6 +743,21 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .drive-stats span{font-size:18px;font-weight:800}.drive-stats small{font-size:11px;color:var(--sub)}
 a.btn{text-decoration:none;color:var(--ink)}
 .rt-ov a.btn{color:#1a1206;background:#f4efe2}
+.fate-ask{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.fate-ball{font-size:52px;line-height:1}
+.fate-ask textarea{font-size:16px;text-align:center}
+.fate-sum{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.fate-sum span{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700}
+.fate-list{display:flex;flex-direction:column;gap:8px}
+.fate-item{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.fate-item.yes{border-left-color:#3f9b78}.fate-item.no{border-left-color:var(--danger)}
+.fate-q{font-size:15px;font-weight:700}.fate-q small{color:var(--sub);font-weight:500}
+.fate-a{display:flex;flex-direction:column;gap:2px}.fate-a b{font-size:16px}.fate-a small{font-size:12px;color:var(--sub)}
+.fate-foot{display:flex;align-items:center;gap:8px}.fate-foot small{font-size:11px;color:var(--sub)}
+.fate-big{font-size:90px;font-weight:900;margin:24px 0 10px;min-height:110px;display:flex;align-items:center;justify-content:center}
+.fate-big.shake{animation:fateShake .35s ease-in-out infinite}
+.fate-big.yes{color:#5fd3a5;animation:cerPick .5s ease}.fate-big.no{color:#ff7a7a;animation:cerPick .5s ease}
+@keyframes fateShake{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(-8px,2px) rotate(-8deg)}75%{transform:translate(8px,-2px) rotate(8deg)}}
 .bg-list{display:flex;flex-direction:column;gap:6px;margin:12px 0 4px}
 .bg-row{display:flex;gap:6px;align-items:center}
 .card-log{display:flex;flex-direction:column;gap:4px;font-size:13px}
@@ -3907,12 +3923,13 @@ async function loadRandom(tid){
   const [mealCats, meals, bingoItems, bingo, drives] = exBad ? [[], [], [], [], []] : ex.map(x => x.data);
   const cl = await sb.from('rt_card_log').select('*').eq('trip_id', tid);
   const sl = await sb.from('rt_sleeps').select('*').eq('trip_id', tid);
+  const ft = await sb.from('rt_fates').select('*').eq('trip_id', tid);
   const cardLog = cl.error ? [] : cl.data;
   const gids = new Set(gates.map(g => g.id));
   S.rt = { tid, cities, spins, types, used, gates, gateVotes:gateVotes.filter(v => gids.has(v.gate_id)), penalties, counts, poolStats,
     state:state[0] || { gate_trigger:'move', gate_every:120, gate_from:10, gate_to:20, gate_limit:30, gate_fail:'penalty', gate_verify:'either' },
     myCards:priv[0] || [], myPool:priv[1] || [], culprit:priv[2] || [],
-    mealCats, meals, bingoItems, bingo, drives, cardLog, sleeps:sl.error ? [] : sl.data, exErr:exBad?.error.message || null };
+    mealCats, meals, bingoItems, bingo, drives, cardLog, sleeps:sl.error ? [] : sl.data, fates:ft.error ? [] : ft.data, exErr:exBad?.error.message || null };
 }
 function randomHTML(t){
   if (!S.rt || S.rt.tid !== t.id){ loadRandom(t.id).then(() => { if (S.tripTab === 'random' && S.tripId === t.id) renderTrips(); }); return '<div class="panel ac-locked">🎲<br>불러오는 중…</div>'; }
@@ -3921,10 +3938,10 @@ function randomHTML(t){
   if (S.rtTab === 'mission') S.rtTab = 'gate';
   const g = openGate();
   const tabs = [['roulette', '🗺', '목적지 룰렛'], ['gate', '🔓', '관문 미션', g || S.rt.gates.some(x => x.culprit_status === 'voting')], ['cards', '🃏', '찬스 카드'],
-    ['meal', '🍽', '식사 룰렛'], ['sleep', '🛏', '취침 룰렛'], ['bingo', '📸', '포토 빙고'], ['car', '⚽', '축구 퀴즈'], ['drive', '🚗', '운전 당번']];
+    ['fate', '🎱', '운명의 질문'], ['meal', '🍽', '식사 룰렛'], ['sleep', '🛏', '취침 룰렛'], ['bingo', '📸', '포토 빙고'], ['car', '⚽', '축구 퀴즈'], ['drive', '🚗', '운전 당번']];
   const needEx = ['meal', 'bingo', 'drive'].includes(S.rtTab) && S.rt.exErr;
   const body = needEx ? `<div class="panel ac-locked">🎲<br>이 기능을 쓰려면 Supabase에서 <b>16_trip_extras.sql</b>을 실행해주세요<br><small>${esc(S.rt.exErr)}</small></div>`
-    : { roulette:rtRoulette, cards:rtCards, gate:rtGate, meal:rtMeal, sleep:rtSleep, bingo:rtBingo, car:rtCar, drive:rtDrive }[S.rtTab](t);
+    : { roulette:rtRoulette, cards:rtCards, gate:rtGate, fate:rtFate, meal:rtMeal, sleep:rtSleep, bingo:rtBingo, car:rtCar, drive:rtDrive }[S.rtTab](t);
   setTimeout(bindGate);
   return `<div class="rt-grid">${tabs.map(([k, e, l, dot]) => `<button class="${S.rtTab === k ? 'on' : ''}" data-act="rtTab" data-k="${k}"><i>${e}</i><span>${l}</span>${dot ? '<b class="gate-dot"></b>' : ''}</button>`).join('')}</div>${body}`;
 }
@@ -4059,6 +4076,7 @@ function cardLogHTML(){
   return `<h2 class="sec">📜 카드 이동 기록</h2><div class="card-log">${L.slice(0, 30).map(l => `<div>${
     l.action === 'give' ? `🎁 ${n(l.by_id)} → <b>${n(l.to_id)}</b>에게 ${l.card_name ? esc(l.card_name) : '랜덤 카드'}`
     : l.action === 'steal' ? `🏴‍☠️ ${n(l.by_id)}: <b>${n(l.from_id)}</b>의 카드 1장을 뺏어 <b>${n(l.to_id)}</b>에게`
+    : l.action === 'fate' ? `🎱 운명의 질문: <b>${n(l.to_id)}</b>에게 찬스 카드 1장`
     : `🗑 ${n(l.by_id)}: <b>${n(l.from_id)}</b>의 카드 1장 몰수`
   } <small>${new Date(l.created_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })}</small></div>`).join('')}</div>`;
 }
@@ -4292,7 +4310,7 @@ setInterval(async () => {
   }
   if (S.cat === 'travel' && S.tripTab === 'random' && S.rt?.tid === S.tripId && !S.rt.err && Date.now() - _gateTickAt > 30000 && !_gateBusy){
     _gateTickAt = Date.now();
-    const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.sleeps, S.rt.bingo, S.rt.drives, S.rt.state, S.rt.counts, S.rt.cardLog]);
+    const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.sleeps, S.rt.fates, S.rt.bingo, S.rt.drives, S.rt.state, S.rt.counts, S.rt.cardLog]);
     const myBefore = (S.rt.myCards || []).filter(c => !c.used_at).length;
     const before = sig();
     try {
@@ -4361,6 +4379,51 @@ function openBudgetEdit(t){
   openListEdit({ title:'💰 식사 예산 편집', sub:'이 여행의 식사 룰렛 예산 목록이에요. 이름을 바로 고칠 수도 있어요.', list:S.rt.state.meal_budgets || MEAL_BUDGETS, defaults:MEAL_BUDGETS,
     quick:['1인 5천 원', '1인 1만 5천 원', '1인 5만 원', '편의점만', '현지 시장에서만', '제일 싼 메뉴'], placeholder:'예) 1인 1만 5천 원, 편의점만',
     onSave:async list => { await call('rt_save_budgets', { p_trip:t.id, p_list:list }); await loadRandom(t.id); } });
+}
+
+// ----- 🎱 운명의 질문 -----
+const FATE_YES = ['YES!', 'YES, 단 제안한 사람이 쏜다', 'YES, 단 다 같이 인증샷'];
+const FATE_NO = ['NO!', 'NO, 대신 제안한 사람에게 찬스 카드 1장', 'NO, 오늘은 아니야'];
+const fateFinal = f => f.veto_by ? !f.side : f.side;
+function rtFate(t){
+  const R = S.rt, list = [...(R.fates || [])].sort((a, b) => b.id - a.id);
+  const vetoCard = R.myCards.find(c => !c.used_at && /거부/.test(c.name));
+  const card = f => `<div class="fate-item ${fateFinal(f) ? 'yes' : 'no'}">
+      <div class="fate-q">“${esc(f.question)}” <small>— ${esc(shortName(memName(f.asked_by)))}</small></div>
+      <div class="fate-a"><b>${fateFinal(f) ? '✅' : '❌'} ${f.veto_by ? (fateFinal(f) ? 'YES (거부권)' : 'NO (거부권)') : esc(f.answer)}</b>
+        ${f.veto_by ? `<small>원래 답: ${esc(f.answer)} → 🙅 ${esc(shortName(memName(f.veto_by)))}의 거부권으로 뒤집힘</small>` : ''}
+        ${f.card_given ? `<small>🃏 ${esc(shortName(memName(f.asked_by)))}에게 찬스 카드 1장 지급</small>` : ''}</div>
+      <div class="fate-foot"><small>${new Date(f.created_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })}</small><span class="sp"></span>
+        ${!f.veto_by && vetoCard ? `<button class="btn small" data-act="rtFateVeto" data-id="${f.id}">🙅 거부권으로 뒤집기</button>` : ''}
+        ${isAdmin() ? `<button class="icon" data-act="rtFateDel" data-id="${f.id}" title="삭제">✕</button>` : ''}</div>
+    </div>`;
+  return `<div class="panel fate-ask">
+      <div class="fate-ball">🎱</div>
+      <b>하고 싶은 게 생겼다면, 운명에게 물어보세요</b>
+      <textarea id="fate-q" rows="2" placeholder="예) 이따 저녁에 펍 가서 다 같이 축구 보기">${esc(S.rtFateDraft || '')}</textarea>
+      <button class="btn primary rt-go" data-act="rtFateAsk">🎱 운명에 묻기</button>
+      <p class="note" style="margin:0">YES / NO는 무조건 반반 · 답에 "찬스 카드"가 있으면 진짜로 지급돼요 · 🙅 거부권 카드로 결과를 뒤집을 수 있어요</p>
+      <div class="row" style="justify-content:center"><button class="link" data-act="rtFateEditY">✎ YES 답 편집 (${(R.state.fate_yes || FATE_YES).length})</button><button class="link" data-act="rtFateEditN">✎ NO 답 편집 (${(R.state.fate_no || FATE_NO).length})</button></div>
+    </div>
+    ${list.length ? `<div class="fate-sum"><span>✅ 허락 ${list.filter(fateFinal).length}</span><span>❌ 거절 ${list.filter(f => !fateFinal(f)).length}</span><span>🙅 뒤집힘 ${list.filter(f => f.veto_by).length}</span></div>
+      <h2 class="sec">📜 운명의 기록</h2><div class="fate-list">${list.map(card).join('')}</div>` : ''}`;
+}
+async function rtFateAsk(t){
+  const q = $('#fate-q').value.trim();
+  if (!q) return toast('제안을 적어주세요');
+  S.rtFateDraft = q;
+  let r;
+  try { r = await call('rt_fate_ask', { p_trip:t.id, p_question:q }); } catch(e){ return alert(/function|schema/i.test(errMsg(e)) ? 'Supabase에서 21_fate.sql을 먼저 실행해주세요' : errMsg(e)); }
+  S.rtFateDraft = '';
+  const ov = document.createElement('div'); ov.className = 'cer rt-ov';
+  ov.innerHTML = `<div class="cer-in"><div class="cer-kicker">운명의 질문</div><div class="cer-sub" style="margin-top:6px">“${esc(q)}”</div><div class="fate-big shake">🎱</div><div class="cer-sub" id="fate-r">운명이 고민 중…</div></div>`;
+  document.body.appendChild(ov);
+  await new Promise(res => setTimeout(res, 2200));
+  const big = ov.querySelector('.fate-big'); big.classList.remove('shake'); big.classList.add(r.side ? 'yes' : 'no'); big.textContent = r.side ? 'YES' : 'NO';
+  ov.querySelector('#fate-r').innerHTML = `<b style="font-size:20px">${esc(r.answer)}</b>${r.card ? '<br>🃏 제안한 사람에게 찬스 카드 1장 지급!' : ''}`;
+  ov.querySelector('.cer-in').insertAdjacentHTML('beforeend', `<div class="row" style="justify-content:center;margin-top:20px"><button class="btn primary" id="rt-ok">확인</button></div>`);
+  await loadRandom(t.id);
+  ov.querySelector('#rt-ok').onclick = () => { ov.remove(); renderTrips(); };
 }
 
 // ----- 🛏 취침 룰렛 -----
@@ -4644,6 +4707,17 @@ async function rtAct(act, b, id){
       case 'rtBudget': { const k = b.dataset.k; S.rtBudgets = S.rtBudgets.includes(k) ? S.rtBudgets.filter(x => x !== k) : [...S.rtBudgets, k]; return renderTrips(); }
       case 'rtMealSpin': return rtMealSpin(t);
       case 'rtBudgetEdit': return openBudgetEdit(t);
+      case 'rtFateAsk': return rtFateAsk(t);
+      case 'rtFateVeto': { const c = S.rt.myCards.find(x => !x.used_at && /거부/.test(x.name)); if (!c) return toast('쓸 수 있는 거부권이 없어요');
+        const f = S.rt.fates.find(x => x.id === id); if (!confirm(`🙅 거부권을 써서 "${f.question}"의 운명을 ${fateFinal(f) ? 'NO' : 'YES'}로 뒤집을까요?`)) return;
+        await call('rt_fate_veto', { p_fate:id, p_card:c.id }); toast('🙅 운명을 뒤집었어요!'); return done(); }
+      case 'rtFateDel': if (!confirm('이 기록을 지울까요?')) return; await call('rt_delete_fate', { p_id:id }); return done();
+      case 'rtFateEditY': return openListEdit({ title:'✅ YES 답 편집', sub:'YES가 나왔을 때 이 중 하나가 나와요. "찬스 카드"를 넣으면 실제로 카드가 지급돼요.', list:S.rt.state.fate_yes || FATE_YES, defaults:FATE_YES,
+        quick:['YES, 단 지금 당장', 'YES, 단 반대한 사람이 쏜다', 'YES, 그리고 제안한 사람에게 찬스 카드 1장', 'YES, 단 1시간만'], placeholder:'예) YES, 단 막내가 운전',
+        onSave:async list => { await call('rt_save_fate_lists', { p_trip:t.id, p_yes:list, p_no:null }); await loadRandom(t.id); } });
+      case 'rtFateEditN': return openListEdit({ title:'❌ NO 답 편집', sub:'NO가 나왔을 때 이 중 하나가 나와요. "찬스 카드"를 넣으면 실제로 카드가 지급돼요.', list:S.rt.state.fate_no || FATE_NO, defaults:FATE_NO,
+        quick:['NO, 대신 내일 다시 물어보기', 'NO, 제안한 사람 벌칙', 'NO, 대신 아이스크림 하나'], placeholder:'예) NO, 대신 노래방',
+        onSave:async list => { await call('rt_save_fate_lists', { p_trip:t.id, p_yes:null, p_no:list }); await loadRandom(t.id); } });
       case 'rtSleepLabel': S.rtSleepLabel = b.dataset.k; return renderTrips();
       case 'rtSleepT': { const k = b.dataset.k; S.rtSleepT = S.rtSleepT.includes(k) ? S.rtSleepT.filter(x => x !== k) : [...S.rtSleepT, k]; return renderTrips(); }
       case 'rtSleepB': { const k = b.dataset.k; S.rtSleepB = S.rtSleepB.includes(k) ? S.rtSleepB.filter(x => x !== k) : [...S.rtSleepB, k]; return renderTrips(); }
