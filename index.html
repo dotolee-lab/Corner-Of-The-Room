@@ -664,23 +664,51 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .rt-type{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:12px;padding:8px 10px}
 .rt-type div{flex:1;display:flex;flex-direction:column}.rt-type small{color:var(--sub);font-size:12px}
 .rt-type.off{opacity:.45}
-.rt-steps{display:flex;align-items:center;gap:6px;margin:14px 0 10px;font-size:13px;color:var(--sub);flex-wrap:wrap}
-.rt-steps span.on{color:var(--accent);font-weight:800}
-.rt-steps i{font-style:normal;opacity:.5}
+.gate-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--danger);margin-left:2px;vertical-align:2px;animation:float 1s ease-in-out infinite}
+.gate-card{margin-top:12px;border-radius:20px;padding:20px 18px;background:radial-gradient(120% 120% at 50% 0%,rgba(155,140,255,.28),transparent 60%),linear-gradient(160deg,#1b1630,#110f17);border:1px solid rgba(155,140,255,.45);color:#f4efe2;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
+.gate-card.over{border-color:var(--danger);background:radial-gradient(120% 120% at 50% 0%,rgba(230,80,80,.3),transparent 60%),linear-gradient(160deg,#2a1414,#120d0d)}
+.gate-card.free{background:var(--card);color:var(--ink);border-color:var(--line)}
+.gate-top{display:flex;gap:8px;font-size:12px;font-weight:800;letter-spacing:.04em;color:#c9c3e6}
+.gate-top span{background:rgba(255,255,255,.08);padding:3px 10px;border-radius:999px}
+.gate-lock{font-size:13px;font-weight:800;color:#ff9a9a}
+.gate-lock.ok{font-size:22px;color:#3f9b78}
+.gate-mission{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.35;max-width:560px}
+.gate-timer{font-size:40px;font-weight:900;font-variant-numeric:tabular-nums;color:#f2b33d;letter-spacing:.02em}
+.gate-card.over .gate-timer{color:#ff7a7a}
+.gate-warn{margin:0;font-size:13px;font-weight:700;color:var(--danger)}
+.gate-card .gate-warn{color:#ff9a9a}
+.gate-votes{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}
+.gate-votes span{padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.08);font-size:13px;font-weight:700;color:#a9a3c6}
+.gate-votes span.on{background:#3f9b78;color:#fff}
+.gate-votes b{margin-left:4px}
+.gate-photo{max-width:220px;max-height:220px;border-radius:12px;object-fit:cover}
+.gate-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.gate-btns label.btn{cursor:pointer}
+.gate-card .note{color:#a9a3c6}
+.gate-card.free .note{color:var(--sub)}
+.gate-last{font-size:14px;color:var(--sub)}
+.gate-diff{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.gate-sum{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:12px}
+.gate-sum div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 4px;text-align:center;display:flex;flex-direction:column}
+.gate-sum b{font-size:20px}.gate-sum small{font-size:11px;color:var(--sub)}
+.gate-hist{display:flex;flex-direction:column;gap:8px}
+.gate-h{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;padding:10px 12px}
+.gate-h.cleared{border-left-color:#3f9b78}.gate-h.failed{border-left-color:var(--danger)}.gate-h.passed{border-left-color:#9b8cff}
+.gate-hs{width:26px;height:26px;border-radius:50%;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.gate-hm{flex:1;min-width:0;display:flex;flex-direction:column}
+.gate-hm small{font-size:12px;color:var(--sub)}
+.gate-h img{width:48px;height:48px;border-radius:8px;object-fit:cover}
+.gate-add{display:flex;gap:6px;margin-top:10px}
+.gate-add select{width:auto}
+.gate-form{margin-top:10px}
+.gate-hrs{display:flex;align-items:center;gap:4px}
+.gate-hrs select{width:auto!important;height:auto!important}
+.rt-mypool div.used{opacity:.5}
+@media (max-width:600px){.gate-mission{font-size:20px}.gate-sum{grid-template-columns:repeat(3,minmax(0,1fr))}.gate-add{flex-wrap:wrap}.gate-add input{flex-basis:100%}.gate-add select{flex:1}}
 .rt-mypool{display:flex;flex-direction:column;gap:4px;margin-top:10px}
 .rt-mypool div{display:flex;align-items:center;justify-content:space-between;background:var(--bg);border-radius:10px;padding:6px 10px;font-size:14px}
 .rt-poolcnt{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:13px;color:var(--sub);margin:12px 0}
 .rt-poolcnt b{margin-left:auto;color:var(--ink)}
-.rt-secret{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:stretch}
-.rt-mcard{background:#1b1630;color:#f4efe2;border:1px dashed #9b8cff;border-radius:16px;padding:22px 16px;font-size:17px;font-weight:700;cursor:pointer;user-select:none}
-.rt-mlist{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-.rt-mres p{margin:6px 0;font-size:15px;font-weight:600}
-.rt-mres.ok{border-color:#3f9b78}.rt-mres.no{border-color:var(--danger)}
-.rt-mh{display:flex;align-items:center;gap:6px}
-.rt-badge{margin-left:auto;font-size:12px;font-weight:800;padding:2px 8px;border-radius:999px}
-.rt-badge.ok{background:color-mix(in srgb,#7cc4a8 25%,var(--bg));color:#3f9b78}
-.rt-badge.no{background:color-mix(in srgb,var(--danger) 18%,var(--bg));color:var(--danger)}
-.rt-vote{display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap}
 .ag-row.ag-game{border-left-color:#9b8cff}
 .cal-ev.cev-game{background:color-mix(in srgb,#9b8cff 28%,var(--bg))}
 .hc-food{background:radial-gradient(120% 120% at 100% 0%,rgba(232,185,62,.35),transparent 55%),linear-gradient(160deg,#2a2210,#14120d);border-color:rgba(232,185,62,.4)}
@@ -983,7 +1011,7 @@ function renderLogin(sel){
 // 계정이 바뀔 때 이전 사람의 화면 기록(작성 중인 아카데미 투표 등)을 모두 비움
 function resetUserState(){
   S.adraft = {}; S.bdraft = {}; S.bBallots = []; S.bVotes = []; S.pickResult = null; S.tab = 'records'; S.cat = 'home'; S.lastTab = {}; S.tripId = null; S.tourId = null;
-  S.ballots = []; S.awards = []; S.rt = null; S.rtPeek = false;
+  S.ballots = []; S.awards = []; S.rt = null;
 }
 
 async function logout(silent){
@@ -3777,23 +3805,28 @@ async function loadRandom(tid){
   const pub = await Promise.all([
     sb.from('rt_cities').select('*').order('id'), sb.from('rt_spins').select('*').eq('trip_id', tid),
     sb.from('rt_card_types').select('*').order('sort'), sb.from('rt_cards').select('*').eq('trip_id', tid),
-    sb.from('rt_missions').select('*').eq('trip_id', tid), sb.from('rt_mission_votes').select('*'),
-    sb.from('rt_state').select('*').eq('trip_id', tid),
-    sb.rpc('rt_card_counts', { p_trip:tid }), sb.rpc('rt_pool_counts', { p_trip:tid }), sb.rpc('rt_mission_count', { p_trip:tid }),
+    sb.from('rt_gates').select('*').eq('trip_id', tid), sb.from('rt_gate_votes').select('*'),
+    sb.from('rt_penalties').select('*').order('sort'), sb.from('rt_state').select('*').eq('trip_id', tid),
+    sb.rpc('rt_card_counts', { p_trip:tid }), sb.rpc('rt_pool_stats', { p_trip:tid }),
   ]);
   const bad = pub.find(x => x.error);
   if (bad){ S.rt = { err:bad.error.message }; return; }
-  const [cities, spins, types, used, missions, votes, state, counts, pool, mcount] = pub.map(x => x.data);
-  const priv = await Promise.all([call('rt_my_cards', { p_trip:tid }), call('rt_my_pool', { p_trip:tid }), call('rt_my_mission', { p_trip:tid })]);
-  S.rt = { tid, cities, spins, types, used, missions, votes, revealed:!!state[0]?.missions_revealed, counts, pool, mcount,
-    myCards:priv[0] || [], myPool:priv[1] || [], myMission:(priv[2] || [])[0] || null };
+  const [cities, spins, types, used, gates, gateVotes, penalties, state, counts, poolStats] = pub.map(x => x.data);
+  const priv = await Promise.all([call('rt_my_cards', { p_trip:tid }), call('rt_my_pool', { p_trip:tid })]);
+  const gids = new Set(gates.map(g => g.id));
+  S.rt = { tid, cities, spins, types, used, gates, gateVotes:gateVotes.filter(v => gids.has(v.gate_id)), penalties, counts, poolStats,
+    state:state[0] || { gate_trigger:'move', gate_every:120, gate_from:10, gate_to:20, gate_limit:30, gate_fail:'penalty', gate_verify:'either' },
+    myCards:priv[0] || [], myPool:priv[1] || [] };
 }
 function randomHTML(t){
   if (!S.rt || S.rt.tid !== t.id){ loadRandom(t.id).then(() => { if (S.tripTab === 'random' && S.tripId === t.id) renderTrips(); }); return '<div class="panel ac-locked">🎲<br>불러오는 중…</div>'; }
-  if (S.rt.err) return `<div class="panel ac-locked">🎲<br>랜덤 여행 기능을 쓰려면 Supabase에서 <b>12_random_trip.sql</b>을 먼저 실행해주세요<br><small>${esc(S.rt.err)}</small></div>`;
+  if (S.rt.err) return `<div class="panel ac-locked">🎲<br>랜덤 여행 기능을 쓰려면 Supabase에서 <b>12_random_trip.sql</b>과 <b>13_gate_mission.sql</b>을 실행해주세요<br><small>${esc(S.rt.err)}</small></div>`;
   S.rtTab ??= 'roulette';
-  const tabs = [['roulette', '🗺 목적지 룰렛'], ['cards', '🃏 찬스 카드'], ['mission', '🕵️ 시크릿 미션']];
-  const body = { roulette:rtRoulette, cards:rtCards, mission:rtMission }[S.rtTab](t);
+  if (S.rtTab === 'mission') S.rtTab = 'gate';
+  const g = openGate();
+  const tabs = [['roulette', '🗺 목적지 룰렛'], ['cards', '🃏 찬스 카드'], ['gate', `🔓 관문 미션${g ? ' <i class="gate-dot"></i>' : ''}`]];
+  const body = { roulette:rtRoulette, cards:rtCards, gate:rtGate }[S.rtTab](t);
+  setTimeout(bindGate);
   return `<div class="chips rt-tabs">${tabs.map(([k, l]) => `<button class="chip ${S.rtTab === k ? 'on' : ''}" data-act="rtTab" data-k="${k}">${l}</button>`).join('')}</div>${body}`;
 }
 
@@ -3843,7 +3876,8 @@ function rtRoulette(t){
             <button class="chip sm" data-act="rtDice">🎲 시간 주사위</button></div>` : ''}
         ${c.need ? `<p class="note">${esc(c.need)}</p>` : `
           <div class="rt-cands">${c.list.map(x => `<span title="${esc(x.note)}">${esc(x.name)}<small>${esc(x.note)}</small></span>`).join('') || '<p class="note">조건에 맞는 후보가 없어요</p>'}</div>
-          <button class="btn primary rt-go" data-act="rtSpin" ${c.list.length ? '' : 'disabled'}>🎰 Day ${day} 룰렛 돌리기 <small>(${c.list.length}곳)</small></button>
+          ${openGate() ? `<p class="gate-warn">🔒 관문 미션을 먼저 클리어해야 다음 목적지를 뽑을 수 있어요 <button class="link" data-act="rtTab" data-k="gate">관문 보러 가기 →</button></p>` : ''}
+          <button class="btn primary rt-go" data-act="rtSpin" ${c.list.length && !openGate() ? '' : 'disabled'}>🎰 Day ${day} 룰렛 돌리기 <small>(${c.list.length}곳)</small></button>
           <p class="note" style="text-align:center">한 번 돌리면 바로 확정돼요 · 거부권 사용 불가</p>`}
       </div>`}
     <details class="panel rt-manage" ${S.rtCityOpen ? 'open' : ''}><summary data-act="rtCityOpen">⚙️ 후보 도시 관리 <small class="dim">눌러서 빼기·넣기</small></summary>
@@ -3930,38 +3964,135 @@ function rtEditType(id){
   if (id) $('#del').onclick = async () => { if (!confirm('이 카드 종류를 지울까요? 이미 나눠준 카드는 그대로 남아요.')) return; try { await call('rt_delete_card_type', { p_id:id }); await loadRandom(S.tripId); closeModal(); renderTrips(); } catch(e){ $('#merr').textContent = errMsg(e); } };
 }
 
-// ----- 🕵️ 시크릿 미션 (틀) -----
-function rtMission(t){
-  const R = S.rt, mems = tripMembers(t), total = R.pool.reduce((a, p) => a + p.n, 0), assigned = R.mcount > 0;
-  const steps = [['모으기', !assigned], ['배정', assigned && !R.revealed], ['공개 · 투표', R.revealed]];
-  let body;
-  if (!assigned) body = `
-    <div class="panel"><b>1단계 · 미션 모으기</b>
-      <p class="note">미션을 써서 넣으면 쓴 사람만 볼 수 있어요. ${mems.length}개 이상 모이면 랜덤으로 한 명씩 배정해요. 가능하면 자기가 쓴 미션은 자기가 안 받아요.</p>
-      <div style="display:flex;gap:6px"><input id="rm-t" placeholder="예) 친구가 '대박'이라는 말을 5번 하게 만들기"><button class="btn small primary" data-act="rtAddMission">넣기</button></div>
-      ${R.myPool.length ? `<div class="rt-mypool"><small class="dim">내가 넣은 미션</small>${R.myPool.map(p => `<div>${esc(p.text)} <button class="icon" data-act="rtDelPool" data-id="${p.id}" title="삭제">✕</button></div>`).join('')}</div>` : ''}
-      <div class="rt-poolcnt">${mems.map(m => `<span>${esc(shortName(m.name))} ${(R.pool.find(p => p.author_id === m.id)?.n) || 0}개</span>`).join('')}<b>모인 미션 ${total} / ${mems.length}</b></div>
-      <button class="btn primary rt-go" data-act="rtAssign" ${total >= mems.length ? '' : 'disabled'}>🎲 미션 랜덤 배정</button>
+// ----- 🔓 관문 미션 -----
+const GATE_TRIG = { move:['🚗', '출발 전 관문'], time:['⏰', '정기 관문'], manual:['✋', '관문'] };
+const GATE_DIFF = { 1:['🟢', '쉬움'], 2:['🟡', '보통'], 3:['🔴', '어려움'] };
+const GATE_ST = { cleared:['🎉', '클리어'], failed:['💥', '실패'], passed:['🎫', '패스'], open:['🔓', '진행 중'] };
+const gateNeed = t => Math.min(3, tripMembers(t).length || 4);
+const mmss = ms => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+const openGate = () => (S.rt?.gates || []).find(g => g.status === 'open');
+function rtGate(t){
+  const R = S.rt, st = R.state, g = openGate(), mems = tripMembers(t), need = gateNeed(t);
+  const closed = R.gates.filter(x => x.status !== 'open').sort((a, b) => b.seq - a.seq);
+  const leftAll = R.poolStats.reduce((a, p) => a + p.left_n, 0), totalAll = R.poolStats.reduce((a, p) => a + p.n, 0);
+  const pass = R.myCards.find(c => !c.used_at && /패스/.test(c.name));
+  const trigOn = k => st.gate_trigger === k || st.gate_trigger === 'both';
+  let main;
+  if (g){
+    const vs = R.gateVotes.filter(v => v.gate_id === g.id), mine = vs.some(v => v.member_id === S.me);
+    const over = new Date(g.deadline) <= new Date();
+    main = `<div class="gate-card ${over ? 'over' : ''}">
+      <div class="gate-top"><span>${GATE_TRIG[g.trigger]?.[0] || '🔓'} ${g.seq}번째 ${GATE_TRIG[g.trigger]?.[1] || '관문'}</span>${g.difficulty ? `<span>${GATE_DIFF[g.difficulty][0]} ${GATE_DIFF[g.difficulty][1]}</span>` : ''}</div>
+      <div class="gate-lock">🔒 다음 이동 잠김</div>
+      <div class="gate-mission">${esc(g.mission)}</div>
+      <div class="gate-timer" data-deadline="${g.deadline}" data-gid="${g.id}">${over ? (st.gate_fail === 'block' ? '⛔ 시간 초과!' : '⏱ 판정 중…') : mmss(new Date(g.deadline) - new Date())}</div>
+      ${over && st.gate_fail === 'block' ? '<p class="gate-warn">클리어할 때까지 출발 금지! 끝까지 해내세요 💪</p>' : `<p class="dim" style="margin:0">${st.gate_fail === 'block' ? '시간이 지나도 클리어할 때까지 못 움직여요' : '시간 안에 못 깨면 벌칙을 받고 통과해요'}</p>`}
+      ${st.gate_verify !== 'photo' ? `<div class="gate-votes">${mems.map(m => `<span class="${vs.some(v => v.member_id === m.id) ? 'on' : ''}">${esc(shortName(m.name))}</span>`).join('')}<b>${vs.length} / ${need}</b></div>` : ''}
+      ${g.photo_url ? `<a href="${esc(g.photo_url)}" target="_blank" rel="noopener"><img class="gate-photo" src="${esc(g.photo_url)}" alt="인증샷"></a>` : ''}
+      <div class="gate-btns">
+        ${st.gate_verify !== 'photo' ? `<button class="btn ${mine ? '' : 'primary'}" data-act="rtGVote">${mine ? '✋ 완료 취소' : '✅ 우리 완료!'}</button>` : ''}
+        <label class="btn ${st.gate_verify === 'photo' ? 'primary' : ''}">📸 인증샷${st.gate_verify === 'vote' ? ' (기록용)' : ''}<input type="file" accept="image/*" capture="environment" id="gate-ph" hidden></label>
+        ${pass ? `<button class="btn" data-act="rtGPass" data-id="${pass.id}">🎫 패스권 쓰기</button>` : ''}
+      </div>
+      <p class="note" style="margin:0">${{ vote:`${need}명이 "완료"를 누르면 클리어`, photo:'인증샷을 올리면 클리어', either:`${need}명 "완료" 또는 인증샷 올리면 클리어` }[st.gate_verify]} · 운전 중인 사람은 빠져도 돼요</p>
+      ${isAdmin() ? '<button class="link" data-act="rtGDel">이 관문 취소 (관리자)</button>' : ''}
     </div>`;
-  else if (!R.revealed) body = `
-    <div class="panel rt-secret"><b>🕵️ 내 시크릿 미션</b>
-      ${R.myMission ? `<div class="rt-mcard" data-act="rtPeek">${S.rtPeek ? esc(R.myMission.text) : '👆 눌러서 몰래 보기'}</div>` : '<p class="note">이 여행 멤버가 아니라서 받은 미션이 없어요</p>'}
-      <p class="note">다른 사람 미션은 공개 전까지 아무도 볼 수 없어요. 마지막 날 다 같이 공개해요.</p>
-      <button class="btn primary rt-go" data-act="rtReveal">📢 미션 공개</button>
-      ${isAdmin() ? '<button class="link" data-act="rtResetMission">미션 다시 배정 (관리자)</button>' : ''}
+  } else {
+    const last = closed[0];
+    const lastOpen = R.gates.reduce((a, x) => x.opened_at > a ? x.opened_at : a, '');
+    const nextTime = trigOn('time') ? (lastOpen ? new Date(new Date(lastOpen).getTime() + st.gate_every * 60000) : null) : null;
+    main = `<div class="gate-card free">
+      <div class="gate-lock ok">🚗 출발 OK</div>
+      ${last ? `<div class="gate-last">${GATE_ST[last.status][0]} 지난 관문 <b>${GATE_ST[last.status][1]}</b>${last.status === 'failed' ? ` · 벌칙 <b>${esc(last.penalty || '')}</b> → ${esc(memName(last.penalty_member))}` : last.status === 'passed' ? ` · ${esc(memName(last.pass_member))}님 패스권` : ''}</div>` : '<div class="gate-last">아직 연 관문이 없어요</div>'}
+      ${trigOn('move') ? `<div class="gate-diff">${[['', '아무거나'], ...Object.entries(GATE_DIFF).map(([k, [e, l]]) => [k, `${e} ${l}`])].map(([k, l]) => `<button class="chip sm ${(S.rtDiff ?? '') === k ? 'on' : ''}" data-act="rtGDiff" data-k="${k}">${l}</button>`).join('')}</div>
+        <button class="btn primary rt-go" data-act="rtGOpen" ${leftAll ? '' : 'disabled'}>🚗 출발하기 → 관문 미션 뽑기</button>` : ''}
+      ${trigOn('time') ? `<p class="note" style="margin:0">⏰ 정기 관문: ${st.gate_every}분마다 · ${st.gate_from}~${st.gate_to}시 · 여행 기간에만${nextTime ? ` · 다음 예정 ${nextTime.toLocaleTimeString('ko-KR', { hour:'numeric', minute:'2-digit' })} 이후` : ''}</p>` : ''}
+      ${leftAll ? `<p class="note" style="margin:0">남은 미션 ${leftAll}개</p>` : '<p class="gate-warn">남은 미션이 없어요. 아래 미션 풀에 미션을 넣어주세요</p>'}
     </div>`;
-  else body = `
-    <div class="rt-mlist">${R.missions.map(m => { const vs = R.votes.filter(v => v.mission_id === m.id), ok = vs.filter(v => v.ok).length, others = mems.length - 1;
-      const res = ok > others / 2 ? 'ok' : vs.length - ok >= others / 2 && vs.length - ok > 0 ? 'no' : '';
-      const mine = vs.find(v => v.voter_id === S.me);
-      return `<div class="panel rt-mres ${res}"><div class="rt-mh"><b>${esc(memName(m.member_id))}</b><span class="dim">의 미션</span>${res === 'ok' ? '<span class="rt-badge ok">🎉 성공</span>' : res === 'no' ? '<span class="rt-badge no">💥 실패</span>' : ''}</div>
-        <p>${esc(m.text)}</p><small class="dim">쓴 사람 · ${esc(memName(m.author_id))}</small>
-        <div class="rt-vote">${m.member_id === S.me ? `<span class="dim">내 미션 · 다른 사람들이 판정해요</span>` : `<button class="chip sm ${mine?.ok === true ? 'on' : ''}" data-act="rtVote" data-id="${m.id}" data-k="1">✅ 성공</button><button class="chip sm ${mine?.ok === false ? 'on' : ''}" data-act="rtVote" data-id="${m.id}" data-k="0">❌ 실패</button>`}
-          <span class="dim">✅ ${ok} · ❌ ${vs.length - ok}</span></div></div>`; }).join('')}</div>
-    <p class="note">나머지 사람 과반이 ✅면 성공이에요</p>
-    ${isAdmin() ? '<button class="link" data-act="rtHide">공개 취소 (관리자)</button>' : ''}`;
-  return `<div class="rt-steps">${steps.map(([l, on], i) => `<span class="${on ? 'on' : ''}">${i + 1}. ${l}</span>`).join('<i>›</i>')}</div>${body}`;
+  }
+  const done = R.gates.filter(x => x.status !== 'open');
+  const clr = done.filter(x => x.status === 'cleared'), mins = clr.map(x => (new Date(x.closed_at) - new Date(x.opened_at)) / 60000);
+  const longest = clr.length ? clr[mins.indexOf(Math.max(...mins))] : null;
+  return `${main}
+    ${done.length ? `<div class="gate-sum"><div><b>${done.length}</b><small>관문</small></div><div><b>${clr.length}</b><small>🎉 클리어</small></div><div><b>${done.filter(x => x.status === 'failed').length}</b><small>💥 실패</small></div><div><b>${done.filter(x => x.status === 'passed').length}</b><small>🎫 패스</small></div><div><b>${clr.length ? Math.round(mins.reduce((a, b) => a + b, 0) / clr.length) : '–'}</b><small>평균 분</small></div></div>
+      ${longest ? `<p class="note">🐢 가장 오래 걸린 관문: "${esc(longest.mission)}" ${Math.round(Math.max(...mins))}분</p>` : ''}
+      <h2 class="sec">📜 관문 기록</h2>
+      <div class="gate-hist">${closed.map(x => `<div class="gate-h ${x.status}"><span class="gate-hs">${x.seq}</span>
+        <div class="gate-hm"><b>${esc(x.mission)}</b><small>${GATE_ST[x.status][0]} ${GATE_ST[x.status][1]} · ${GATE_TRIG[x.trigger]?.[1] || ''} · ${new Date(x.opened_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })}${x.status === 'cleared' ? ` · ${Math.max(1, Math.round((new Date(x.closed_at) - new Date(x.opened_at)) / 60000))}분 만에` : ''}
+          ${x.status === 'failed' ? ` · 벌칙 ${esc(x.penalty || '')} → ${esc(memName(x.penalty_member))}` : ''}${x.status === 'passed' ? ` · ${esc(memName(x.pass_member))} 패스` : ''}${x.author_id ? ` · 출제 ${esc(shortName(memName(x.author_id)))}` : ''}</small></div>
+        ${x.photo_url ? `<a href="${esc(x.photo_url)}" target="_blank" rel="noopener"><img src="${esc(x.photo_url)}" alt=""></a>` : ''}</div>`).join('')}</div>` : ''}
+    <details class="panel rt-manage" ${S.rtPoolOpen ? 'open' : ''}><summary data-act="rtPoolOpen">📥 미션 풀 <small class="dim">남은 ${leftAll} / 전체 ${totalAll} · 넣은 미션은 쓴 사람만 볼 수 있어요</small></summary>
+      <div class="gate-add"><input id="rm-t" placeholder="예) 현지인에게 맛집 추천받기"><select id="rm-d">${Object.entries(GATE_DIFF).map(([k, [e, l]]) => `<option value="${k}" ${k === '2' ? 'selected' : ''}>${e} ${l}</option>`).join('')}</select><button class="btn small primary" data-act="rtAddMission">넣기</button></div>
+      ${R.myPool.length ? `<div class="rt-mypool"><small class="dim">내가 넣은 미션</small>${R.myPool.map(p => `<div class="${p.used ? 'used' : ''}">${GATE_DIFF[p.difficulty][0]} ${esc(p.text)}${p.used ? ' <small>(나옴)</small>' : ''} <button class="icon" data-act="rtDelPool" data-id="${p.id}" title="삭제">✕</button></div>`).join('')}</div>` : ''}
+      <div class="rt-poolcnt">${mems.map(m => { const p = R.poolStats.find(x => x.author_id === m.id); return `<span>${esc(shortName(m.name))} ${p ? p.n : 0}개</span>`; }).join('')}${(() => { const p = R.poolStats.find(x => x.author_id == null); return p ? `<span>기본 ${p.n}개</span>` : ''; })()}</div>
+      <button class="btn small" data-act="rtPresets">✨ 기본 미션 22개 넣기</button>
+    </details>
+    <details class="panel rt-manage" ${S.rtRuleOpen ? 'open' : ''}><summary data-act="rtRuleOpen">⚙️ 관문 규칙 <small class="dim">${{ move:'이동 전마다', time:'정해진 시간마다', both:'이동 전 + 시간마다' }[st.gate_trigger]} · 제한 ${st.gate_limit}분 · ${st.gate_fail === 'block' ? '막힘' : '벌칙 후 통과'}</small></summary>
+      <div class="form gate-form">
+        <label class="full">언제 뽑나요?<select id="gr-tr">${[['move', '🚗 이동 전마다 (출발 버튼)'], ['time', '⏰ 정해진 시간마다'], ['both', '🚗 + ⏰ 둘 다']].map(([k, l]) => `<option value="${k}" ${st.gate_trigger === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+        <label>시간 간격<select id="gr-ev">${[60, 90, 120, 150, 180, 240].map(m => `<option value="${m}" ${st.gate_every === m ? 'selected' : ''}>${fmtMin(m)}마다</option>`).join('')}</select></label>
+        <label>활동 시간<span class="gate-hrs"><select id="gr-f">${Array.from({ length:24 }, (_, h) => `<option ${st.gate_from === h ? 'selected' : ''}>${h}</option>`).join('')}</select>시 ~ <select id="gr-to">${Array.from({ length:24 }, (_, h) => h + 1).map(h => `<option ${st.gate_to === h ? 'selected' : ''}>${h}</option>`).join('')}</select>시</span></label>
+        <label>제한 시간<select id="gr-l">${[10, 15, 20, 30, 45, 60, 90].map(m => `<option value="${m}" ${st.gate_limit === m ? 'selected' : ''}>${m}분</option>`).join('')}</select></label>
+        <label>못 깨면?<select id="gr-fa"><option value="penalty" ${st.gate_fail === 'penalty' ? 'selected' : ''}>💥 벌칙 받고 통과</option><option value="block" ${st.gate_fail === 'block' ? 'selected' : ''}>⛔ 클리어할 때까지 막힘</option></select></label>
+        <label class="full">클리어 확인<select id="gr-v">${[['either', `✅ ${gateNeed(t)}명 완료 투표 또는 📸 인증샷`], ['vote', `✅ ${gateNeed(t)}명 완료 투표만`], ['photo', '📸 인증샷만']].map(([k, l]) => `<option value="${k}" ${st.gate_verify === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      </div>
+      <button class="btn small primary" data-act="rtGRule">규칙 저장</button>
+      <div class="flabel" style="margin-top:16px">💥 벌칙 목록 <small class="dim">실패하면 이 중 하나 + 랜덤 1명</small></div>
+      <div class="rt-types">${R.penalties.map(p => `<div class="rt-type ${p.active ? '' : 'off'}"><div><b>${esc(p.text)}</b></div>
+        <button class="icon" data-act="rtPenTog" data-id="${p.id}" title="${p.active ? '빼기' : '넣기'}">${p.active ? '⏸' : '▶'}</button><button class="icon" data-act="rtPenDel" data-id="${p.id}" title="삭제">✕</button></div>`).join('')}</div>
+      <div class="gate-add"><input id="pen-t" placeholder="예) 휴게소 간식 쏘기"><button class="btn small" data-act="rtPenAdd">추가</button></div>
+    </details>`;
 }
+async function resizeImage(file, max = 1600){
+  const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(file); });
+  const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+  c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return new Promise(ok => c.toBlob(ok, 'image/jpeg', 0.82));
+}
+async function gateUpload(file){
+  const g = openGate(); if (!g || !file) return;
+  toast('📸 올리는 중…');
+  try {
+    const blob = await resizeImage(file);
+    const path = `gates/${g.trip_id}/${g.id}-${Date.now()}.jpg`;
+    const up = await sb.storage.from('cor-photos').upload(path, blob, { contentType:'image/jpeg', upsert:false });
+    if (up.error) throw up.error;
+    const url = sb.storage.from('cor-photos').getPublicUrl(path).data.publicUrl;
+    const r = await call('rt_gate_photo', { p_gate:g.id, p_url:url });
+    await loadRandom(g.trip_id); renderTrips();
+    toast(r === 'cleared' ? '🎉 관문 클리어! 출발하세요' : '📸 인증샷을 올렸어요');
+  } catch(e){ alert('사진을 올리지 못했어요: ' + errMsg(e)); }
+}
+function bindGate(){
+  const f = $('#gate-ph'); if (f) f.onchange = () => gateUpload(f.files[0]);
+}
+// 1초마다 타이머, 30초마다 새 소식 확인 (랜덤 탭을 보고 있을 때만)
+let _gateBusy = false, _gateTickAt = 0;
+setInterval(async () => {
+  const el = document.querySelector('.gate-timer[data-deadline]');
+  if (el){
+    const left = new Date(el.dataset.deadline) - new Date();
+    if (left > 0) el.textContent = mmss(left);
+    else if (!_gateBusy && S.rt?.state?.gate_fail === 'penalty'){
+      _gateBusy = true; el.textContent = '⏱ 판정 중…';
+      try { const r = await call('rt_expire_gate', { p_gate:+el.dataset.gid }); await loadRandom(S.rt.tid); renderTrips(); if (r === 'failed') toast('💥 시간 초과! 벌칙 당첨자를 확인하세요'); } catch(e){}
+      _gateBusy = false;
+    } else if (S.rt?.state?.gate_fail === 'block') el.textContent = '⛔ 시간 초과!';
+  }
+  if (S.cat === 'travel' && S.tripTab === 'random' && S.rt?.tid === S.tripId && !S.rt.err && Date.now() - _gateTickAt > 30000 && !_gateBusy){
+    _gateTickAt = Date.now();
+    const before = JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used]);
+    try {
+      if (['time', 'both'].includes(S.rt.state.gate_trigger)) await call('rt_tick_gate', { p_trip:S.rt.tid });
+      await loadRandom(S.rt.tid);
+      const typing = document.activeElement?.matches('input,textarea,select') || $('#modal')?.classList.contains('open');
+      if (!typing && before !== JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used])){
+        const g = openGate(); renderTrips(); if (g && !before.includes(`"id":${g.id},`)) toast(`🔓 새 관문 미션이 열렸어요!`);
+      }
+    } catch(e){}
+  }
+}, 1000);
 
 async function rtAct(act, b, id){
   const t = S.trips.find(x => x.id === S.tripId);
@@ -3983,15 +4114,22 @@ async function rtAct(act, b, id){
       case 'rtUse': { const c = S.rt.myCards.find(x => x.id === id); const note = prompt(`${c.emoji} ${c.name}을(를) 사용할까요?\n어디에 썼는지 한마디 (선택)`, ''); if (note === null) return;
         await call('rt_use_card', { p_card:id, p_note:note }); toast(`${c.emoji} ${c.name} 사용!`); return done(); }
       case 'rtType': return rtEditType(b.dataset.id ? id : null);
-      case 'rtAddMission': { const v = $('#rm-t').value; await call('rt_add_mission', { p_trip:t.id, p_text:v }); toast('미션을 넣었어요 🤫'); return done(); }
-      case 'rtDelPool': await call('rt_delete_pool', { p_id:id }); return done();
-      case 'rtAssign': if (!confirm('모인 미션을 랜덤으로 배정할까요?')) return; await call('rt_assign_missions', { p_trip:t.id }); S.rtPeek = false; toast('🕵️ 미션을 배정했어요. 몰래 확인하세요!'); return done();
-      case 'rtPeek': S.rtPeek = !S.rtPeek; return renderTrips();
-      case 'rtReveal': if (!confirm('모두의 미션을 공개할까요?')) return; await call('rt_reveal', { p_trip:t.id, p_on:true }); return done();
-      case 'rtHide': await call('rt_reveal', { p_trip:t.id, p_on:false }); return done();
-      case 'rtResetMission': if (!confirm('배정된 미션을 모두 지우고 다시 배정할 수 있게 할까요?')) return; await call('rt_reset_missions', { p_trip:t.id }); return done();
-      case 'rtVote': { const m = S.rt.votes.find(v => v.mission_id === id && v.voter_id === S.me), ok = b.dataset.k === '1';
-        await call('rt_vote_mission', { p_mission:id, p_ok:m?.ok === ok ? null : ok }); return done(); }
+      case 'rtAddMission': { await call('rt_add_gate_mission', { p_trip:t.id, p_text:$('#rm-t').value, p_diff:+$('#rm-d').value }); S.rtPoolOpen = true; toast('미션을 넣었어요 🤫'); return done(); }
+      case 'rtDelPool': await call('rt_delete_pool', { p_id:id }); S.rtPoolOpen = true; return done();
+      case 'rtPresets': { const n = await call('rt_add_presets', { p_trip:t.id }); S.rtPoolOpen = true; toast(n ? `✨ 기본 미션 ${n}개를 넣었어요` : '이미 다 들어가 있어요'); return done(); }
+      case 'rtPoolOpen': S.rtPoolOpen = !b.parentNode.open; return;
+      case 'rtRuleOpen': S.rtRuleOpen = !b.parentNode.open; return;
+      case 'rtGDiff': S.rtDiff = b.dataset.k; return renderTrips();
+      case 'rtGOpen': { if (!confirm('출발 전 관문 미션을 뽑을까요?')) return; await call('rt_open_gate', { p_trip:t.id, p_trigger:'move', p_diff:S.rtDiff ? +S.rtDiff : null }); toast('🔓 관문 미션 등장!'); return done(); }
+      case 'rtGVote': { const g = openGate(), mine = S.rt.gateVotes.some(v => v.gate_id === g.id && v.member_id === S.me);
+        const r = await call('rt_vote_gate', { p_gate:g.id, p_on:!mine }); if (r === 'cleared') toast('🎉 관문 클리어! 출발하세요'); return done(); }
+      case 'rtGPass': { if (!confirm('🎫 패스권을 써서 이 관문을 건너뛸까요?')) return; await call('rt_pass_gate', { p_gate:openGate().id, p_card:id }); toast('🎫 패스! 출발하세요'); return done(); }
+      case 'rtGDel': { if (!confirm('이 관문을 취소할까요? 미션은 풀로 돌아가요.')) return; await call('rt_delete_gate', { p_gate:openGate().id }); return done(); }
+      case 'rtGRule': { await call('rt_save_gate_settings', { p_trip:t.id, p_d:{ trigger:$('#gr-tr').value, every:+$('#gr-ev').value, from:+$('#gr-f').value, to:+$('#gr-to').value,
+          limit:+$('#gr-l').value, fail:$('#gr-fa').value, verify:$('#gr-v').value } }); S.rtRuleOpen = true; toast('규칙을 저장했어요'); return done(); }
+      case 'rtPenAdd': await call('rt_save_penalty', { p_id:null, p_text:$('#pen-t').value, p_active:true }); S.rtRuleOpen = true; return done();
+      case 'rtPenTog': { const p = S.rt.penalties.find(x => x.id === id); await call('rt_save_penalty', { p_id:id, p_text:p.text, p_active:!p.active }); S.rtRuleOpen = true; return done(); }
+      case 'rtPenDel': if (!confirm('이 벌칙을 지울까요?')) return; await call('rt_delete_penalty', { p_id:id }); S.rtRuleOpen = true; return done();
     }
   } catch(e){ alert(errMsg(e)); }
 }
