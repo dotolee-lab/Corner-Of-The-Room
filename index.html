@@ -740,6 +740,11 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .drive-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-top:12px}
 .drive-stats div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
 .drive-stats span{font-size:18px;font-weight:800}.drive-stats small{font-size:11px;color:var(--sub)}
+.card-log{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.card-log div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.card-log small{color:var(--sub);font-size:11px;margin-left:4px}
+.fd-rvsel button small{opacity:.6;font-size:11px}
+.fd-rvsel button:disabled{opacity:.35;cursor:not-allowed}
 .gate-crank{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;font-size:13px}
 .gate-crank span{background:var(--chip);padding:3px 10px;border-radius:999px;font-weight:700}
 .gate-crank span.top{background:#f2b33d;color:#1a1206}
@@ -3896,11 +3901,13 @@ async function loadRandom(tid){
     sb.from('rt_bingo_items').select('*').order('id'), sb.from('rt_bingo_cells').select('*').eq('trip_id', tid), sb.from('rt_drive_log').select('*').eq('trip_id', tid)]);
   const exBad = ex.find(x => x.error);
   const [mealCats, meals, bingoItems, bingo, drives] = exBad ? [[], [], [], [], []] : ex.map(x => x.data);
+  const cl = await sb.from('rt_card_log').select('*').eq('trip_id', tid);
+  const cardLog = cl.error ? [] : cl.data;
   const gids = new Set(gates.map(g => g.id));
   S.rt = { tid, cities, spins, types, used, gates, gateVotes:gateVotes.filter(v => gids.has(v.gate_id)), penalties, counts, poolStats,
     state:state[0] || { gate_trigger:'move', gate_every:120, gate_from:10, gate_to:20, gate_limit:30, gate_fail:'penalty', gate_verify:'either' },
     myCards:priv[0] || [], myPool:priv[1] || [], culprit:priv[2] || [],
-    mealCats, meals, bingoItems, bingo, drives, exErr:exBad?.error.message || null };
+    mealCats, meals, bingoItems, bingo, drives, cardLog, exErr:exBad?.error.message || null };
 }
 function randomHTML(t){
   if (!S.rt || S.rt.tid !== t.id){ loadRandom(t.id).then(() => { if (S.tripTab === 'random' && S.tripId === t.id) renderTrips(); }); return '<div class="panel ac-locked">🎲<br>불러오는 중…</div>'; }
@@ -4012,7 +4019,8 @@ function rtAddCity(){
 
 // ----- 🃏 찬스 카드 -----
 function rtCards(t){
-  const R = S.rt, dealt = R.counts.length > 0, mems = tripMembers(t);
+  const R = S.rt, dealt = R.state.cards_dealt ?? R.counts.length > 0, mems = tripMembers(t);
+  S.rtDealN ??= 2;
   const cnt = id => R.counts.find(c => c.member_id === id) || { total:0, used:0 };
   return `
     ${dealt ? `<h2 class="sec">🃏 내 카드 <small class="dim">나만 볼 수 있어요</small></h2>
@@ -4024,16 +4032,67 @@ function rtCards(t){
       <div class="rt-board">${mems.map(m => { const c = cnt(m.id), us = R.used.filter(u => u.member_id === m.id);
         return `<div class="rt-brow"><b>${esc(m.name)}</b><span class="rt-left">${'🂠'.repeat(c.total - c.used)}<small>남은 ${c.total - c.used}장</small></span>
           <div class="rt-usedlist">${us.map(u => `<span>${esc(u.emoji || '')} ${esc(u.name)}${u.used_note ? ` · ${esc(u.used_note)}` : ''} <small>${new Date(u.used_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })}</small></span>`).join('')}</div></div>`; }).join('')}</div>
+      <div class="gate-btns" style="margin-top:10px;justify-content:flex-start"><button class="btn small" data-act="rtGive">🎁 카드 주기</button><button class="btn small" data-act="rtTake">🏴‍☠️ 카드 뺏기</button></div>
+      ${cardLogHTML()}
       ${isAdmin() ? '<button class="link" data-act="rtRedeal" style="margin-top:10px">카드 다시 나누기 (관리자)</button>' : ''}`
     : `<div class="panel rt-deal"><div class="rt-ce big">🃏</div><b>아직 카드를 안 나눠줬어요</b>
-        <p class="note">여행 출발할 때 누르면 ${mems.length}명에게 2장씩 랜덤으로 나눠줘요. 받은 카드는 본인만 볼 수 있어요.</p>
-        <button class="btn primary" data-act="rtDeal">🃏 카드 나눠주기 (1인 2장)</button></div>`}
+        <p class="note">여행 출발할 때 누르면 ${mems.length}명에게 ${S.rtDealN}장씩 랜덤으로 나눠줘요. 받은 카드는 본인만 볼 수 있어요.</p>
+        <div class="rt-band" style="justify-content:center"><span class="fd-fl">1인당</span>${[1, 2, 3, 4, 5].map(n => `<button class="chip sm ${S.rtDealN === n ? 'on' : ''}" data-act="rtDealN" data-k="${n}">${n}장</button>`).join('')}</div>
+        <button class="btn primary" data-act="rtDeal">🃏 카드 나눠주기 (1인 ${S.rtDealN}장)</button>
+        <p class="note" style="margin:0">카드 종류(${R.types.filter(x => x.active).length}종)보다 많이 고르면 같은 카드가 겹쳐 나올 수 있어요</p></div>`}
     <details class="panel rt-manage" ${S.rtTypeOpen ? 'open' : ''}><summary data-act="rtTypeOpen">⚙️ 카드 종류 관리 <small class="dim">${R.types.filter(x => x.active).length}종 사용 중</small></summary>
       <div class="rt-types">${R.types.map(x => `<div class="rt-type ${x.active ? '' : 'off'}"><span class="rt-ce">${esc(x.emoji)}</span><div><b>${esc(x.name)}</b><small>${esc(x.descr || '')}</small></div>
         <button class="icon" data-act="rtType" data-id="${x.id}" title="수정">✎</button></div>`).join('')}</div>
       <button class="btn small" data-act="rtType">+ 카드 종류 추가</button>
       ${dealt ? '<p class="note">이미 나눠준 카드는 바뀌지 않아요. 다음 여행부터 적용돼요.</p>' : ''}
     </details>`;
+}
+function cardLogHTML(){
+  const L = [...(S.rt.cardLog || [])].sort((a, b) => b.id - a.id);
+  if (!L.length) return '';
+  const n = id => esc(shortName(memName(id)));
+  return `<h2 class="sec">📜 카드 이동 기록</h2><div class="card-log">${L.slice(0, 30).map(l => `<div>${
+    l.action === 'give' ? `🎁 ${n(l.by_id)} → <b>${n(l.to_id)}</b>에게 ${l.card_name ? esc(l.card_name) : '랜덤 카드'}`
+    : l.action === 'steal' ? `🏴‍☠️ ${n(l.by_id)}: <b>${n(l.from_id)}</b>의 카드 1장을 뺏어 <b>${n(l.to_id)}</b>에게`
+    : `🗑 ${n(l.by_id)}: <b>${n(l.from_id)}</b>의 카드 1장 몰수`
+  } <small>${new Date(l.created_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })}</small></div>`).join('')}</div>`;
+}
+function openCardGive(t){
+  const mems = tripMembers(t), types = S.rt.types.filter(x => x.active);
+  let to = null, type = '', cnt = 1;
+  openModal(`<h3>🎁 카드 주기</h3>
+    <div class="flabel">누구에게?</div><div class="fd-rvsel" id="cg-to">${mems.map(m => `<button type="button" data-v="${m.id}">${esc(m.name)}</button>`).join('')}</div>
+    <div class="flabel" style="margin-top:12px">어떤 카드?</div>
+    <div class="fd-rvsel" id="cg-ty"><button type="button" data-v="" class="on">🎲 랜덤 (받는 사람만 앎)</button>${types.map(x => `<button type="button" data-v="${x.id}">${esc(x.emoji)} ${esc(x.name)}</button>`).join('')}</div>
+    <div class="flabel" style="margin-top:12px">몇 장?</div><div class="fd-rvsel" id="cg-n">${[1, 2, 3].map(n => `<button type="button" data-v="${n}" class="${n === 1 ? 'on' : ''}">${n}장</button>`).join('')}</div>
+    <p class="err" id="merr"></p>
+    <div class="row"><span class="sp"></span><button class="btn" id="cancel">취소</button><button class="btn primary" id="save">주기</button></div>`);
+  const pick = (id, set) => $('#' + id).onclick = e => { const b = e.target.closest('[data-v]'); if (!b) return; $('#' + id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); set(b.dataset.v); };
+  pick('cg-to', v => to = +v); pick('cg-ty', v => type = v); pick('cg-n', v => cnt = +v);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    if (!to) return $('#merr').textContent = '받을 사람을 골라주세요';
+    try { await call('rt_give_card', { p_trip:t.id, p_to:to, p_type:type ? +type : null, p_count:cnt }); await loadRandom(t.id); closeModal(); renderTrips(); toast(`🎁 ${memName(to)}에게 카드 ${cnt}장!`); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
+}
+function openCardTake(t){
+  const mems = tripMembers(t), left = id => { const c = S.rt.counts.find(x => x.member_id === id); return c ? c.total - c.used : 0; };
+  let from = null, to = '';
+  openModal(`<h3>🏴‍☠️ 카드 뺏기</h3><p class="sub" style="margin:0">안 쓴 카드 중 1장을 랜덤으로 뺏어요. 어떤 카드인지는 뺏긴 사람과 받은 사람만 알아요.</p>
+    <div class="flabel" style="margin-top:12px">누구 카드를?</div><div class="fd-rvsel" id="ct-fr">${mems.map(m => `<button type="button" data-v="${m.id}" ${left(m.id) ? '' : 'disabled'}>${esc(m.name)} <small>${left(m.id)}장</small></button>`).join('')}</div>
+    <div class="flabel" style="margin-top:12px">뺏은 카드는?</div><div class="fd-rvsel" id="ct-to"><button type="button" data-v="" class="on">🗑 없애기</button>${mems.map(m => `<button type="button" data-v="${m.id}">👉 ${esc(m.name)}에게</button>`).join('')}</div>
+    <p class="err" id="merr"></p>
+    <div class="row"><span class="sp"></span><button class="btn" id="cancel">취소</button><button class="btn primary" id="save">뺏기</button></div>`);
+  const pick = (id, set) => $('#' + id).onclick = e => { const b = e.target.closest('[data-v]:not(:disabled)'); if (!b) return; $('#' + id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); set(b.dataset.v); };
+  pick('ct-fr', v => from = +v); pick('ct-to', v => to = v);
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => {
+    if (!from) return $('#merr').textContent = '누구 카드를 뺏을지 골라주세요';
+    if (to && +to === from) return $('#merr').textContent = '뺏은 사람에게 다시 줄 순 없어요';
+    try { await call('rt_take_card', { p_trip:t.id, p_from:from, p_to:to ? +to : null }); await loadRandom(t.id); closeModal(); renderTrips(); toast(`🏴‍☠️ ${memName(from)}의 카드 1장을 뺏었어요!`); }
+    catch(e){ $('#merr').textContent = errMsg(e); }
+  };
 }
 function rtEditType(id){
   const x = id ? S.rt.types.find(y => y.id === id) : { emoji:'🃏', active:true };
@@ -4228,7 +4287,8 @@ setInterval(async () => {
   }
   if (S.cat === 'travel' && S.tripTab === 'random' && S.rt?.tid === S.tripId && !S.rt.err && Date.now() - _gateTickAt > 30000 && !_gateBusy){
     _gateTickAt = Date.now();
-    const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.bingo, S.rt.drives, S.rt.state]);
+    const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.bingo, S.rt.drives, S.rt.state, S.rt.counts, S.rt.cardLog]);
+    const myBefore = (S.rt.myCards || []).filter(c => !c.used_at).length;
     const before = sig();
     try {
       if (['time', 'both'].includes(S.rt.state.gate_trigger)) await call('rt_tick_gate', { p_trip:S.rt.tid });
@@ -4236,6 +4296,8 @@ setInterval(async () => {
       const typing = document.activeElement?.matches('input,textarea,select') || $('#modal')?.classList.contains('open');
       if (!typing && before !== sig()){
         const g = openGate(); renderTrips(); if (g && !before.includes(`"id":${g.id},`)) toast(`🔓 새 관문 미션이 열렸어요!`);
+        const myAfter = (S.rt.myCards || []).filter(c => !c.used_at).length;
+        if (myAfter > myBefore) toast(`🎁 찬스 카드 ${myAfter - myBefore}장을 받았어요!`); else if (myAfter < myBefore) toast(`🏴‍☠️ 내 찬스 카드를 뺏겼어요!`);
       }
     } catch(e){}
   }
@@ -4477,7 +4539,10 @@ async function rtAct(act, b, id){
       case 'rtTypeOpen': S.rtTypeOpen = !b.parentNode.open; return;
       case 'rtCity': { const c = S.rt.cities.find(x => x.id === id); await call('rt_toggle_city', { p_id:id, p_on:!c.active }); S.rtCityOpen = true; return done(); }
       case 'rtAddCity': return rtAddCity();
-      case 'rtDeal': if (!confirm('카드를 나눠줄까요? 한 번 나눠주면 다시 못 바꿔요.')) return; await call('rt_deal', { p_trip:t.id, p_n:2 }); toast('🃏 카드를 나눠줬어요!'); return done();
+      case 'rtDealN': S.rtDealN = +b.dataset.k; return renderTrips();
+      case 'rtDeal': if (!confirm(`1인 ${S.rtDealN}장씩 나눠줄까요?\n나눠준 뒤엔 "카드 주기·뺏기"로 조절할 수 있어요.`)) return; await call('rt_deal', { p_trip:t.id, p_n:S.rtDealN }); toast('🃏 카드를 나눠줬어요!'); return done();
+      case 'rtGive': return openCardGive(t);
+      case 'rtTake': return openCardTake(t);
       case 'rtRedeal': if (!confirm('나눠준 카드와 사용 기록을 모두 지울까요?')) return; await call('rt_reset_cards', { p_trip:t.id }); return done();
       case 'rtUse': { const c = S.rt.myCards.find(x => x.id === id); const note = prompt(`${c.emoji} ${c.name}을(를) 사용할까요?\n어디에 썼는지 한마디 (선택)`, ''); if (note === null) return;
         await call('rt_use_card', { p_card:id, p_note:note }); toast(`${c.emoji} ${c.name} 사용!`); return done(); }
