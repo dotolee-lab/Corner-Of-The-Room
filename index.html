@@ -730,6 +730,33 @@ a.btn{text-decoration:none;color:var(--ink)}
 .fate-big.shake{animation:fateShake .35s ease-in-out infinite}
 .fate-big.yes{color:#5fd3a5;animation:cerPick .5s ease}.fate-big.no{color:#ff7a7a;animation:cerPick .5s ease}
 @keyframes fateShake{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(-8px,2px) rotate(-8deg)}75%{transform:translate(8px,-2px) rotate(8deg)}}
+.clock-card{margin-top:12px;border-radius:22px;padding:18px 16px;background:radial-gradient(120% 120% at 50% 0%,rgba(155,140,255,.25),transparent 60%),linear-gradient(160deg,#1b1630,#110f17);border:1px solid rgba(155,140,255,.45);color:#f4efe2;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.clock-card.due{border-color:#f2b33d;box-shadow:0 0 0 3px rgba(242,179,61,.25)}
+.clock-due{font-size:22px;font-weight:900;color:#f2b33d;animation:float 1.2s ease-in-out infinite}
+.clock-next{font-size:14px;color:#c9c3e6}.clock-next b{color:#f2b33d;font-variant-numeric:tabular-nums;font-size:18px}
+.wheel-wrap{position:relative;width:min(320px,82vw);aspect-ratio:1;margin:6px 0}
+.wheel{width:100%;height:100%;border-radius:50%;box-shadow:0 8px 30px rgba(0,0,0,.45),0 0 0 6px rgba(255,255,255,.12)}
+.wheel svg{width:100%;height:100%;display:block}
+.wheel-pin{position:absolute;top:-14px;left:50%;transform:translateX(-50%);z-index:2;font-size:30px;color:#f2b33d;text-shadow:0 2px 6px rgba(0,0,0,.6);line-height:1}
+.clock-card .rt-go{max-width:420px}
+.clock-last{width:100%;max-width:520px;display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.clock-last > small{color:#a9a3c6;font-size:12px}
+.clock-res{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.07);border-radius:14px;padding:10px 14px;text-align:left}
+.clock-res.vetoed{opacity:.5}
+.clock-res-e{font-size:34px}
+.clock-res-m{display:flex;flex-direction:column;gap:2px}.clock-res-m b{font-size:18px}.clock-res-m small{font-size:12px;color:#c9c3e6}
+.clock-card .gate-btns{justify-content:center}
+.clock-card .gate-btns .btn{background:rgba(255,255,255,.1);color:#f4efe2;border:1px solid rgba(255,255,255,.28)}
+.clock-card .note{color:#c9c3e6}
+.gate-h.clock-h.vetoed{opacity:.55}
+.cs-list{display:flex;flex-direction:column;gap:6px;margin:12px 0 4px;max-height:55vh;overflow:auto}
+.cs-row{display:flex;gap:6px;align-items:center;background:var(--bg);border-radius:12px;padding:6px}
+.cs-row.off{opacity:.45}
+.cs-row .cs-e{width:46px!important;flex:0 0 46px;text-align:center;font-size:18px;padding:6px 2px}
+.cs-m{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.cs-m input{padding:5px 8px;font-size:13px}
+.cs-row select{width:auto;flex:0 0 auto;padding:5px 4px}
+.cs-k{width:28px;text-align:center;opacity:.5;font-size:12px}
 .bg-list{display:flex;flex-direction:column;gap:6px;margin:12px 0 4px}
 .bg-row{display:flex;gap:6px;align-items:center}
 .card-log{display:flex;flex-direction:column;gap:4px;font-size:13px}
@@ -2817,7 +2844,7 @@ function openTrip(id, preset = {}){
       <label>출발<input id="ft3" type="date" value="${t.start_date || ''}"></label>
       <label>도착<input id="ft4" type="date" value="${t.end_date || ''}"></label>
       <div class="full"><div class="flabel">함께 가는 사람</div>${memChecks(t.member_ids || [], 'tm')}</div>
-      <label class="full rt-mode"><span><input type="checkbox" id="ft-rnd" ${t.is_random ? 'checked' : ''}> 🎲 랜덤 여행 모드</span><small>관문 미션 · 찬스 카드 · 운명의 질문 · 식사/취침 룰렛 · 축구 퀴즈 탭이 생겨요</small></label>
+      <label class="full rt-mode"><span><input type="checkbox" id="ft-rnd" ${t.is_random ? 'checked' : ''}> 🎲 랜덤 여행 모드</span><small>운명의 시계 · 찬스 카드 · 운명의 질문 · 식사/취침 룰렛 · 축구 퀴즈 탭이 생겨요</small></label>
       <label class="full">대표 사진 주소 (선택)<input id="ft5" value="${esc(t.cover_url || '')}" placeholder="https://… 이미지 링크, 비우면 색으로 표시"></label>
       <label class="full">메모 (선택)<textarea id="ft6" rows="2">${esc(t.memo || '')}</textarea></label>
     </div>
@@ -3852,6 +3879,7 @@ function openSession(id, plan){
 const fmtMin = m => m < 60 ? `${m}분` : `${Math.floor(m / 60)}시간${m % 60 ? ` ${m % 60}분` : ''}`;
 
 async function loadRandom(tid){
+  try { await call('rt_clock_tick', { p_trip:tid }); } catch(e){}
   const pub = await Promise.all([
     sb.from('rt_cities').select('*').order('id'), sb.from('rt_spins').select('*').eq('trip_id', tid),
     sb.from('rt_card_types').select('*').order('sort'), sb.from('rt_cards').select('*').eq('trip_id', tid),
@@ -3869,26 +3897,178 @@ async function loadRandom(tid){
   const cl = await sb.from('rt_card_log').select('*').eq('trip_id', tid);
   const sl = await sb.from('rt_sleeps').select('*').eq('trip_id', tid);
   const ft = await sb.from('rt_fates').select('*').eq('trip_id', tid);
+  const ck = await sb.from('rt_clock_spins').select('*').eq('trip_id', tid);
   const cardLog = cl.error ? [] : cl.data;
   const gids = new Set(gates.map(g => g.id));
   S.rt = { tid, cities, spins, types, used, gates, gateVotes:gateVotes.filter(v => gids.has(v.gate_id)), penalties, counts, poolStats,
     state:state[0] || { gate_trigger:'move', gate_every:120, gate_from:10, gate_to:20, gate_limit:30, gate_fail:'penalty', gate_verify:'either' },
     myCards:priv[0] || [], myPool:priv[1] || [], culprit:priv[2] || [],
-    mealCats, meals, cardLog, sleeps:sl.error ? [] : sl.data, fates:ft.error ? [] : ft.data, exErr:exBad?.error.message || null };
+    mealCats, meals, cardLog, sleeps:sl.error ? [] : sl.data, fates:ft.error ? [] : ft.data, clock:ck.error ? [] : ck.data, clockErr:ck.error?.message || null, exErr:exBad?.error.message || null };
 }
 function randomHTML(t){
   if (!S.rt || S.rt.tid !== t.id){ loadRandom(t.id).then(() => { if (S.tripTab === 'random' && S.tripId === t.id) renderTrips(); }); return '<div class="panel ac-locked">🎲<br>불러오는 중…</div>'; }
   if (S.rt.err) return `<div class="panel ac-locked">🎲<br>랜덤 여행 기능을 쓰려면 Supabase에서 <b>12_random_trip.sql</b>과 <b>13_gate_mission.sql</b>을 실행해주세요<br><small>${esc(S.rt.err)}</small></div>`;
-  if (!['gate', 'cards', 'fate', 'meal', 'sleep', 'car'].includes(S.rtTab)) S.rtTab = 'gate';
-  const g = openGate();
-  const tabs = [['gate', '🔓', '관문 미션', g || S.rt.gates.some(x => x.culprit_status === 'voting')], ['cards', '🃏', '찬스 카드'], ['fate', '🎱', '운명의 질문'],
+  if (!['clock', 'cards', 'fate', 'meal', 'sleep', 'car'].includes(S.rtTab)) S.rtTab = 'clock';
+  const pend = clockPending();
+  const tabs = [['clock', '⏰', '운명의 시계', pend], ['cards', '🃏', '찬스 카드'], ['fate', '🎱', '운명의 질문'],
     ['meal', '🍽', '식사 룰렛'], ['sleep', '🛏', '취침 룰렛'], ['car', '⚽', '축구 퀴즈']];
   const needEx = S.rtTab === 'meal' && S.rt.exErr;
-  const body = needEx ? `<div class="panel ac-locked">🎲<br>이 기능을 쓰려면 Supabase에서 <b>16_trip_extras.sql</b>을 실행해주세요<br><small>${esc(S.rt.exErr)}</small></div>`
-    : { cards:rtCards, gate:rtGate, fate:rtFate, meal:rtMeal, sleep:rtSleep, car:rtCar }[S.rtTab](t);
+  const body = S.rtTab === 'clock' && (S.rt.clockErr || S.rt.state.clock_every == null) ? `<div class="panel ac-locked">⏰<br>운명의 시계를 쓰려면 Supabase에서 <b>22_fate_clock.sql</b>을 실행해주세요${S.rt.clockErr ? `<br><small>${esc(S.rt.clockErr)}</small>` : ''}</div>`
+    : pend && S.rt.state.clock_lock && ['meal', 'sleep', 'fate'].includes(S.rtTab) ? clockLockHTML()
+    : needEx ? `<div class="panel ac-locked">🎲<br>이 기능을 쓰려면 Supabase에서 <b>16_trip_extras.sql</b>을 실행해주세요<br><small>${esc(S.rt.exErr)}</small></div>`
+    : { cards:rtCards, clock:rtClock, fate:rtFate, meal:rtMeal, sleep:rtSleep, car:rtCar }[S.rtTab](t);
   setTimeout(bindGate);
   return `<div class="rt-grid">${tabs.map(([k, e, l, dot]) => `<button class="${S.rtTab === k ? 'on' : ''}" data-act="rtTab" data-k="${k}"><i>${e}</i><span>${l}</span>${dot ? '<b class="gate-dot"></b>' : ''}</button>`).join('')}</div>${body}`;
 }
+
+// 운명의 시계 '목적지 변경'용 시·군 좌표 (대략)
+const KR_PLACES = {
+  강화:[37.747,126.488], 양평:[37.491,127.488], 이천:[37.272,127.435], 여주:[37.298,127.637], 횡성:[37.492,127.985], 인제:[38.070,128.170],
+  철원:[38.147,127.313], 화천:[38.106,127.708], 양구:[38.110,127.990], 고성:[38.381,128.468], 동해:[37.525,129.114], 삼척:[37.450,129.165],
+  영월:[37.184,128.462], 태백:[37.164,128.986], 제천:[37.133,128.191], 괴산:[36.815,127.787], 청주:[36.642,127.489], 보은:[36.489,127.729],
+  아산:[36.790,127.002], 서산:[36.785,126.450], 당진:[36.890,126.628], 부여:[36.276,126.910], 서천:[36.080,126.692], 논산:[36.187,127.099],
+  예산:[36.683,126.845], 홍성:[36.601,126.661], 청양:[36.459,126.802], 금산:[36.109,127.488], 옥천:[36.306,127.571], 영동:[36.175,127.783],
+  대구:[35.871,128.601], 울산:[35.538,129.311], 부산:[35.180,129.075], 문경:[36.586,128.187], 상주:[36.411,128.159], 봉화:[36.893,128.733],
+  청송:[36.436,129.057], 의성:[36.353,128.697], 예천:[36.658,128.452], 영양:[36.667,129.112], 구미:[36.120,128.344], 김천:[36.140,128.114],
+  영천:[35.973,128.939], 청도:[35.647,128.734], 밀양:[35.504,128.746], 창원:[35.228,128.682], 진주:[35.180,128.108], 거제:[34.880,128.621],
+  남해:[34.838,127.892], 사천:[35.004,128.064], 산청:[35.416,127.874], 함양:[35.520,127.725], 거창:[35.687,127.910], 합천:[35.567,128.166],
+  광주:[35.160,126.852], 목포:[34.812,126.392], 보성:[34.771,127.080], 광양:[34.940,127.696], 구례:[35.202,127.463], 곡성:[35.282,127.292],
+  고흥:[34.611,127.285], 해남:[34.573,126.599], 강진:[34.642,126.767], 완도:[34.311,126.755], 무주:[36.007,127.661], 진안:[35.792,127.425],
+  부안:[35.732,126.733], 고창:[35.436,126.702], 정읍:[35.570,126.856], 익산:[35.948,126.958], 임실:[35.618,127.289], 장수:[35.647,127.521],
+  춘천:[37.881,127.730], 가평:[37.831,127.510], 홍천:[37.697,127.889], 원주:[37.342,127.920], 충주:[36.991,127.926], 단양:[36.985,128.366],
+  천안:[36.815,127.114], 공주:[36.447,127.119], 보령:[36.333,126.613], 태안:[36.746,126.298], 강릉:[37.752,128.876], 속초:[38.207,128.592],
+  양양:[38.075,128.619], 평창:[37.371,128.390], 정선:[37.381,128.661], 안동:[36.568,128.730], 영주:[36.806,128.624], 전주:[35.824,127.148],
+  군산:[35.968,126.737], 대전:[36.351,127.385], 경주:[35.856,129.225], 포항:[36.019,129.343], 영덕:[36.415,129.365], 울진:[36.993,129.400],
+  여수:[34.760,127.662], 순천:[34.951,127.487], 담양:[35.321,126.988], 남원:[35.416,127.390], 통영:[34.854,128.433], 하동:[35.067,127.751],
+};
+const geoKm = (a, b) => { const R = 6371, r = x => x * Math.PI / 180, dLa = r(b.lat - a.lat), dLo = r(b.lng - a.lng);
+  return 2 * R * Math.asin(Math.sqrt(Math.sin(dLa / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLo / 2) ** 2)); };
+const driveMin = km => Math.round((km * 0.8 + 15) / 10) * 10;   // 직선거리로 어림잡은 차 이동 시간
+// ----- ⏰ 운명의 시계 (관문 미션 대체) -----
+const CLOCK_SLOTS = [
+  { k:'go', e:'🚗', n:'계속 이동', d:'하던 대로 계속 가요', w:3, on:true },
+  { k:'dest', e:'🔀', n:'목적지 변경', d:'근처 1~2시간 거리의 새 목적지로!', w:2, on:true },
+  { k:'stay', e:'⏸', n:'여기서 1시간', d:'지금 있는 곳에서 1시간 놀기', w:2, on:true },
+  { k:'uturn', e:'↩️', n:'유턴', d:'왔던 방향으로 30분 되돌아가기', w:1, on:true },
+  { k:'fork', e:'🧭', n:'갈림길 주사위', d:'다음 갈림길에서 이 방향으로', w:2, on:true },
+  { k:'rest', e:'☕', n:'다음 휴게소 정차', d:'무조건 다음 휴게소·카페에 정차', w:2, on:true },
+  { k:'road', e:'🛣', n:'국도 모드', d:'1시간 동안 고속도로 금지', w:1, on:true },
+  { k:'nomap', e:'🗺', n:'지도 금지', d:'30분 동안 지도 앱 없이 이동', w:1, on:true },
+  { k:'eat', e:'🍽', n:'지금 먹기', d:'바로 식사 룰렛 돌리기', w:2, on:true },
+  { k:'sleep', e:'🏨', n:'오늘은 여기서 잔다', d:'바로 취침 룰렛 돌리기', w:1, on:true },
+  { k:'driver', e:'🔄', n:'운전자 교체', d:'지금 바로 운전자 바꾸기', w:2, on:true },
+  { k:'bonus', e:'🎁', n:'보너스', d:'돌린 사람에게 찬스 카드 1장', w:1, on:true },
+  { k:'penalty', e:'💥', n:'벌칙', d:'돌린 사람이 벌칙 목록에서 하나', w:1, on:false },
+];
+const WHEEL_COLORS = ['#ee7a45', '#f2b33d', '#7cc4a8', '#9b8cff', '#e86a8a', '#5aa9e6', '#c9a26b', '#8fcf6b'];
+const clockSlots = () => (S.rt.state.clock_slots || CLOCK_SLOTS);
+const clockActive = () => clockSlots().filter(x => x.on !== false && (+x.w || 0) > 0);
+const clockPending = () => (S.rt?.clock || []).find(c => !c.spun_at);
+function clockBase(t){
+  const last = [...(S.rt.clock || [])].filter(c => c.spun_at && !c.vetoed_by && c.slot?.k === 'dest' && c.sub).sort((a, b) => b.id - a.id)[0];
+  const name = last?.sub || Object.keys(KR_PLACES).find(n => `${t.place || ''} ${t.title || ''}`.includes(n));
+  return name && KR_PLACES[name] ? { name, lat:KR_PLACES[name][0], lng:KR_PLACES[name][1] } : null;
+}
+function clockCands(t){
+  const base = clockBase(t); if (!base) return [];
+  return Object.entries(KR_PLACES).filter(([n]) => n !== base.name).map(([n, [lat, lng]]) => ({ name:n, m:driveMin(geoKm(base, { lat, lng })) }))
+    .filter(c => c.m >= 60 && c.m <= 120).map(c => ({ name:c.name }));
+}
+function wheelSVG(slots){
+  const tot = slots.reduce((a, s) => a + (+s.w || 1), 0); let a0 = 0;
+  const P = (ang, r) => [Math.sin(ang) * r, -Math.cos(ang) * r];
+  return `<svg viewBox="-110 -110 220 220">${slots.map((s, i) => {
+    const sweep = (+s.w || 1) / tot * Math.PI * 2, a1 = a0 + sweep, mid = a0 + sweep / 2;
+    const [x0, y0] = P(a0, 100), [x1, y1] = P(a1, 100), [tx, ty] = P(mid, 74);
+    const path = slots.length === 1 ? `<circle r="100" fill="${WHEEL_COLORS[0]}"/>` : `<path d="M0 0 L${x0.toFixed(2)} ${y0.toFixed(2)} A100 100 0 ${sweep > Math.PI ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z" fill="${WHEEL_COLORS[i % WHEEL_COLORS.length]}" stroke="#fff" stroke-width="1.5"/>`;
+    const out = `${path}<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" font-size="${sweep < 0.35 ? 13 : 17}" text-anchor="middle" dominant-baseline="central" transform="rotate(${(mid * 180 / Math.PI).toFixed(1)} ${tx.toFixed(1)} ${ty.toFixed(1)})">${s.e || '•'}</text>`;
+    a0 = a1; return out; }).join('')}<circle r="16" fill="#1b1630" stroke="#fff" stroke-width="3"/></svg>`;
+}
+function rtClock(t){
+  const R = S.rt, st = R.state, slots = clockActive(), pend = clockPending();
+  const done = [...(R.clock || [])].filter(c => c.spun_at).sort((a, b) => b.id - a.id), last = done[0];
+  const sched = (R.clock || []).filter(c => !c.manual).sort((a, b) => b.due_at.localeCompare(a.due_at))[0];
+  const now = new Date(), h = now.getHours(), inTrip = todayStr() >= t.start_date && todayStr() <= (t.end_date || t.start_date), inHours = h >= st.clock_from && h < st.clock_to;
+  const next = sched ? new Date(new Date(sched.due_at).getTime() + st.clock_every * 60000) : null;
+  const status = pend ? `<div class="clock-due">🔔 지금 돌릴 차례!</div>`
+    : !inTrip ? `<div class="clock-next">여행 기간에만 울려요 · 지금은 연습으로 돌려볼 수 있어요</div>`
+    : !inHours ? `<div class="clock-next">😴 쉬는 시간 (${st.clock_from}~${st.clock_to}시에만 울려요)</div>`
+    : `<div class="clock-next">다음 룰렛 <b class="clock-cd" data-next="${next ? next.toISOString() : ''}">${next ? mmss(Math.max(0, next - now)) : '곧'}</b> 뒤</div>`;
+  const vetoCard = R.myCards.find(c => !c.used_at && /거부/.test(c.name));
+  const resultCard = c => { const s = c.slot || {};
+    return `<div class="clock-res ${c.vetoed_by ? 'vetoed' : ''}"><div class="clock-res-e">${esc(s.e || '🎡')}</div>
+      <div class="clock-res-m"><b>${esc(s.n || '')}${c.sub ? ` · ${esc(c.sub)}` : ''}</b><small>${esc(s.d || '')}${c.card_given ? ' · 🃏 카드 지급 완료' : ''}</small>
+        ${c.vetoed_by ? `<small>🙅 ${esc(shortName(memName(c.vetoed_by)))}의 거부권으로 무효</small>` : ''}</div></div>`; };
+  const actions = last && !last.vetoed_by ? (() => { const k = last.slot?.k; const b = [];
+    if (k === 'dest') b.push(last.sub ? `<a class="btn small" href="https://map.naver.com/p/directions/-/${encodeURIComponent(last.sub)}" target="_blank" rel="noopener">🗺 ${esc(last.sub)} 길찾기 ↗</a>` : '<span class="note">근처 1~2시간 거리에서 다 같이 새 목적지를 정해요</span>');
+    if (k === 'eat') b.push('<button class="btn small primary" data-act="rtTab" data-k="meal">🍽 식사 룰렛으로</button>');
+    if (k === 'sleep') b.push('<button class="btn small primary" data-act="rtTab" data-k="sleep">🏨 취침 룰렛으로</button>');
+    if (st.clock_veto && vetoCard && !pend) b.push(`<button class="btn small" data-act="rtClockVeto" data-id="${last.id}">🙅 거부권으로 무효</button>`);
+    return b.length ? `<div class="gate-btns" style="margin-top:8px">${b.join('')}</div>` : ''; })() : '';
+  return `<div class="clock-card ${pend ? 'due' : ''}">
+      <div class="gate-top"><span>⏰ 운명의 시계 · ${fmtMin(st.clock_every)}마다</span></div>
+      ${status}
+      <div class="wheel-wrap"><div class="wheel-pin">▼</div><div class="wheel" id="wheel" style="transform:rotate(${S.wheelRot || 0}deg)">${wheelSVG(slots)}</div></div>
+      <button class="btn primary rt-go" data-act="rtClockSpin" ${slots.length ? '' : 'disabled'}>${pend ? '🎡 지금 돌리기!' : '🎡 지금 바로 돌리기'}</button>
+      ${last ? `<div class="clock-last"><small>최근 결과 · ${new Date(last.spun_at).toLocaleTimeString('ko-KR', { hour:'numeric', minute:'2-digit' })} · ${esc(shortName(memName(last.spun_by)))}</small>${resultCard(last)}${actions}</div>` : ''}
+    </div>
+    ${done.length > 1 ? `<h2 class="sec">🕐 운명의 타임라인</h2><div class="gate-hist">${done.slice(1).map(c => `<div class="gate-h clock-h ${c.vetoed_by ? 'vetoed' : ''}"><span class="gate-hs">${esc(c.slot?.e || '🎡')}</span>
+      <div class="gate-hm"><b>${esc(c.slot?.n || '')}${c.sub ? ` · ${esc(c.sub)}` : ''}${c.vetoed_by ? ' <span class="dim">(무효)</span>' : ''}</b><small>${new Date(c.spun_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })} · ${esc(shortName(memName(c.spun_by)))}${c.manual ? '' : ' · ⏰ 정기'}</small></div>
+      ${isAdmin() ? `<button class="icon" data-act="rtClockDel" data-id="${c.id}" title="삭제">✕</button>` : ''}</div>`).join('')}</div>` : ''}
+    <details class="panel rt-manage" ${S.rtClockOpen ? 'open' : ''}><summary data-act="rtClockOpen">⚙️ 시계 규칙 <small class="dim">${fmtMin(st.clock_every)}마다 · ${st.clock_from}~${st.clock_to}시 · ${st.clock_lock ? '안 돌리면 다른 룰렛 잠금' : '알림만'} · 거부권 ${st.clock_veto ? '가능' : '불가'}</small></summary>
+      <div class="form gate-form">
+        <label>간격<select id="ck-ev">${[30, 60, 90, 120, 150, 180].map(m => `<option value="${m}" ${st.clock_every === m ? 'selected' : ''}>${fmtMin(m)}마다</option>`).join('')}</select></label>
+        <label>활동 시간<span class="gate-hrs"><select id="ck-f">${Array.from({ length:24 }, (_, x) => `<option ${st.clock_from === x ? 'selected' : ''}>${x}</option>`).join('')}</select>시 ~ <select id="ck-to">${Array.from({ length:24 }, (_, x) => x + 1).map(x => `<option ${st.clock_to === x ? 'selected' : ''}>${x}</option>`).join('')}</select>시</span></label>
+        <label>돌릴 차례인데 안 돌리면?<select id="ck-lk"><option value="1" ${st.clock_lock ? 'selected' : ''}>🔒 식사·취침 룰렛, 운명의 질문 잠금</option><option value="0" ${st.clock_lock ? '' : 'selected'}>🔔 알림만</option></select></label>
+        <label>거부권 카드<select id="ck-vt"><option value="0" ${st.clock_veto ? '' : 'selected'}>🙅 룰렛 결과에는 못 써요</option><option value="1" ${st.clock_veto ? 'selected' : ''}>🙅 무효로 하고 다시 돌리기 가능</option></select></label>
+      </div>
+      <div class="row" style="justify-content:flex-start"><button class="btn small primary" data-act="rtClockRule">규칙 저장</button><button class="btn small" data-act="rtClockSlots">🎡 칸 편집 (${slots.length}/${clockSlots().length}칸 사용)</button></div>
+    </details>`;
+}
+async function rtClockSpin(t){
+  const slots = clockActive();
+  let r;
+  try { r = await call('rt_clock_spin', { p_trip:t.id, p_cands:clockCands(t) }); }
+  catch(e){ return alert(/function|schema|column/i.test(errMsg(e)) ? 'Supabase에서 22_fate_clock.sql을 먼저 실행해주세요' : errMsg(e)); }
+  const idx = Math.max(0, slots.findIndex(s => s.k === r.slot.k && s.n === r.slot.n));
+  const tot = slots.reduce((a, s) => a + (+s.w || 1), 0);
+  const start = slots.slice(0, idx).reduce((a, s) => a + (+s.w || 1), 0) / tot * 360, size = (+slots[idx].w || 1) / tot * 360;
+  const target = start + size * (0.2 + Math.random() * 0.6);
+  const cur = S.wheelRot || 0, base = cur - (cur % 360);
+  S.wheelRot = base + 360 * 6 + (360 - target);
+  const w = $('#wheel'); w.style.transition = 'transform 4.2s cubic-bezier(.12,.75,.15,1)'; w.style.transform = `rotate(${S.wheelRot}deg)`;
+  await new Promise(res => setTimeout(res, 4400));
+  await loadRandom(t.id);
+  toast(`${r.slot.e} ${r.slot.n}${r.sub ? ' · ' + r.sub : ''}!${r.card ? ' 🃏 카드 1장 획득' : ''}`);
+  renderTrips();
+}
+function openClockSlots(t){
+  let list = clockSlots().map(x => ({ ...x }));
+  const draw = () => { $('#cs-list').innerHTML = list.map((x, i) => `<div class="cs-row ${x.on === false ? 'off' : ''}">
+      <input class="cs-e" value="${esc(x.e || '')}" data-i="${i}" data-f="e" maxlength="4">
+      <div class="cs-m"><input value="${esc(x.n || '')}" data-i="${i}" data-f="n" placeholder="이름"><input value="${esc(x.d || '')}" data-i="${i}" data-f="d" placeholder="설명"></div>
+      <select data-i="${i}" data-f="w" title="나오는 비율">${[1, 2, 3, 4, 5].map(v => `<option value="${v}" ${(+x.w || 1) === v ? 'selected' : ''}>×${v}</option>`).join('')}</select>
+      <button class="icon" data-tog="${i}" title="${x.on === false ? '켜기' : '끄기'}">${x.on === false ? '▶' : '⏸'}</button>
+      ${x.k === 'custom' ? `<button class="icon" data-del="${i}" title="삭제">✕</button>` : '<span class="cs-k" title="기본 칸은 지울 수 없고 끌 수 있어요">🔒</span>'}</div>`).join(''); };
+  openModal(`<h3>🎡 운명의 시계 칸 편집</h3><p class="sub" style="margin:0">×숫자가 클수록 자주 나와요 · 기본 칸은 끄기만 되고, 새로 추가한 칸은 지울 수 있어요</p>
+    <div id="cs-list" class="cs-list"></div>
+    <div class="gate-add"><input id="cs-new" placeholder="새 칸 이름 예) 노래방 가기"><button class="btn small" id="cs-add">칸 추가</button></div>
+    <p class="err" id="merr"></p>
+    <div class="row"><button class="link" id="cs-reset">기본값으로</button><span class="sp"></span><button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  draw();
+  const sync = () => document.querySelectorAll('#cs-list [data-f]').forEach(el => { const x = list[+el.dataset.i]; x[el.dataset.f] = el.dataset.f === 'w' ? +el.value : el.value; });
+  $('#cs-list').onclick = e => { const tg = e.target.closest('[data-tog]'), dl = e.target.closest('[data-del]'); if (!tg && !dl) return; sync();
+    if (tg){ const x = list[+tg.dataset.tog]; x.on = x.on === false; } else list.splice(+dl.dataset.del, 1); draw(); };
+  $('#cs-add').onclick = () => { const n = $('#cs-new').value.trim(); if (!n) return; sync(); list.push({ k:'custom', e:'🎲', n, d:'', w:1, on:true }); $('#cs-new').value = ''; draw(); };
+  $('#cs-reset').onclick = () => { list = CLOCK_SLOTS.map(x => ({ ...x })); draw(); };
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => { sync();
+    if (!list.some(x => x.on !== false && x.n.trim())) return $('#merr').textContent = '켜진 칸이 하나 이상 있어야 해요';
+    try { await call('rt_save_clock', { p_trip:t.id, p_d:{ slots:list.filter(x => x.n.trim()).map(x => ({ k:x.k, e:x.e.trim() || '🎲', n:x.n.trim(), d:(x.d || '').trim(), w:+x.w || 1, on:x.on !== false })) } });
+      await loadRandom(t.id); closeModal(); renderTrips(); toast('🎡 칸을 저장했어요'); }
+    catch(e){ $('#merr').textContent = errMsg(e); } };
+}
+const clockLockHTML = () => `<div class="panel ac-locked">🔒<br><b>운명의 시계부터 돌려주세요!</b><br><small>돌릴 차례가 지나면 다른 룰렛은 잠겨요</small><br><button class="btn primary" data-act="rtTab" data-k="clock" style="margin-top:12px">⏰ 운명의 시계로</button></div>`;
 
 // ----- 🃏 찬스 카드 -----
 function rtCards(t){
@@ -3928,6 +4108,7 @@ function cardLogHTML(){
     l.action === 'give' ? `🎁 ${n(l.by_id)} → <b>${n(l.to_id)}</b>에게 ${l.card_name ? esc(l.card_name) : '랜덤 카드'}`
     : l.action === 'steal' ? `🏴‍☠️ ${n(l.by_id)}: <b>${n(l.from_id)}</b>의 카드 1장을 뺏어 <b>${n(l.to_id)}</b>에게`
     : l.action === 'fate' ? `🎱 운명의 질문: <b>${n(l.to_id)}</b>에게 찬스 카드 1장`
+    : l.action === 'clock' ? `⏰ 운명의 시계 보너스: <b>${n(l.to_id)}</b>에게 찬스 카드 1장`
     : `🗑 ${n(l.by_id)}: <b>${n(l.from_id)}</b>의 카드 1장 몰수`
   } <small>${new Date(l.created_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })}</small></div>`).join('')}</div>`;
 }
@@ -4021,7 +4202,7 @@ async function openPresetPicker(tid){
   };
 }
 const gateNeed = t => Math.min(3, tripMembers(t).length || 4);
-const mmss = ms => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+const mmss = ms => { const s = Math.max(0, Math.round(ms / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return (h ? `${h}:${String(m).padStart(2, "0")}` : `${m}`) + `:${String(s % 60).padStart(2, "0")}`; };
 const openGate = () => (S.rt?.gates || []).find(g => g.status === 'open');
 function rtGate(t){
   const R = S.rt, st = R.state, g = openGate(), mems = tripMembers(t), need = gateNeed(t);
@@ -4147,6 +4328,8 @@ function bindGate(){
 // 1초마다 타이머, 30초마다 새 소식 확인 (랜덤 탭을 보고 있을 때만)
 let _gateBusy = false, _gateTickAt = 0;
 setInterval(async () => {
+  const cd = document.querySelector('.clock-cd[data-next]');
+  if (cd && cd.dataset.next){ const left = new Date(cd.dataset.next) - new Date(); cd.textContent = left > 0 ? mmss(left) : '곧'; if (left <= 0 && Date.now() - _gateTickAt > 5000) _gateTickAt = 0; }
   const dv = document.querySelector('.gate-timer[data-drive]');
   if (dv) dv.textContent = fmtMin(Math.round((new Date() - new Date(dv.dataset.drive)) / 60000));
   const el = document.querySelector('.gate-timer[data-deadline]');
@@ -4161,15 +4344,14 @@ setInterval(async () => {
   }
   if (S.cat === 'travel' && S.tripTab === 'random' && S.rt?.tid === S.tripId && !S.rt.err && Date.now() - _gateTickAt > 30000 && !_gateBusy){
     _gateTickAt = Date.now();
-    const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.sleeps, S.rt.fates, S.rt.state, S.rt.counts, S.rt.cardLog]);
+    const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.sleeps, S.rt.fates, S.rt.clock, S.rt.state, S.rt.counts, S.rt.cardLog]);
     const myBefore = (S.rt.myCards || []).filter(c => !c.used_at).length;
     const before = sig();
     try {
-      if (['time', 'both'].includes(S.rt.state.gate_trigger)) await call('rt_tick_gate', { p_trip:S.rt.tid });
       await loadRandom(S.rt.tid);
       const typing = document.activeElement?.matches('input,textarea,select') || $('#modal')?.classList.contains('open');
       if (!typing && before !== sig()){
-        const g = openGate(); renderTrips(); if (g && !before.includes(`"id":${g.id},`)) toast(`🔓 새 관문 미션이 열렸어요!`);
+        const pc = clockPending(); renderTrips(); if (pc && !before.includes(`"id":${pc.id},`)) toast('🔔 운명의 시계를 돌릴 시간이에요!');
         const myAfter = (S.rt.myCards || []).filter(c => !c.used_at).length;
         if (myAfter > myBefore) toast(`🎁 찬스 카드 ${myAfter - myBefore}장을 받았어요!`); else if (myAfter < myBefore) toast(`🏴‍☠️ 내 찬스 카드를 뺏겼어요!`);
       }
@@ -4453,6 +4635,13 @@ async function rtAct(act, b, id){
       case 'rtBudget': { const k = b.dataset.k; S.rtBudgets = S.rtBudgets.includes(k) ? S.rtBudgets.filter(x => x !== k) : [...S.rtBudgets, k]; return renderTrips(); }
       case 'rtMealSpin': return rtMealSpin(t);
       case 'rtBudgetEdit': return openBudgetEdit(t);
+      case 'rtClockSpin': return rtClockSpin(t);
+      case 'rtClockOpen': S.rtClockOpen = !b.parentNode.open; return;
+      case 'rtClockSlots': return openClockSlots(t);
+      case 'rtClockRule': await call('rt_save_clock', { p_trip:t.id, p_d:{ every:+$('#ck-ev').value, from:+$('#ck-f').value, to:+$('#ck-to').value, lock:$('#ck-lk').value === '1', veto:$('#ck-vt').value === '1' } }); S.rtClockOpen = true; toast('규칙을 저장했어요'); return done();
+      case 'rtClockVeto': { const c = S.rt.myCards.find(x => !x.used_at && /거부/.test(x.name)); if (!c) return toast('쓸 수 있는 거부권이 없어요');
+        if (!confirm('🙅 거부권을 써서 이 결과를 무효로 하고 다시 돌릴까요?')) return; await call('rt_clock_veto', { p_spin:id, p_card:c.id }); toast('🙅 무효! 다시 돌려주세요'); return done(); }
+      case 'rtClockDel': if (!confirm('이 기록을 지울까요?')) return; await call('rt_clock_delete', { p_id:id }); return done();
       case 'rtFateAsk': return rtFateAsk(t);
       case 'rtFateVeto': { const c = S.rt.myCards.find(x => !x.used_at && /거부/.test(x.name)); if (!c) return toast('쓸 수 있는 거부권이 없어요');
         const f = S.rt.fates.find(x => x.id === id); if (!confirm(`🙅 거부권을 써서 "${f.question}"의 운명을 ${fateFinal(f) ? 'NO' : 'YES'}로 뒤집을까요?`)) return;
