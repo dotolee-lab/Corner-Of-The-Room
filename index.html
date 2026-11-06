@@ -740,6 +740,8 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .drive-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-top:12px}
 .drive-stats div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
 .drive-stats span{font-size:18px;font-weight:800}.drive-stats small{font-size:11px;color:var(--sub)}
+.bg-list{display:flex;flex-direction:column;gap:6px;margin:12px 0 4px}
+.bg-row{display:flex;gap:6px;align-items:center}
 .card-log{display:flex;flex-direction:column;gap:4px;font-size:13px}
 .card-log div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
 .card-log small{color:var(--sub);font-size:11px;margin-left:4px}
@@ -4310,11 +4312,12 @@ const FD_FROM_MEAL = { 한식:'한식', 고기:'고기', 해산물:'해산물', 
 function rtMeal(t){
   const R = S.rt, cats = R.mealCats.filter(c => c.active);
   S.rtMealLabel ??= (() => { const h = new Date().getHours(); return h < 10 ? '아침' : h < 15 ? '점심' : h < 21 ? '저녁' : '야식'; })();
-  S.rtBudgets ??= MEAL_BUDGETS.slice(0, 3);
+  const budgets = R.state.meal_budgets || MEAL_BUDGETS;
+  if (!S.rtBudgets || S.rtBudgetsFor !== budgets.join('|')){ S.rtBudgets = budgets.filter(b => !/자유/.test(b)); S.rtBudgetsFor = budgets.join('|'); }
   const last = [...R.meals].sort((a, b) => b.id - a.id);
   return `<div class="panel meal-panel">
       <div class="rt-band"><span class="fd-fl">끼니</span>${MEAL_LABELS.map(l => `<button class="chip sm ${S.rtMealLabel === l ? 'on' : ''}" data-act="rtMealLabel" data-k="${l}">${l}</button>`).join('')}</div>
-      <div class="rt-band"><span class="fd-fl">예산</span>${MEAL_BUDGETS.map(b => `<button class="chip sm ${S.rtBudgets.includes(b) ? 'on' : ''}" data-act="rtBudget" data-k="${b}">${b}</button>`).join('')}<small class="dim">켜진 것 중에서 뽑아요 · 다 끄면 예산 없음</small></div>
+      <div class="rt-band"><span class="fd-fl">예산</span>${budgets.map(b => `<button class="chip sm ${S.rtBudgets.includes(b) ? 'on' : ''}" data-act="rtBudget" data-k="${esc(b)}">${esc(b)}</button>`).join('')}<button class="link" data-act="rtBudgetEdit">✎ 예산 편집</button><small class="dim">켜진 것 중에서 뽑아요 · 다 끄면 예산 없음</small></div>
       <div class="rt-cands">${cats.map(c => `<span>${c.emoji} ${esc(c.name)}</span>`).join('')}</div>
       <button class="btn primary rt-go" data-act="rtMealSpin" ${cats.length ? '' : 'disabled'}>🍽 ${S.rtMealLabel} 메뉴 룰렛 돌리기</button>
     </div>
@@ -4328,6 +4331,28 @@ function rtMeal(t){
       <div class="gate-add"><input id="mc-e" placeholder="🍴" maxlength="4" style="width:64px;flex:0 0 64px"><input id="mc-n" placeholder="예) 브런치"><button class="btn small" data-act="rtMealCatAdd">추가</button></div>
       <p class="note">누르면 빼기·넣기</p>
     </details>`;
+}
+function openBudgetEdit(t){
+  const list = [...(S.rt.state.meal_budgets || MEAL_BUDGETS)];
+  const draw = () => { $('#bg-list').innerHTML = list.map((b, i) => `<div class="bg-row"><input value="${esc(b)}" data-i="${i}"><button class="icon" data-del="${i}" title="삭제">✕</button></div>`).join('') || '<p class="note">예산이 없어요 · 아래에서 추가해주세요</p>'; };
+  openModal(`<h3>💰 예산 편집</h3><p class="sub" style="margin:0">이 여행의 식사 룰렛 예산 목록이에요. 이름을 바로 고칠 수도 있어요.</p>
+    <div id="bg-list" class="bg-list"></div>
+    <div class="gate-add"><input id="bg-new" placeholder="예) 1인 1만 5천 원, 편의점만"><button class="btn small" id="bg-add">추가</button></div>
+    <div class="chips" style="margin-top:8px">${['1인 5천 원', '1인 1만 5천 원', '1인 5만 원', '편의점만', '현지 시장에서만', '제일 싼 메뉴'].map(x => `<button class="chip sm" data-quick="${x}">+ ${x}</button>`).join('')}</div>
+    <p class="err" id="merr"></p>
+    <div class="row"><button class="link" id="bg-reset">기본값으로</button><span class="sp"></span><button class="btn" id="cancel">취소</button><button class="btn primary" id="save">저장</button></div>`);
+  draw();
+  const sync = () => document.querySelectorAll('#bg-list input').forEach(x => list[+x.dataset.i] = x.value);
+  $('#bg-list').onclick = e => { const d = e.target.closest('[data-del]'); if (!d) return; sync(); list.splice(+d.dataset.del, 1); draw(); };
+  const add = v => { v = v.trim(); if (!v) return; sync(); if (!list.includes(v)) list.push(v); draw(); };
+  $('#bg-add').onclick = () => { add($('#bg-new').value); $('#bg-new').value = ''; };
+  $('#bg-new').onkeydown = e => { if (e.key === 'Enter'){ e.preventDefault(); $('#bg-add').click(); } };
+  document.querySelectorAll('[data-quick]').forEach(b => b.onclick = () => add(b.dataset.quick));
+  $('#bg-reset').onclick = () => { list.splice(0, list.length, ...MEAL_BUDGETS); draw(); };
+  $('#cancel').onclick = closeModal;
+  $('#save').onclick = async () => { sync();
+    try { await call('rt_save_budgets', { p_trip:t.id, p_list:list.map(x => x.trim()).filter(Boolean) }); await loadRandom(t.id); closeModal(); renderTrips(); toast('💰 예산을 저장했어요'); }
+    catch(e){ $('#merr').textContent = /function|schema/i.test(errMsg(e)) ? 'Supabase에서 19_meal_budget.sql을 먼저 실행해주세요' : errMsg(e); } };
 }
 async function rtMealSpin(t){
   const cats = S.rt.mealCats.filter(c => c.active);
@@ -4567,6 +4592,7 @@ async function rtAct(act, b, id){
       case 'rtMealLabel': S.rtMealLabel = b.dataset.k; return renderTrips();
       case 'rtBudget': { const k = b.dataset.k; S.rtBudgets = S.rtBudgets.includes(k) ? S.rtBudgets.filter(x => x !== k) : [...S.rtBudgets, k]; return renderTrips(); }
       case 'rtMealSpin': return rtMealSpin(t);
+      case 'rtBudgetEdit': return openBudgetEdit(t);
       case 'rtMealOpen': S.rtMealOpen = !b.parentNode.open; return;
       case 'rtMealCat': { const c = S.rt.mealCats.find(x => x.id === id); await call('rt_save_meal_cat', { p_id:id, p_emoji:c.emoji, p_name:c.name, p_active:!c.active }); S.rtMealOpen = true; return done(); }
       case 'rtMealCatAdd': await call('rt_save_meal_cat', { p_id:null, p_emoji:$('#mc-e').value, p_name:$('#mc-n').value, p_active:true }); S.rtMealOpen = true; return done();
