@@ -621,24 +621,13 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .rt-mode input{width:auto!important}
 .rt-mode small{color:var(--sub);font-weight:500}
 .rt-tabs{margin:14px 0 4px}
-.rt-days{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
-.rt-day{border:1px solid var(--line);background:var(--card);border-radius:14px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:var(--ink);font:inherit}
-.rt-day small{font-size:11px;font-weight:800;color:var(--sub);letter-spacing:.05em}
-.rt-day b{font-size:20px;letter-spacing:-.02em}
-.rt-day em{font-style:normal;font-size:11px;color:var(--sub);text-align:center;line-height:1.3}
-.rt-day.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
-.rt-day.done b{color:var(--accent)}
 .rt-band{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
 .rt-cands{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
 .rt-cands span{background:var(--chip);border-radius:10px;padding:5px 10px;font-size:13px;font-weight:700;display:flex;flex-direction:column;line-height:1.25}
 .rt-cands small{font-size:10px;color:var(--sub);font-weight:500}
 .rt-go{display:block;width:100%;font-size:16px;padding:13px}
-.rt-result{text-align:center;padding:22px 16px}
-.rt-r-kicker{font-size:12px;font-weight:800;color:var(--accent);letter-spacing:.12em}
-.rt-r-city{font-size:40px;font-weight:800;letter-spacing:-.03em;margin:4px 0}
 .rt-manage{margin-top:14px}
 .rt-manage summary{cursor:pointer;font-weight:700}
-.rt-cgroup{margin-top:12px}.rt-cgroup b{font-size:13px;color:var(--sub)}
 .rt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .rt-chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 11px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .rt-chips button.off{opacity:.45;text-decoration:line-through}
@@ -679,7 +668,7 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .pp-item span{flex:1}
 .pp-item small{font-size:11px;color:var(--sub)}
 .pp-item.added{opacity:.5;cursor:default}
-.rt-grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px;margin:14px 0 6px}
+.rt-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:14px 0 6px}
 .rt-grid button{position:relative;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:8px 4px;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
 .rt-grid button i{font-style:normal;font-size:20px;line-height:1.2}
 .rt-grid button span{font-size:12px;font-weight:700;white-space:nowrap}
@@ -689,17 +678,6 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 @media (max-width:600px){.rt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.rt-grid button span{font-size:11px}}
 .meal-panel .rt-band small{flex-basis:100%;font-size:11px}
 .gate-h.meal.latest{border-left-color:var(--accent)}
-.bingo-head{display:flex;align-items:baseline;justify-content:space-between;margin:14px 0 8px}
-.bingo-head b{font-size:17px}.bingo-head span{font-size:13px;color:var(--sub)}
-.bingo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-width:520px}
-.bingo-c{aspect-ratio:1;border:1px solid var(--line);background:var(--card);border-radius:14px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;font:inherit;color:var(--ink);cursor:pointer;text-align:center;gap:4px}
-.bingo-c span{font-size:13px;font-weight:700;line-height:1.3;position:relative;z-index:1}
-.bingo-c small{font-size:11px;position:relative;z-index:1;font-weight:800}
-.bingo-c img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}
-.bingo-c.done{border-color:#3f9b78;background:color-mix(in srgb,#7cc4a8 18%,var(--card))}
-.bingo-c.done span,.bingo-c.done small{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.7)}
-.bingo-c.line{border:2px solid #f2b33d;box-shadow:0 0 0 2px rgba(242,179,61,.25)}
-.bingo-big{width:100%;border-radius:12px;max-height:60vh;object-fit:contain;background:#000}
 .car-decks{margin:12px 0}
 .car-card{min-height:210px;border-radius:22px;padding:24px 20px;background:radial-gradient(120% 120% at 50% 0%,rgba(155,140,255,.28),transparent 60%),linear-gradient(160deg,#1b1630,#110f17);border:1px solid rgba(155,140,255,.45);color:#f4efe2;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;margin-bottom:12px}
 .car-card.empty{font-size:18px;color:#a9a3c6}
@@ -734,13 +712,7 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .car-score div span{font-size:13px;font-weight:700;margin-right:2px}
 .car-score div b{min-width:22px;text-align:center;font-size:16px}
 .car-score .link{margin-left:auto}
-.drive-card .gate-mission{font-size:30px}
-.drive-next{font-size:15px}
 .rt-tagx{font-size:11px;font-weight:800;background:color-mix(in srgb,var(--danger) 25%,transparent);color:#ff9a9a;padding:2px 8px;border-radius:999px}
-.drive-pick{font-size:13px}
-.drive-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-top:12px}
-.drive-stats div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
-.drive-stats span{font-size:18px;font-weight:800}.drive-stats small{font-size:11px;color:var(--sub)}
 a.btn{text-decoration:none;color:var(--ink)}
 .rt-ov a.btn{color:#1a1206;background:#f4efe2}
 .fate-ask{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:stretch}
@@ -2845,7 +2817,7 @@ function openTrip(id, preset = {}){
       <label>출발<input id="ft3" type="date" value="${t.start_date || ''}"></label>
       <label>도착<input id="ft4" type="date" value="${t.end_date || ''}"></label>
       <div class="full"><div class="flabel">함께 가는 사람</div>${memChecks(t.member_ids || [], 'tm')}</div>
-      <label class="full rt-mode"><span><input type="checkbox" id="ft-rnd" ${t.is_random ? 'checked' : ''}> 🎲 랜덤 여행 모드</span><small>목적지 룰렛 · 찬스 카드 · 시크릿 미션 탭이 생겨요</small></label>
+      <label class="full rt-mode"><span><input type="checkbox" id="ft-rnd" ${t.is_random ? 'checked' : ''}> 🎲 랜덤 여행 모드</span><small>관문 미션 · 찬스 카드 · 운명의 질문 · 식사/취침 룰렛 · 축구 퀴즈 탭이 생겨요</small></label>
       <label class="full">대표 사진 주소 (선택)<input id="ft5" value="${esc(t.cover_url || '')}" placeholder="https://… 이미지 링크, 비우면 색으로 표시"></label>
       <label class="full">메모 (선택)<textarea id="ft6" rows="2">${esc(t.memo || '')}</textarea></label>
     </div>
@@ -3877,33 +3849,7 @@ function openSession(id, plan){
 }
 
 // ================= 🎲 랜덤 여행 모드 =================
-const RT_START = { name:'신림역', lat:37.4842, lng:126.9297 };
-const RT_SEOUL = { lat:37.5665, lng:126.978 };
-// 룰렛 Day 2·3 후보를 찾을 때 쓰는 시·군 좌표 (대략)
-const KR_PLACES = {
-  강화:[37.747,126.488], 양평:[37.491,127.488], 이천:[37.272,127.435], 여주:[37.298,127.637], 횡성:[37.492,127.985], 인제:[38.070,128.170],
-  철원:[38.147,127.313], 화천:[38.106,127.708], 양구:[38.110,127.990], 고성:[38.381,128.468], 동해:[37.525,129.114], 삼척:[37.450,129.165],
-  영월:[37.184,128.462], 태백:[37.164,128.986], 제천:[37.133,128.191], 괴산:[36.815,127.787], 청주:[36.642,127.489], 보은:[36.489,127.729],
-  아산:[36.790,127.002], 서산:[36.785,126.450], 당진:[36.890,126.628], 부여:[36.276,126.910], 서천:[36.080,126.692], 논산:[36.187,127.099],
-  예산:[36.683,126.845], 홍성:[36.601,126.661], 청양:[36.459,126.802], 금산:[36.109,127.488], 옥천:[36.306,127.571], 영동:[36.175,127.783],
-  대구:[35.871,128.601], 울산:[35.538,129.311], 부산:[35.180,129.075], 문경:[36.586,128.187], 상주:[36.411,128.159], 봉화:[36.893,128.733],
-  청송:[36.436,129.057], 의성:[36.353,128.697], 예천:[36.658,128.452], 영양:[36.667,129.112], 구미:[36.120,128.344], 김천:[36.140,128.114],
-  영천:[35.973,128.939], 청도:[35.647,128.734], 밀양:[35.504,128.746], 창원:[35.228,128.682], 진주:[35.180,128.108], 거제:[34.880,128.621],
-  남해:[34.838,127.892], 사천:[35.004,128.064], 산청:[35.416,127.874], 함양:[35.520,127.725], 거창:[35.687,127.910], 합천:[35.567,128.166],
-  광주:[35.160,126.852], 목포:[34.812,126.392], 보성:[34.771,127.080], 광양:[34.940,127.696], 구례:[35.202,127.463], 곡성:[35.282,127.292],
-  고흥:[34.611,127.285], 해남:[34.573,126.599], 강진:[34.642,126.767], 완도:[34.311,126.755], 무주:[36.007,127.661], 진안:[35.792,127.425],
-  부안:[35.732,126.733], 고창:[35.436,126.702], 정읍:[35.570,126.856], 익산:[35.948,126.958], 임실:[35.618,127.289], 장수:[35.647,127.521],
-  춘천:[37.881,127.730], 가평:[37.831,127.510], 홍천:[37.697,127.889], 원주:[37.342,127.920], 충주:[36.991,127.926], 단양:[36.985,128.366],
-  천안:[36.815,127.114], 공주:[36.447,127.119], 보령:[36.333,126.613], 태안:[36.746,126.298], 강릉:[37.752,128.876], 속초:[38.207,128.592],
-  양양:[38.075,128.619], 평창:[37.371,128.390], 정선:[37.381,128.661], 안동:[36.568,128.730], 영주:[36.806,128.624], 전주:[35.824,127.148],
-  군산:[35.968,126.737], 대전:[36.351,127.385], 경주:[35.856,129.225], 포항:[36.019,129.343], 영덕:[36.415,129.365], 울진:[36.993,129.400],
-  여수:[34.760,127.662], 순천:[34.951,127.487], 담양:[35.321,126.988], 남원:[35.416,127.390], 통영:[34.854,128.433], 하동:[35.067,127.751],
-};
-const geoKm = (a, b) => { const R = 6371, r = x => x * Math.PI / 180, dLa = r(b.lat - a.lat), dLo = r(b.lng - a.lng);
-  return 2 * R * Math.asin(Math.sqrt(Math.sin(dLa / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLo / 2) ** 2)); };
-const driveMin = km => Math.round((km * 0.8 + 15) / 10) * 10;   // 직선거리로 어림잡은 차 이동 시간
 const fmtMin = m => m < 60 ? `${m}분` : `${Math.floor(m / 60)}시간${m % 60 ? ` ${m % 60}분` : ''}`;
-const RT_BANDS = [2, 3, 4];
 
 async function loadRandom(tid){
   const pub = await Promise.all([
@@ -3917,10 +3863,9 @@ async function loadRandom(tid){
   if (bad){ S.rt = { err:bad.error.message }; return; }
   const [cities, spins, types, used, gates, gateVotes, penalties, state, counts, poolStats] = pub.map(x => x.data);
   const priv = await Promise.all([call('rt_my_cards', { p_trip:tid }), call('rt_my_pool', { p_trip:tid }), call('rt_culprit_state', { p_trip:tid }).catch(() => [])]);
-  const ex = await Promise.all([sb.from('rt_meal_cats').select('*').order('sort'), sb.from('rt_meals').select('*').eq('trip_id', tid),
-    sb.from('rt_bingo_items').select('*').order('id'), sb.from('rt_bingo_cells').select('*').eq('trip_id', tid), sb.from('rt_drive_log').select('*').eq('trip_id', tid)]);
+  const ex = await Promise.all([sb.from('rt_meal_cats').select('*').order('sort'), sb.from('rt_meals').select('*').eq('trip_id', tid)]);
   const exBad = ex.find(x => x.error);
-  const [mealCats, meals, bingoItems, bingo, drives] = exBad ? [[], [], [], [], []] : ex.map(x => x.data);
+  const [mealCats, meals] = exBad ? [[], []] : ex.map(x => x.data);
   const cl = await sb.from('rt_card_log').select('*').eq('trip_id', tid);
   const sl = await sb.from('rt_sleeps').select('*').eq('trip_id', tid);
   const ft = await sb.from('rt_fates').select('*').eq('trip_id', tid);
@@ -3929,114 +3874,20 @@ async function loadRandom(tid){
   S.rt = { tid, cities, spins, types, used, gates, gateVotes:gateVotes.filter(v => gids.has(v.gate_id)), penalties, counts, poolStats,
     state:state[0] || { gate_trigger:'move', gate_every:120, gate_from:10, gate_to:20, gate_limit:30, gate_fail:'penalty', gate_verify:'either' },
     myCards:priv[0] || [], myPool:priv[1] || [], culprit:priv[2] || [],
-    mealCats, meals, bingoItems, bingo, drives, cardLog, sleeps:sl.error ? [] : sl.data, fates:ft.error ? [] : ft.data, exErr:exBad?.error.message || null };
+    mealCats, meals, cardLog, sleeps:sl.error ? [] : sl.data, fates:ft.error ? [] : ft.data, exErr:exBad?.error.message || null };
 }
 function randomHTML(t){
   if (!S.rt || S.rt.tid !== t.id){ loadRandom(t.id).then(() => { if (S.tripTab === 'random' && S.tripId === t.id) renderTrips(); }); return '<div class="panel ac-locked">🎲<br>불러오는 중…</div>'; }
   if (S.rt.err) return `<div class="panel ac-locked">🎲<br>랜덤 여행 기능을 쓰려면 Supabase에서 <b>12_random_trip.sql</b>과 <b>13_gate_mission.sql</b>을 실행해주세요<br><small>${esc(S.rt.err)}</small></div>`;
-  S.rtTab ??= 'roulette';
-  if (S.rtTab === 'mission') S.rtTab = 'gate';
+  if (!['gate', 'cards', 'fate', 'meal', 'sleep', 'car'].includes(S.rtTab)) S.rtTab = 'gate';
   const g = openGate();
-  const tabs = [['roulette', '🗺', '목적지 룰렛'], ['gate', '🔓', '관문 미션', g || S.rt.gates.some(x => x.culprit_status === 'voting')], ['cards', '🃏', '찬스 카드'],
-    ['fate', '🎱', '운명의 질문'], ['meal', '🍽', '식사 룰렛'], ['sleep', '🛏', '취침 룰렛'], ['bingo', '📸', '포토 빙고'], ['car', '⚽', '축구 퀴즈'], ['drive', '🚗', '운전 당번']];
-  const needEx = ['meal', 'bingo', 'drive'].includes(S.rtTab) && S.rt.exErr;
+  const tabs = [['gate', '🔓', '관문 미션', g || S.rt.gates.some(x => x.culprit_status === 'voting')], ['cards', '🃏', '찬스 카드'], ['fate', '🎱', '운명의 질문'],
+    ['meal', '🍽', '식사 룰렛'], ['sleep', '🛏', '취침 룰렛'], ['car', '⚽', '축구 퀴즈']];
+  const needEx = S.rtTab === 'meal' && S.rt.exErr;
   const body = needEx ? `<div class="panel ac-locked">🎲<br>이 기능을 쓰려면 Supabase에서 <b>16_trip_extras.sql</b>을 실행해주세요<br><small>${esc(S.rt.exErr)}</small></div>`
-    : { roulette:rtRoulette, cards:rtCards, gate:rtGate, fate:rtFate, meal:rtMeal, sleep:rtSleep, bingo:rtBingo, car:rtCar, drive:rtDrive }[S.rtTab](t);
+    : { cards:rtCards, gate:rtGate, fate:rtFate, meal:rtMeal, sleep:rtSleep, car:rtCar }[S.rtTab](t);
   setTimeout(bindGate);
   return `<div class="rt-grid">${tabs.map(([k, e, l, dot]) => `<button class="${S.rtTab === k ? 'on' : ''}" data-act="rtTab" data-k="${k}"><i>${e}</i><span>${l}</span>${dot ? '<b class="gate-dot"></b>' : ''}</button>`).join('')}</div>${body}`;
-}
-
-// ----- 🗺 목적지 룰렛 -----
-function rtCandidates(t, day){
-  const R = S.rt, spin = d => R.spins.find(s => s.day === d);
-  const off = new Set(R.cities.filter(c => !c.active).map(c => c.name));
-  const taken = new Set(R.spins.map(s => s.city));
-  if (day === 1){
-    const band = S.rtBand ?? 0;
-    return { list:R.cities.filter(c => c.active && (!band || c.band === band)).map(c => ({ name:c.name, lat:c.lat, lng:c.lng, note:`${c.band}시간권` })) };
-  }
-  const prev = spin(day - 1);
-  if (!prev) return { need:`먼저 Day ${day - 1} 목적지를 정해주세요` };
-  if (prev.lat == null) return { need:`${prev.city}의 위치 정보가 없어서 주변 도시를 찾을 수 없어요` };
-  const pool = new Map();
-  Object.entries(KR_PLACES).forEach(([n, [lat, lng]]) => pool.set(n, { name:n, lat, lng }));
-  R.cities.filter(c => c.lat != null).forEach(c => pool.set(c.name, { name:c.name, lat:c.lat, lng:c.lng }));
-  const all = [...pool.values()].filter(c => !off.has(c.name) && !taken.has(c.name));
-  if (day === 2) return { list:all.map(c => ({ ...c, km:geoKm(prev, c) })).filter(c => driveMin(c.km) <= 90).sort((a, b) => a.km - b.km)
-    .map(c => ({ name:c.name, lat:c.lat, lng:c.lng, note:`약 ${fmtMin(driveMin(c.km))}` })) };
-  const home = geoKm(prev, RT_SEOUL);
-  return { list:all.map(c => ({ ...c, a:geoKm(prev, c), b:geoKm(c, RT_SEOUL) }))
-    .filter(c => c.b < home - 30 && c.a > 25 && driveMin(c.a) <= 120 && c.a + c.b <= home * 1.15).sort((x, y) => x.a - y.a)
-    .map(c => ({ name:c.name, lat:c.lat, lng:c.lng, note:`+${fmtMin(driveMin(c.a))} · 서울까지 ${fmtMin(driveMin(c.b))}` })) };
-}
-function rtRoulette(t){
-  const R = S.rt, spin = d => R.spins.find(s => s.day === d);
-  S.rtDay ??= [1, 2, 3].find(d => !spin(d)) || 1;
-  const day = S.rtDay, done = spin(day), c = done ? null : rtCandidates(t, day);
-  const dayLabel = { 1:'메인 목적지', 2:'1시간 30분 안의 다른 곳', 3:'서울 가는 길 경유지' };
-  const from = day === 1 ? RT_START : spin(day - 1);
-  return `
-    <div class="rt-days">${[1, 2, 3].map(d => { const s = spin(d);
-      return `<button class="rt-day ${day === d ? 'on' : ''} ${s ? 'done' : ''}" data-act="rtDay" data-k="${d}"><small>Day ${d}</small><b>${s ? esc(s.city) : '?'}</b><em>${dayLabel[d]}</em></button>`; }).join('')}</div>
-    ${done ? `<div class="panel rt-result">
-        <div class="rt-r-kicker">Day ${day} 목적지</div>
-        <div class="rt-r-city">${esc(done.city)}</div>
-        ${from?.lat != null && done.lat != null ? `<div class="dim">${day === 1 ? '신림역' : esc(from.city)}에서 차로 약 ${fmtMin(driveMin(geoKm(from, done)))}</div>` : ''}
-        <div class="row" style="justify-content:center;margin-top:12px">
-          <a class="btn small" href="${naverMap(done.city)}" target="_blank" rel="noopener">네이버 지도 ↗</a>
-          ${isAdmin() ? `<button class="btn small danger" data-act="rtReset" data-k="${day}">되돌리기</button>` : ''}
-        </div>
-        <p class="note">🙅 룰렛 결과에는 거부권을 쓸 수 없어요 · 일정 탭에 자동으로 기록됐어요</p></div>`
-    : `<div class="panel">
-        ${day === 1 ? `<div class="rt-band"><span class="fd-fl">시간권</span>${[[0, '전체'], ...RT_BANDS.map(b => [b, `${b}시간권`])].map(([b, l]) => `<button class="chip sm ${(S.rtBand ?? 0) === b ? 'on' : ''}" data-act="rtBand" data-k="${b}">${l}</button>`).join('')}
-            <button class="chip sm" data-act="rtDice">🎲 시간 주사위</button></div>` : ''}
-        ${c.need ? `<p class="note">${esc(c.need)}</p>` : `
-          <div class="rt-cands">${c.list.map(x => `<span title="${esc(x.note)}">${esc(x.name)}<small>${esc(x.note)}</small></span>`).join('') || '<p class="note">조건에 맞는 후보가 없어요</p>'}</div>
-          ${openGate() ? `<p class="gate-warn">🔒 관문 미션을 먼저 클리어해야 다음 목적지를 뽑을 수 있어요 <button class="link" data-act="rtTab" data-k="gate">관문 보러 가기 →</button></p>` : ''}
-          <button class="btn primary rt-go" data-act="rtSpin" ${c.list.length && !openGate() ? '' : 'disabled'}>🎰 Day ${day} 룰렛 돌리기 <small>(${c.list.length}곳)</small></button>
-          <p class="note" style="text-align:center">한 번 돌리면 바로 확정돼요 · 거부권 사용 불가</p>`}
-      </div>`}
-    <details class="panel rt-manage" ${S.rtCityOpen ? 'open' : ''}><summary data-act="rtCityOpen">⚙️ 후보 도시 관리 <small class="dim">눌러서 빼기·넣기</small></summary>
-      ${RT_BANDS.concat([...new Set(R.cities.map(x => x.band))].filter(b => !RT_BANDS.includes(b)).sort()).map(b => `<div class="rt-cgroup"><b>${b}시간권</b>
-        <div class="rt-chips">${R.cities.filter(x => x.band === b).map(x => `<button class="${x.active ? '' : 'off'}" data-act="rtCity" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div></div>`).join('')}
-      <button class="btn small" data-act="rtAddCity">+ 도시 추가</button>
-    </details>`;
-}
-async function rtDoSpin(t){
-  const day = S.rtDay, c = rtCandidates(t, day);
-  if (!c.list?.length) return;
-  let pick;
-  try { pick = await call('rt_spin', { p_trip:t.id, p_day:day, p_cands:c.list.map(({ name, lat, lng }) => ({ name, lat, lng })) }); }
-  catch(e){ alert(errMsg(e)); await loadTravel(); await loadRandom(t.id); return renderTrips(); }
-  const ov = document.createElement('div'); ov.className = 'cer rt-ov';
-  ov.innerHTML = `<div class="cer-in"><div class="cer-kicker">DAY ${day} 목적지</div><div class="rt-slot"><span id="rt-slot">?</span></div><div class="cer-sub" id="rt-sub">두구두구두구…</div></div>`;
-  document.body.appendChild(ov);
-  const names = c.list.map(x => x.name), el = ov.querySelector('#rt-slot');
-  let i = 0, delay = 50;
-  await new Promise(res => { const tick = () => { el.textContent = names[i++ % names.length]; delay *= 1.09; if (delay < 420) setTimeout(tick, delay); else res(); }; tick(); });
-  el.textContent = pick.name; el.parentNode.classList.add('hit');
-  ov.querySelector('#rt-sub').innerHTML = `🎉 이번 여행 Day ${day}는 <b>${esc(pick.name)}</b>!`;
-  ov.querySelector('.cer-in').insertAdjacentHTML('beforeend', `<div class="row" style="justify-content:center;margin-top:20px"><a class="btn" href="${naverMap(pick.name)}" target="_blank" rel="noopener">네이버 지도 ↗</a><button class="btn primary" id="rt-ok">확인</button></div>`);
-  await loadTravel(); await loadRandom(t.id);
-  ov.querySelector('#rt-ok').onclick = () => { ov.remove(); renderTrips(); };
-}
-function rtAddCity(){
-  openModal(`<h3>후보 도시 추가</h3>
-    <div class="form">
-      <label class="full">도시 이름<input id="rc-n" list="rc-list" placeholder="예) 삼척"></label>
-      <datalist id="rc-list">${Object.keys(KR_PLACES).filter(n => !S.rt.cities.some(c => c.name === n)).map(n => `<option value="${n}">`).join('')}</datalist>
-      <label class="full">신림역에서 차로<select id="rc-b">${[1, 2, 3, 4, 5, 6].map(b => `<option value="${b}" ${b === 3 ? 'selected' : ''}>${b}시간권</option>`).join('')}</select></label>
-    </div>
-    <p class="note" id="rc-h">목록에 있는 시·군을 고르면 거리를 보고 시간권을 자동으로 골라줘요</p>
-    <p class="err" id="merr"></p>
-    <div class="row"><span class="sp"></span><button class="btn" id="cancel">취소</button><button class="btn primary" id="save">추가</button></div>`);
-  $('#rc-n').oninput = () => { const p = KR_PLACES[$('#rc-n').value.trim()]; if (!p) return;
-    const m = driveMin(geoKm(RT_START, { lat:p[0], lng:p[1] })); $('#rc-b').value = Math.min(6, Math.max(1, Math.round(m / 60)));
-    $('#rc-h').textContent = `신림역에서 차로 약 ${fmtMin(m)} (직선거리로 어림잡은 값)`; };
-  $('#cancel').onclick = closeModal;
-  $('#save').onclick = async () => { const n = $('#rc-n').value.trim(), p = KR_PLACES[n];
-    try { await call('rt_save_city', { p_id:null, p_d:{ name:n, band:+$('#rc-b').value, lat:p?.[0] ?? '', lng:p?.[1] ?? '' } }); await loadRandom(S.tripId); closeModal(); renderTrips(); }
-    catch(e){ $('#merr').textContent = errMsg(e); } };
 }
 
 // ----- 🃏 찬스 카드 -----
@@ -4310,7 +4161,7 @@ setInterval(async () => {
   }
   if (S.cat === 'travel' && S.tripTab === 'random' && S.rt?.tid === S.tripId && !S.rt.err && Date.now() - _gateTickAt > 30000 && !_gateBusy){
     _gateTickAt = Date.now();
-    const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.sleeps, S.rt.fates, S.rt.bingo, S.rt.drives, S.rt.state, S.rt.counts, S.rt.cardLog]);
+    const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.sleeps, S.rt.fates, S.rt.state, S.rt.counts, S.rt.cardLog]);
     const myBefore = (S.rt.myCards || []).filter(c => !c.used_at).length;
     const before = sig();
     try {
@@ -4484,61 +4335,6 @@ async function rtMealSpin(t){
   ov.querySelector('#rt-ok').onclick = () => { ov.remove(); renderTrips(); };
 }
 
-// ----- 📸 포토 빙고 -----
-const BINGO_LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
-function rtBingo(t){
-  const R = S.rt, cells = [...R.bingo].sort((a, b) => a.idx - b.idx);
-  const doneSet = new Set(cells.filter(c => c.done_at).map(c => c.idx));
-  const lines = BINGO_LINES.filter(l => l.every(i => doneSet.has(i)));
-  const inLine = new Set(lines.flat());
-  const manage = `<details class="panel rt-manage" ${S.rtBingoOpen ? 'open' : ''}><summary data-act="rtBingoOpen">⚙️ 빙고 칸 후보 <small class="dim">${R.bingoItems.filter(x => x.active).length}개 사용 중 · 판 만들 때 9개를 랜덤으로</small></summary>
-      <div class="rt-chips" style="margin-top:10px">${R.bingoItems.map(x => `<button class="${x.active ? '' : 'off'}" data-act="rtBingoItem" data-id="${x.id}">${esc(x.text)}</button>`).join('')}</div>
-      <div class="gate-add"><input id="bi-t" placeholder="예) 바닷가 조개껍데기"><button class="btn small" data-act="rtBingoItemAdd">추가</button></div>
-      <p class="note">누르면 빼기·넣기 · 이미 만든 판은 안 바뀌어요</p>
-    </details>`;
-  if (!cells.length) return `<div class="panel rt-deal"><div class="rt-ce big">📸</div><b>포토 빙고판을 만들어요</b>
-      <p class="note">후보 중 9칸을 랜덤으로 깔아요. 여행 내내 사진을 찍어 칸을 채우고, 빙고 한 줄마다 그 줄을 완성한 사람이 🃏 찬스 카드 1장을 받아요.</p>
-      <button class="btn primary" data-act="rtBingoNew">📸 빙고판 만들기</button></div>${manage}`;
-  return `<div class="bingo-head"><b>📸 포토 빙고</b><span>${doneSet.size} / 9칸 · <b>${lines.length}</b>줄 빙고${lines.length ? ' 🎉' : ''}</span></div>
-    <div class="bingo">${cells.map(c => `<button class="bingo-c ${c.done_at ? 'done' : ''} ${inLine.has(c.idx) ? 'line' : ''}" data-act="rtBingoCell" data-k="${c.idx}">
-      ${c.photo_url ? `<img src="${esc(c.photo_url)}" alt="">` : ''}<span>${esc(c.text)}</span>${c.done_at ? `<small>✓ ${esc(shortName(memName(c.done_by)))}</small>` : ''}</button>`).join('')}</div>
-    <p class="note">칸을 눌러 사진을 올리면 채워져요 · 한 줄 완성할 때마다 완성한 사람에게 찬스 카드 1장 🃏</p>
-    <input type="file" accept="image/*" capture="environment" id="bingo-ph" hidden>
-    ${isAdmin() || !doneSet.size ? '<button class="link" data-act="rtBingoReset">빙고판 새로 만들기</button>' : ''}
-    ${manage}`;
-}
-async function uploadTripPhoto(file, folder){
-  const blob = await resizeImage(file);
-  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.jpg`;
-  const up = await sb.storage.from('cor-photos').upload(path, blob, { contentType:'image/jpeg', upsert:false });
-  if (up.error) throw up.error;
-  return sb.storage.from('cor-photos').getPublicUrl(path).data.publicUrl;
-}
-function rtBingoCell(t, idx){
-  const c = S.rt.bingo.find(x => x.idx === idx);
-  if (c.done_at){
-    openModal(`<h3>📸 ${esc(c.text)}</h3>${c.photo_url ? `<img src="${esc(c.photo_url)}" class="bingo-big" alt="">` : '<p class="note">사진 없이 채운 칸이에요</p>'}
-      <p class="dim">${esc(memName(c.done_by))} · ${new Date(c.done_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })}</p>
-      <div class="row">${c.done_by === S.me || isAdmin() ? '<button class="btn danger" id="del">칸 비우기</button>' : ''}<span class="sp"></span><button class="btn primary" id="cancel">닫기</button></div>`);
-    $('#cancel').onclick = closeModal;
-    if ($('#del')) $('#del').onclick = async () => { try { await call('rt_bingo_unmark', { p_trip:t.id, p_idx:idx }); await loadRandom(t.id); closeModal(); renderTrips(); } catch(e){ alert(errMsg(e)); } };
-    return;
-  }
-  const f = $('#bingo-ph');
-  f.value = '';
-  f.onchange = async () => {
-    if (!f.files[0]) return;
-    toast('📸 올리는 중…');
-    try {
-      const url = await uploadTripPhoto(f.files[0], `bingo/${t.id}`);
-      const r = await call('rt_bingo_mark', { p_trip:t.id, p_idx:idx, p_url:url });
-      await loadRandom(t.id); renderTrips();
-      toast(r.new ? `🎉 빙고 ${r.lines}줄! 찬스 카드 ${r.new}장 획득 🃏` : `📸 "${c.text}" 칸 완료!`);
-    } catch(e){ alert('사진을 올리지 못했어요: ' + errMsg(e)); }
-  };
-  f.click();
-}
-
 // ----- ⚽ 차 안 축구 퀴즈 (폰에서만 · 선수 정보는 2025년 기준) -----
 const QZ_HINT = [{"h": ["아르헨티나", "키 170cm 왼발잡이", "발롱도르 8회 수상", "2022 카타르 월드컵 우승 주장"], "a": "리오넬 메시"}, {"h": ["포르투갈", "챔피언스리그 역대 최다 득점", "골 세리머니 \"SIUUU\"", "맨유 → 레알 → 유벤투스 → 알나스르"], "a": "크리스티아누 호날두"}, {"h": ["노르웨이", "아버지도 프리미어리거", "잘츠부르크 → 도르트문트", "맨시티 첫 시즌 EPL 36골"], "a": "엘링 홀란"}, {"h": ["이집트", "왼발 윙어", "첼시에서 실패 → 로마에서 부활", "별명 \"이집트 왕\""], "a": "모하메드 살라"}, {"h": ["대한민국", "함부르크 → 레버쿠젠", "2021-22 EPL 공동 득점왕", "2025 유로파리그 우승 주장"], "a": "손흥민"}, {"h": ["프랑스", "2018 월드컵 우승 당시 10대", "2022 월드컵 결승 해트트릭", "PSG → 레알 마드리드"], "a": "킬리안 음바페"}, {"h": ["크로아티아", "2018 발롱도르", "토트넘 → 레알 마드리드", "2018 월드컵 준우승 주장"], "a": "루카 모드리치"}, {"h": ["잉글랜드", "토트넘 역대 최다 득점", "오랫동안 \"무관\" 꼬리표", "바이에른에서 첫 우승 트로피"], "a": "해리 케인"}, {"h": ["네덜란드", "흐로닝언 → 셀틱 → 사우샘프턴", "중앙 수비수", "리버풀 주장"], "a": "버질 반 다이크"}, {"h": ["프랑스", "1998 월드컵 결승 헤딩 2골", "2006 월드컵 결승 박치기 퇴장", "감독으로 레알 챔스 3연패"], "a": "지네딘 지단"}, {"h": ["잉글랜드", "오른발 프리킥 장인", "아내는 스파이스 걸스 멤버", "인터 마이애미 구단주"], "a": "데이비드 베컴"}, {"h": ["대한민국", "교토 → PSV", "별명 \"두 개의 심장\"", "맨유에서 7시즌"], "a": "박지성"}, {"h": ["코트디부아르", "마르세유에서 1시즌", "2012 챔스 결승 동점골·결승 PK", "첼시 레전드 공격수"], "a": "디디에 드로그바"}, {"h": ["프랑스", "모나코 → 유벤투스", "아스널 무패 우승 \"인빈시블스\"의 에이스", "아스널 역대 최다 득점"], "a": "티에리 앙리"}, {"h": ["스페인", "바르셀로나 유스 라 마시아", "2010 월드컵 결승 연장 결승골", "비셀 고베에서도 뜀"], "a": "안드레스 이니에스타"}, {"h": ["잉글랜드", "에버턴에서 16살 데뷔", "맨유 역대 최다 득점 (253골)", "은퇴 후 감독·해설가"], "a": "웨인 루니"}, {"h": ["스웨덴", "말뫼 → 아약스 → 유벤투스", "태권도 유단자 · 아크로바틱 골", "\"즐라탄은 즐라탄이다\""], "a": "즐라탄 이브라히모비치"}, {"h": ["대한민국", "전북 → 베이징 → 페네르바체", "나폴리 33년 만의 우승 주역", "별명 \"괴물 수비수\""], "a": "김민재"}, {"h": ["잉글랜드", "버밍엄 시티에서 16살 데뷔", "도르트문트 → 레알 마드리드", "레알에서 등번호 5번"], "a": "주드 벨링엄"}, {"h": ["폴란드", "도르트문트에서 득점왕", "분데스리가 한 시즌 41골 기록", "바이에른 → 바르셀로나"], "a": "로베르트 레반도프스키"}, {"h": ["브라질", "2005 발롱도르", "항상 웃는 얼굴 · 엘라스티코", "바르셀로나 시절 베르나베우 기립박수"], "a": "호나우지뉴"}, {"h": ["이탈리아", "골키퍼", "2006 월드컵 우승", "유벤투스에서 20년 가까이"], "a": "잔루이지 부폰"}, {"h": ["벨기에", "헹크 → 첼시 → 볼프스부르크", "맨시티 10년 · 도움왕 여러 번", "2025년 나폴리 이적"], "a": "케빈 더브라위너"}, {"h": ["우루과이", "흐로닝언 → 아약스 → 리버풀", "바르셀로나 \"MSN\" 트리오", "월드컵에서 깨물기 사건"], "a": "루이스 수아레스"}, {"h": ["브라질", "산투스 출신", "2017년 역대 최고 이적료로 PSG행", "브라질 대표팀 역대 최다 득점"], "a": "네이마르"}, {"h": ["브라질", "상파울루 → AC밀란", "2007 발롱도르", "레알 마드리드 → 올랜도 시티"], "a": "카카"}, {"h": ["브라질", "별명 \"페노메노 (괴물)\"", "2002 월드컵 득점왕 8골", "바르 → 인테르 → 레알 → AC밀란"], "a": "호나우두"}, {"h": ["이탈리아", "수염 · 레지스타(후방 플레이메이커)", "AC밀란 → 유벤투스", "2006 월드컵 우승 · 무회전 프리킥"], "a": "안드레아 피를로"}, {"h": ["이탈리아", "수비수", "AC밀란에서만 25시즌", "아버지 체사레도 밀란 주장"], "a": "파올로 말디니"}, {"h": ["스페인", "곱슬머리 수비수", "바르셀로나 원클럽 주장", "2010 월드컵 준결승 독일전 헤딩골"], "a": "카를레스 푸욜"}, {"h": ["스페인", "미드필더 · 패스 마스터", "바르셀로나 → 알사드", "은퇴 후 바르셀로나 감독"], "a": "사비 에르난데스"}, {"h": ["스페인", "골키퍼 · 별명 \"성 이케르\"", "레알 마드리드 → 포르투", "2010 월드컵 우승 주장"], "a": "이케르 카시야스"}, {"h": ["스페인", "세비야 출신 수비수", "2014 챔스 결승 92분 동점 헤딩", "레알 → PSG → 세비야 → 몬테레이"], "a": "세르히오 라모스"}, {"h": ["잉글랜드", "리버풀 주장", "2005 챔스 결승 \"이스탄불의 기적\"", "LA 갤럭시 → 감독"], "a": "스티븐 제라드"}, {"h": ["잉글랜드", "웨스트햄 출신 미드필더", "첼시 역대 최다 득점 (211골)", "은퇴 후 첼시 감독"], "a": "프랭크 램파드"}, {"h": ["잉글랜드", "첼시 주장 · 수비수", "2008 챔스 결승 승부차기 미끄러짐", "\"캡틴, 리더, 레전드\""], "a": "존 테리"}, {"h": ["잉글랜드", "빨간 머리 미드필더", "맨유 원클럽맨", "은퇴했다가 복귀"], "a": "폴 스콜스"}, {"h": ["웨일스", "왼쪽 윙어", "맨유 원클럽맨", "프리미어리그 13회 우승"], "a": "라이언 긱스"}, {"h": ["잉글랜드", "중앙 수비수", "웨스트햄 → 리즈", "맨유에서 12시즌"], "a": "리오 퍼디난드"}, {"h": ["네덜란드", "페예노르트 → 아스널", "2012-13 맨유 우승 · 득점왕", "2014 월드컵 \"날아가는 네덜란드인\" 헤딩"], "a": "로빈 판 페르시"}, {"h": ["네덜란드", "왼발 컷인 슛 장인", "첼시 → 레알 → 바이에른", "2013 챔스 결승 결승골"], "a": "아르연 로번"}, {"h": ["프랑스", "바이에른 왼쪽 윙어", "2013 트레블", "피오렌티나 → 살레르니타나"], "a": "프랑크 리베리"}, {"h": ["이탈리아", "키 작은 중앙 수비수", "2006 월드컵 우승 주장", "2006 발롱도르"], "a": "파비오 칸나바로"}, {"h": ["이탈리아", "별명 \"로마의 왕자\"", "AS로마 원클럽맨", "2006 월드컵 우승"], "a": "프란체스코 토티"}, {"h": ["이탈리아", "유벤투스 등번호 10번", "유벤투스 강등 때도 잔류", "시드니 FC에서 뜀"], "a": "알레산드로 델 피에로"}, {"h": ["우크라이나", "디나모 키예프 → AC밀란", "2004 발롱도르", "2006년 첼시 이적"], "a": "안드리 셰브첸코"}, {"h": ["독일", "골키퍼 · \"스위퍼 키퍼\"", "샬케 → 바이에른", "2014 월드컵 우승"], "a": "마누엘 노이어"}, {"h": ["독일", "별명 \"공간 해석가\"", "2010 월드컵 득점왕", "바이에른 25년 → 2025 밴쿠버"], "a": "토마스 뮐러"}, {"h": ["독일", "정확한 패스의 미드필더", "바이에른 → 레알", "유로 2024 후 은퇴"], "a": "토니 크로스"}, {"h": ["독일", "월드컵 역대 최다 득점 16골", "공중제비 세리머니", "바이에른 → 라치오"], "a": "미로슬라프 클로제"}, {"h": ["독일", "풀백 · 작은 키", "바이에른 원클럽 주장", "2014 월드컵 우승 주장"], "a": "필립 람"}, {"h": ["독일", "바이에른 미드필더", "2014 월드컵 결승 피 흘리며 투혼", "맨유 → 시카고 파이어"], "a": "바스티안 슈바인슈타이거"}, {"h": ["벨기에", "릴 → 첼시", "2019년 레알 이적 후 부상", "2023년 은퇴"], "a": "에덴 아자르"}, {"h": ["벨기에", "키 2m 골키퍼", "첼시 → 레알", "2022 챔스 결승 MOM"], "a": "티보 쿠르투아"}, {"h": ["프랑스", "레알 소시에다드 출신", "2018 월드컵 우승", "아틀레티코 역대 최다 득점"], "a": "앙투안 그리즈만"}, {"h": ["프랑스", "리옹 → 레알 마드리드", "2022 발롱도르", "사우디 알이티하드"], "a": "카림 벤제마"}, {"h": ["프랑스", "작은 키 · 엄청난 활동량", "레스터 → 첼시 연속 우승", "2018 월드컵 우승"], "a": "은골로 캉테"}, {"h": ["프랑스", "맨유 → 유벤투스 → 맨유", "2018 월드컵 결승 골", "도핑 징계 후 2025 모나코"], "a": "폴 포그바"}, {"h": ["프랑스", "키 큰 미드필더", "아스널 무패 우승 주장", "은퇴 후 감독"], "a": "파트리크 비에이라"}, {"h": ["아르헨티나", "1986 월드컵 \"신의 손\"", "나폴리의 신", "보카 주니어스"], "a": "디에고 마라도나"}, {"h": ["브라질", "월드컵 3회 우승", "산투스 레전드", "뉴욕 코스모스"], "a": "펠레"}, {"h": ["아르헨티나", "별명 \"바티골\"", "피오렌티나 레전드", "AS로마에서 첫 우승"], "a": "가브리엘 바티스투타"}, {"h": ["아르헨티나", "왼발 윙어", "레알 → 맨유 → PSG → 유벤투스", "2022 월드컵 결승 골"], "a": "앙헬 디마리아"}, {"h": ["아르헨티나", "아틀레티코 → 맨시티", "2012 우승 결정골 \"93:20\"", "맨시티 역대 최다 득점"], "a": "세르히오 아궤로"}, {"h": ["아르헨티나", "맨유 → 맨시티 \"Welcome to Manchester\"", "유벤투스", "보카 주니어스 레전드"], "a": "카를로스 테베스"}, {"h": ["아르헨티나", "라싱 클루브 출신", "인테르 주장", "2022 월드컵 우승"], "a": "라우타로 마르티네스"}, {"h": ["아르헨티나", "리버 플레이트 출신", "맨시티 → 아틀레티코", "2022 월드컵 4골"], "a": "훌리안 알바레스"}, {"h": ["아르헨티나", "골키퍼", "아스널 → 애스턴빌라", "2022 월드컵 결승 승부차기 영웅"], "a": "에밀리아노 마르티네스"}, {"h": ["우루과이", "나폴리 → PSG", "PSG 한때 역대 최다 득점", "맨유 → 발렌시아 → 보카"], "a": "에딘손 카바니"}, {"h": ["우루과이", "2010 월드컵 골든볼", "맨유 → 비야레알 → 아틀레티코", "금발 장발 공격수"], "a": "디에고 포를란"}, {"h": ["브라질", "플라멩구 → 레알", "2024 챔스 결승골", "2024 FIFA 올해의 선수"], "a": "비니시우스 주니오르"}, {"h": ["브라질", "골키퍼", "로마 → 리버풀", "2021년 헤딩 결승골"], "a": "알리송 베케르"}, {"h": ["브라질", "중앙 수비수", "AC밀란 → PSG → 첼시", "플루미넨시로 귀국"], "a": "티아구 실바"}, {"h": ["브라질", "레알 왼쪽 풀백", "곱슬머리", "플루미넨시"], "a": "마르셀루"}, {"h": ["브라질", "수비형 미드필더", "상파울루 → 레알", "맨유"], "a": "카세미루"}, {"h": ["브라질", "리버풀 → 바르셀로나", "바이에른 임대로 2020 트레블", "애스턴빌라 → 바스쿠"], "a": "필리피 쿠티뉴"}, {"h": ["브라질", "호펜하임 → 리버풀", "노룩 골", "사우디 알아흘리"], "a": "호베르투 피르미누"}, {"h": ["세네갈", "사우샘프턴 → 리버풀", "EPL 최단 시간 해트트릭", "바이에른 → 알나스르"], "a": "사디오 마네"}, {"h": ["카메룬", "바르셀로나 → 인테르", "두 팀에서 연속 트레블", "첼시 → 에버턴"], "a": "사뮈엘 에투"}, {"h": ["가봉", "도르트문트 → 아스널", "스파이더맨 마스크 세리머니", "바르셀로나 → 첼시 → 마르세유"], "a": "피에르에메릭 오바메양"}, {"h": ["코트디부아르", "바르셀로나 → 맨시티", "생일 케이크 사건", "미드필더"], "a": "야야 투레"}, {"h": ["나이지리아", "릴 → 나폴리", "얼굴 마스크", "갈라타사라이"], "a": "빅터 오시멘"}, {"h": ["모로코", "레알 유스 · 오른쪽 풀백", "도르트문트 → 인테르 → PSG", "2022 월드컵 스페인전 파넨카"], "a": "아슈라프 하키미"}, {"h": ["대한민국", "셀틱 → 스완지", "선덜랜드 → 뉴캐슬", "FC서울"], "a": "기성용"}, {"h": ["대한민국", "왼쪽 풀백 · 헛다리 드리블", "PSV → 토트넘 → 도르트문트", "밴쿠버에서 은퇴"], "a": "이영표"}, {"h": ["대한민국", "별명 \"차붐\"", "프랑크푸르트 → 레버쿠젠", "분데스리가 98골"], "a": "차범근"}, {"h": ["대한민국", "발렌시아 유스", "2019 U-20 월드컵 골든볼", "PSG"], "a": "이강인"}, {"h": ["대한민국", "별명 \"황소\"", "잘츠부르크 → 라이프치히", "울버햄튼"], "a": "황희찬"}, {"h": ["대한민국", "전북 출신 미드필더", "홀슈타인 킬", "마인츠"], "a": "이재성"}, {"h": ["스페인", "라스팔마스 → 바르셀로나", "2021 골든보이", "패스 마스터 미드필더"], "a": "페드리"}, {"h": ["스페인", "2007년생", "바르셀로나 유스", "유로 2024 우승 · 최연소 득점"], "a": "라민 야말"}, {"h": ["스페인", "아틀레티코 → 맨시티", "2023 챔스 결승골", "2024 발롱도르"], "a": "로드리"}, {"h": ["스페인", "바르셀로나 수비형 미드필더", "2010 월드컵 우승", "인터 마이애미"], "a": "세르히오 부스케츠"}, {"h": ["스페인", "맨유 → 바르셀로나", "중앙 수비수", "킹스 리그 창설"], "a": "제라르드 피케"}, {"h": ["스페인", "발렌시아 → 바르셀로나", "스페인 대표팀 역대 최다 득점", "뉴욕 시티 → 비셀 고베"], "a": "다비드 비야"}, {"h": ["잉글랜드", "아스널 유스", "등번호 7번 윙어", "유로 2020 결승 승부차기 실축"], "a": "부카요 사카"}, {"h": ["잉글랜드", "스톡포트 출신", "맨시티 유스", "2023-24 PFA 올해의 선수"], "a": "필 포든"}, {"h": ["잉글랜드", "맨유 유스", "아동 무료 급식 캠페인", "애스턴빌라 → 바르셀로나 임대"], "a": "마커스 래시포드"}, {"h": ["잉글랜드", "애스턴빌라 주장", "1억 파운드에 맨시티", "2025 에버턴 임대"], "a": "잭 그릴리시"}, {"h": ["잉글랜드", "리버풀 출신 공격수", "2001 발롱도르", "레알 → 뉴캐슬 → 맨유"], "a": "마이클 오언"}, {"h": ["잉글랜드", "블랙번 → 뉴캐슬", "프리미어리그 역대 최다 득점 260골", "해설가"], "a": "앨런 시어러"}, {"h": ["덴마크", "골키퍼", "맨유 1999 트레블", "아들도 골키퍼"], "a": "피터 슈마이켈"}, {"h": ["덴마크", "아약스 → 토트넘 → 인테르", "유로 2020 경기 중 심정지 후 복귀", "맨유 → 볼프스부르크"], "a": "크리스티안 에릭센"}, {"h": ["노르웨이", "15살에 레알 이적", "임대 생활 끝에 아스널", "아스널 주장"], "a": "마르틴 외데고르"}, {"h": ["체코", "골키퍼 · 헤드기어", "첼시 → 아스널", "프리미어리그 최다 무실점"], "a": "페트르 체흐"}, {"h": ["네덜란드", "PSV → 맨유", "레알 마드리드 → 함부르크", "박스 안 득점 기계"], "a": "뤼트 판니스텔로이"}, {"h": ["네덜란드", "\"크루이프 턴\"", "아약스 → 바르셀로나", "감독으로 바르 \"드림팀\""], "a": "요한 크루이프"}, {"h": ["네덜란드", "비행기 공포증", "인테르 → 아스널", "\"논플라잉 더치맨\""], "a": "데니스 베르캄프"}, {"h": ["네덜란드", "빌럼 II → 아약스", "2019 아약스 챔스 4강", "바르셀로나"], "a": "프렝키 더용"}, {"h": ["프랑스", "몽펠리에 → 아스널 → 첼시", "AC밀란", "프랑스 대표팀 역대 최다 득점"], "a": "올리비에 지루"}, {"h": ["독일", "샬케 → 브레멘 → 레알", "아스널 도움왕", "2014 월드컵 우승"], "a": "메수트 외질"}, {"h": ["알제리", "레스터 동화 우승 주역", "2016 PFA 올해의 선수", "맨시티 → 알아흘리"], "a": "리야드 마레즈"}];
 const QZ_PATH = [{"h": ["스포르팅", "맨유", "레알 마드리드", "유벤투스", "맨유", "알나스르"], "a": "크리스티아누 호날두"}, {"h": ["바르셀로나", "PSG", "인터 마이애미"], "a": "리오넬 메시"}, {"h": ["말뫼", "아약스", "유벤투스", "인테르", "바르셀로나", "AC밀란", "PSG", "맨유", "LA 갤럭시", "AC밀란"], "a": "즐라탄 이브라히모비치"}, {"h": ["산투스", "바르셀로나", "PSG", "알힐랄", "산투스"], "a": "네이마르"}, {"h": ["함부르크", "레버쿠젠", "토트넘", "LAFC"], "a": "손흥민"}, {"h": ["디나모 자그레브", "토트넘", "레알 마드리드", "AC밀란"], "a": "루카 모드리치"}, {"h": ["헹크", "첼시", "볼프스부르크", "맨시티", "나폴리"], "a": "케빈 더브라위너"}, {"h": ["교토 퍼플상가", "PSV", "맨유", "QPR", "PSV"], "a": "박지성"}, {"h": ["아틀레티코", "리버풀", "첼시", "AC밀란", "아틀레티코", "사간 도스"], "a": "페르난도 토레스"}, {"h": ["모나코", "유벤투스", "아스널", "바르셀로나", "뉴욕 레드불스"], "a": "티에리 앙리"}, {"h": ["나시오날", "흐로닝언", "아약스", "리버풀", "바르셀로나", "아틀레티코", "인터 마이애미"], "a": "루이스 수아레스"}, {"h": ["모나코", "PSG", "레알 마드리드"], "a": "킬리안 음바페"}, {"h": ["몰데", "잘츠부르크", "도르트문트", "맨시티"], "a": "엘링 홀란"}, {"h": ["바젤", "첼시", "피오렌티나", "로마", "리버풀"], "a": "모하메드 살라"}, {"h": ["리옹", "레알 마드리드", "알이티하드"], "a": "카림 벤제마"}, {"h": ["사우샘프턴", "토트넘", "레알 마드리드", "토트넘", "LAFC"], "a": "가레스 베일"}, {"h": ["릴", "첼시", "레알 마드리드"], "a": "에덴 아자르"}, {"h": ["안더레흐트", "첼시", "에버턴", "맨유", "인테르", "첼시", "로마", "나폴리"], "a": "로멜루 루카쿠"}, {"h": ["전북", "베이징 궈안", "페네르바체", "나폴리", "바이에른"], "a": "김민재"}, {"h": ["발렌시아", "마요르카", "PSG"], "a": "이강인"}, {"h": ["버밍엄", "도르트문트", "레알 마드리드"], "a": "주드 벨링엄"}, {"h": ["레흐 포즈난", "도르트문트", "바이에른", "바르셀로나"], "a": "로베르트 레반도프스키"}, {"h": ["레알 소시에다드", "아틀레티코", "바르셀로나", "아틀레티코"], "a": "앙투안 그리즈만"}, {"h": ["그레미우", "PSG", "바르셀로나", "AC밀란", "플라멩구"], "a": "호나우지뉴"}, {"h": ["갱강", "마르세유", "첼시", "상하이 선화", "갈라타사라이", "첼시"], "a": "디디에 드로그바"}, {"h": ["크루제이루", "PSV", "바르셀로나", "인테르", "레알 마드리드", "AC밀란", "코린치안스"], "a": "호나우두"}, {"h": ["상파울루", "AC밀란", "레알 마드리드", "AC밀란", "상파울루", "올랜도 시티"], "a": "카카"}, {"h": ["맨유", "레알 마드리드", "LA 갤럭시", "AC밀란", "PSG"], "a": "데이비드 베컴"}, {"h": ["브레시아", "인테르", "AC밀란", "유벤투스", "뉴욕 시티"], "a": "안드레아 피를로"}, {"h": ["디나모 키예프", "AC밀란", "첼시", "AC밀란", "디나모 키예프"], "a": "안드리 셰브첸코"}, {"h": ["페예노르트", "아스널", "맨유", "페네르바체", "페예노르트"], "a": "로빈 판 페르시"}, {"h": ["흐로닝언", "PSV", "첼시", "레알 마드리드", "바이에른", "흐로닝언"], "a": "아르연 로번"}, {"h": ["헤이렌베인", "PSV", "맨유", "레알 마드리드", "함부르크", "말라가"], "a": "뤼트 판니스텔로이"}, {"h": ["아약스", "인테르", "아스널"], "a": "데니스 베르캄프"}, {"h": ["리버풀", "LA 갤럭시"], "a": "스티븐 제라드"}, {"h": ["웨스트햄", "첼시", "맨시티", "뉴욕 시티"], "a": "프랭크 램파드"}, {"h": ["에버턴", "맨유", "에버턴", "DC 유나이티드", "더비 카운티"], "a": "웨인 루니"}, {"h": ["리버풀", "레알 마드리드", "뉴캐슬", "맨유", "스토크"], "a": "마이클 오언"}, {"h": ["웨스트햄", "리즈", "맨유", "QPR"], "a": "리오 퍼디난드"}, {"h": ["세비야", "레알 마드리드", "PSG", "세비야", "몬테레이"], "a": "세르히오 라모스"}, {"h": ["스포르팅 히혼", "사라고사", "발렌시아", "바르셀로나", "아틀레티코", "뉴욕 시티", "비셀 고베"], "a": "다비드 비야"}, {"h": ["레알 소시에다드", "리버풀", "레알 마드리드", "바이에른"], "a": "사비 알론소"}, {"h": ["아스널", "바르셀로나", "첼시", "모나코", "코모"], "a": "세스크 파브레가스"}, {"h": ["발렌시아", "맨시티", "레알 소시에다드"], "a": "다비드 실바"}, {"h": ["바르셀로나", "비셀 고베", "에미레이츠 클럽"], "a": "안드레스 이니에스타"}, {"h": ["바르셀로나", "인터 마이애미"], "a": "세르히오 부스케츠"}, {"h": ["맨유", "사라고사", "맨유", "바르셀로나"], "a": "제라르드 피케"}, {"h": ["레알 마드리드", "마요르카", "바르셀로나", "인테르", "안지", "첼시", "에버턴"], "a": "사뮈엘 에투"}, {"h": ["인데펜디엔테", "아틀레티코", "맨시티", "바르셀로나"], "a": "세르히오 아궤로"}, {"h": ["보카 주니어스", "코린치안스", "웨스트햄", "맨유", "맨시티", "유벤투스", "보카 주니어스"], "a": "카를로스 테베스"}, {"h": ["로사리오 센트랄", "벤피카", "레알 마드리드", "맨유", "PSG", "유벤투스", "벤피카", "로사리오 센트랄"], "a": "앙헬 디마리아"}, {"h": ["리버 플레이트", "레알 마드리드", "나폴리", "유벤투스", "AC밀란", "첼시", "유벤투스", "인터 마이애미"], "a": "곤살로 이과인"}, {"h": ["다누비오", "팔레르모", "나폴리", "PSG", "맨유", "발렌시아", "보카 주니어스"], "a": "에딘손 카바니"}, {"h": ["인데펜디엔테", "맨유", "비야레알", "아틀레티코", "인테르", "세레소 오사카"], "a": "디에고 포를란"}, {"h": ["플라멩구", "레알 마드리드"], "a": "비니시우스 주니오르"}, {"h": ["인테르", "리버풀", "바르셀로나", "바이에른", "애스턴빌라", "바스쿠 다 가마"], "a": "필리피 쿠티뉴"}, {"h": ["호펜하임", "리버풀", "알아흘리"], "a": "호베르투 피르미누"}, {"h": ["메스", "잘츠부르크", "사우샘프턴", "리버풀", "바이에른", "알나스르"], "a": "사디오 마네"}, {"h": ["생테티엔", "도르트문트", "아스널", "바르셀로나", "첼시", "마르세유"], "a": "피에르에메릭 오바메양"}, {"h": ["볼프스부르크", "샤를루아", "릴", "나폴리", "갈라타사라이"], "a": "빅터 오시멘"}, {"h": ["레알 마드리드", "도르트문트", "인테르", "PSG"], "a": "아슈라프 하키미"}, {"h": ["불로뉴", "캉", "레스터", "첼시", "알이티하드"], "a": "은골로 캉테"}, {"h": ["맨유", "유벤투스", "맨유", "유벤투스", "모나코"], "a": "폴 포그바"}, {"h": ["몽펠리에", "아스널", "첼시", "AC밀란", "LAFC", "릴"], "a": "올리비에 지루"}, {"h": ["칸", "보르도", "유벤투스", "레알 마드리드"], "a": "지네딘 지단"}, {"h": ["칸", "AC밀란", "아스널", "유벤투스", "인테르", "맨시티"], "a": "파트리크 비에이라"}, {"h": ["PSG", "아스널", "레알 마드리드", "리버풀", "맨시티", "페네르바체", "볼턴", "첼시"], "a": "니콜라 아넬카"}, {"h": ["메스", "갈라타사라이", "마르세유", "바이에른", "피오렌티나", "살레르니타나"], "a": "프랑크 리베리"}, {"h": ["바이에른", "레버쿠젠", "바이에른", "레알 마드리드"], "a": "토니 크로스"}, {"h": ["바이에른", "맨유", "시카고 파이어"], "a": "바스티안 슈바인슈타이거"}, {"h": ["샬케", "브레멘", "레알 마드리드", "아스널", "페네르바체", "바샥셰히르"], "a": "메수트 외질"}, {"h": ["카이저슬라우테른", "브레멘", "바이에른", "라치오"], "a": "미로슬라프 클로제"}, {"h": ["도르트문트", "바이에른", "도르트문트", "PSV", "프랑크푸르트"], "a": "마리오 괴체"}, {"h": ["묀헨글라트바흐", "도르트문트", "LA 갤럭시"], "a": "마르코 로이스"}, {"h": ["빌럼 II", "아약스", "바르셀로나"], "a": "프렝키 더용"}, {"h": ["아약스", "토트넘", "인테르", "브렌트퍼드", "맨유", "볼프스부르크"], "a": "크리스티안 에릭센"}, {"h": ["스트룀스고세트", "레알 마드리드", "헤이렌베인", "피테서", "레알 소시에다드", "아스널"], "a": "마르틴 외데고르"}, {"h": ["레이턴 오리엔트", "밀월", "노리치", "레스터", "토트넘", "바이에른"], "a": "해리 케인"}, {"h": ["애스턴빌라", "맨시티", "에버턴"], "a": "잭 그릴리시"}, {"h": ["맨유", "애스턴빌라", "바르셀로나"], "a": "마커스 래시포드"}, {"h": ["도르트문트", "맨유", "도르트문트", "첼시", "애스턴빌라"], "a": "제이든 산초"}, {"h": ["리버풀", "맨시티", "첼시", "아스널"], "a": "라힘 스털링"}, {"h": ["셰필드 유나이티드", "토트넘", "맨시티", "AC밀란", "번리"], "a": "카일 워커"}, {"h": ["FC서울", "셀틱", "스완지", "선덜랜드", "스완지", "뉴캐슬", "마요르카", "FC서울"], "a": "기성용"}, {"h": ["안양 LG", "PSV", "토트넘", "도르트문트", "알힐랄", "밴쿠버"], "a": "이영표"}, {"h": ["다름슈타트", "프랑크푸르트", "레버쿠젠"], "a": "차범근"}, {"h": ["잘츠부르크", "함부르크", "라이프치히", "울버햄튼"], "a": "황희찬"}, {"h": ["전북", "홀슈타인 킬", "마인츠"], "a": "이재성"}, {"h": ["대전", "밴쿠버", "루빈 카잔", "올림피아코스", "츠르베나 즈베즈다", "페예노르트"], "a": "황인범"}, {"h": ["인테르나시오나우", "로마", "리버풀"], "a": "알리송 베케르"}, {"h": ["헹크", "첼시", "아틀레티코", "첼시", "레알 마드리드"], "a": "티보 쿠르투아"}, {"h": ["렌", "첼시", "아스널"], "a": "페트르 체흐"}, {"h": ["리버 플레이트", "맨시티", "아틀레티코"], "a": "훌리안 알바레스"}, {"h": ["레알 마드리드", "유벤투스", "레알 마드리드", "첼시", "아틀레티코", "AC밀란", "갈라타사라이", "코모"], "a": "알바로 모라타"}, {"h": ["벤피카", "아틀레티코", "첼시", "바르셀로나", "첼시", "AC밀란", "알나스르"], "a": "주앙 펠릭스"}, {"h": ["우디네세", "바르셀로나", "아스널", "맨유", "인테르", "마르세유", "인테르", "우디네세"], "a": "알렉시스 산체스"}, {"h": ["르아브르", "레스터", "맨시티", "알아흘리"], "a": "리야드 마레즈"}, {"h": ["흐로닝언", "셀틱", "사우샘프턴", "리버풀"], "a": "버질 반 다이크"}];
@@ -4621,63 +4417,13 @@ function rtCar(t){
       한 번 나온 문제는 ${S.qzServer === false ? '이 폰에서' : '어느 폰에서든'} 다시 안 나와요 · 점수판은 이 폰에만 · 선수 정보는 2025년 기준</p>`;
 }
 
-// ----- 🚗 운전 당번표 -----
-function rtDrive(t){
-  const R = S.rt, st = R.state, mems = tripMembers(t);
-  const drivers = (st.drive_members || []).map(id => S.members.find(m => m.id === id)).filter(Boolean);
-  const logs = [...R.drives].sort((a, b) => b.id - a.id), cur = logs.find(l => !l.ended_at);
-  const lastStart = cur?.started_at || logs[0]?.started_at || '';
-  // 벌칙 '운전 당번'에 걸린 사람이 있으면 다음 차례로
-  const penal = R.gates.filter(g => g.penalty && /운전/.test(g.penalty) && g.penalty_member && drivers.some(d => d.id === g.penalty_member) && (!lastStart || g.closed_at > lastStart))
-    .sort((a, b) => b.closed_at.localeCompare(a.closed_at))[0];
-  const nextBy = cur ? drivers[(drivers.findIndex(d => d.id === cur.member_id) + 1) % (drivers.length || 1)] : (logs[0] ? drivers[(drivers.findIndex(d => d.id === logs[0].member_id) + 1) % (drivers.length || 1)] : drivers[0]);
-  const next = penal ? S.members.find(m => m.id === penal.penalty_member) : nextBy;
-  const today = todayStr(), kd = iso => { const d = new Date(iso); return ymd(d); };
-  const drank = new Set(R.drives.filter(l => kd(l.started_at) === today).map(l => l.member_id));
-  const mins = id => Math.round(R.drives.filter(l => l.member_id === id).reduce((a, l) => a + ((l.ended_at ? new Date(l.ended_at) : new Date()) - new Date(l.started_at)), 0) / 60000);
-  const cfg = `<details class="panel rt-manage" ${S.rtDriveOpen || !drivers.length ? 'open' : ''}><summary data-act="rtDriveOpen">⚙️ 운전자 · 교대 간격 <small class="dim">${drivers.length ? drivers.map(d => shortName(d.name)).join(' → ') + ` · ${fmtMin(st.drive_every)}마다` : '설정 필요'}</small></summary>
-      <div class="flabel" style="margin-top:10px">운전하는 사람 <small class="dim">누른 순서가 교대 순서예요</small></div>
-      <div class="fd-rvsel" id="dv-m">${mems.map(m => { const i = (S.rtDrvSel ?? st.drive_members ?? []).indexOf(m.id); return `<button type="button" data-act="rtDrvPick" data-id="${m.id}" class="${i >= 0 ? 'on' : ''}">${i >= 0 ? `${i + 1}. ` : ''}${esc(m.name)}</button>`; }).join('')}</div>
-      <div class="gate-add"><select id="dv-e">${[60, 90, 120, 150, 180].map(m => `<option value="${m}" ${st.drive_every === m ? 'selected' : ''}>${fmtMin(m)}마다 교대</option>`).join('')}</select><button class="btn small primary" data-act="rtDriveCfg">저장</button></div>
-    </details>`;
-  if (!drivers.length) return `<div class="panel rt-deal"><div class="rt-ce big">🚗</div><b>운전할 사람과 순서를 먼저 정해주세요</b></div>${cfg}`;
-  const el = cur ? Math.round((new Date() - new Date(cur.started_at)) / 60000) : 0;
-  return `<div class="gate-card ${cur ? (el >= st.drive_every ? 'over' : '') : 'free'} drive-card">
-      ${cur ? `<div class="gate-top"><span>🚗 지금 운전 중</span></div>
-        <div class="gate-mission">${esc(memName(cur.member_id))}</div>
-        <div class="gate-timer" data-drive="${cur.started_at}" data-every="${st.drive_every}">${fmtMin(el)}</div>
-        <p class="${el >= st.drive_every ? 'gate-warn' : 'dim'}" style="margin:0">${el >= st.drive_every ? '⏰ 교대할 시간이에요! 다음 휴게소에서 바꿔요' : `교대까지 ${fmtMin(st.drive_every - el)} 남음`}</p>`
-      : `<div class="gate-lock ok">🅿️ 주차 중</div>`}
-      <div class="drive-next">다음 운전 <b>${next ? esc(next.name) : '–'}</b>${penal ? ' <span class="rt-tagx">💥 벌칙</span>' : ''}</div>
-      <div class="gate-btns">
-        ${next ? `<button class="btn primary" data-act="rtDriveGo" data-id="${next.id}">${cur ? `🔄 ${esc(shortName(next.name))}(으)로 교대` : `🚗 ${esc(shortName(next.name))} 운전 시작`}</button>` : ''}
-        ${cur ? '<button class="btn" data-act="rtDriveStop">🅿️ 도착 · 운전 끝</button>' : ''}
-      </div>
-      <div class="drive-pick">${drivers.filter(d => d.id !== next?.id && d.id !== cur?.member_id).map(d => `<button class="link" data-act="rtDriveGo" data-id="${d.id}">${esc(shortName(d.name))}(으)로 ${cur ? '교대' : '시작'}</button>`).join(' · ')}</div>
-    </div>
-    <div class="drive-stats">${drivers.map(d => `<div><b>${esc(d.name)}</b><span>${fmtMin(mins(d.id))}</span>${drank.has(d.id) ? '<small>🚫🍺 오늘 운전함</small>' : '<small>🍺 OK</small>'}</div>`).join('')}</div>
-    <p class="note">오늘 운전한 사람은 술 금지! 저녁에 숙소 도착한 뒤에도 그날 운전 당번은 🚫🍺</p>
-    ${logs.length ? `<h2 class="sec">🛣 운전 기록</h2><div class="gate-hist">${logs.slice(0, 20).map(l => `<div class="gate-h"><span class="gate-hs">🚗</span>
-      <div class="gate-hm"><b>${esc(memName(l.member_id))}</b><small>${new Date(l.started_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })} ~ ${l.ended_at ? new Date(l.ended_at).toLocaleTimeString('ko-KR', { hour:'numeric', minute:'2-digit' }) : '운전 중'} · ${fmtMin(Math.round(((l.ended_at ? new Date(l.ended_at) : new Date()) - new Date(l.started_at)) / 60000))}</small></div>
-      ${isAdmin() ? `<button class="icon" data-act="rtDriveDel" data-id="${l.id}" title="삭제">✕</button>` : ''}</div>`).join('')}</div>` : ''}
-    ${cfg}`;
-}
-
 async function rtAct(act, b, id){
   const t = S.trips.find(x => x.id === S.tripId);
   const done = async () => { await loadRandom(t.id); renderTrips(); };
   try {
     switch (act){
       case 'rtTab': S.rtTab = b.dataset.k; return renderTrips();
-      case 'rtDay': S.rtDay = +b.dataset.k; return renderTrips();
-      case 'rtBand': S.rtBand = +b.dataset.k; return renderTrips();
-      case 'rtDice': { S.rtBand = RT_BANDS[Math.floor(Math.random() * RT_BANDS.length)]; renderTrips(); return toast(`🎲 주사위 결과: ${S.rtBand}시간권!`); }
-      case 'rtSpin': if (!confirm(`Day ${S.rtDay} 룰렛을 돌릴까요?\n한 번 돌리면 바로 확정돼요.`)) return; return rtDoSpin(t);
-      case 'rtReset': if (!confirm(`Day ${b.dataset.k} 결과를 지우고 다시 돌릴 수 있게 할까요?`)) return; await call('rt_reset_spin', { p_trip:t.id, p_day:+b.dataset.k }); await loadTravel(); return done();
-      case 'rtCityOpen': S.rtCityOpen = !b.parentNode.open; return;
       case 'rtTypeOpen': S.rtTypeOpen = !b.parentNode.open; return;
-      case 'rtCity': { const c = S.rt.cities.find(x => x.id === id); await call('rt_toggle_city', { p_id:id, p_on:!c.active }); S.rtCityOpen = true; return done(); }
-      case 'rtAddCity': return rtAddCity();
       case 'rtDealN': S.rtDealN = +b.dataset.k; return renderTrips();
       case 'rtDeal': if (!confirm(`1인 ${S.rtDealN}장씩 나눠줄까요?\n나눠준 뒤엔 "카드 주기·뺏기"로 조절할 수 있어요.`)) return; await call('rt_deal', { p_trip:t.id, p_n:S.rtDealN }); toast('🃏 카드를 나눠줬어요!'); return done();
       case 'rtGive': return openCardGive(t);
@@ -4735,12 +4481,6 @@ async function rtAct(act, b, id){
       case 'rtMealDel': if (!confirm('이 기록을 지울까요?')) return; await call('rt_delete_meal', { p_id:id }); return done();
       case 'rtMealPlace': { const m = S.rt.meals.find(x => x.id === id), city = ([...S.rt.spins].sort((a, b) => b.day - a.day)[0] || {}).city || t.place || '';
         return openPlace(null, { name:'', area:city, category:FD_FROM_MEAL[m.category] || '기타', region:guessRegion(city) }, async () => { await loadFood(); toast('🍽 미식가 맛집에 등록했어요'); }); }
-      case 'rtBingoNew': await call('rt_bingo_create', { p_trip:t.id }); toast('📸 빙고판 완성! 사진 찍으러 가요'); return done();
-      case 'rtBingoReset': if (!confirm('지금 빙고판을 지우고 새로 만들까요?')) return; await call('rt_bingo_reset', { p_trip:t.id }); return done();
-      case 'rtBingoCell': return rtBingoCell(t, +b.dataset.k);
-      case 'rtBingoOpen': S.rtBingoOpen = !b.parentNode.open; return;
-      case 'rtBingoItem': { const x = S.rt.bingoItems.find(y => y.id === id); await call('rt_save_bingo_item', { p_id:id, p_text:x.text, p_active:!x.active }); S.rtBingoOpen = true; return done(); }
-      case 'rtBingoItemAdd': await call('rt_save_bingo_item', { p_id:null, p_text:$('#bi-t').value, p_active:true }); S.rtBingoOpen = true; return done();
       case 'rtDeck': S.rtDeck = b.dataset.k; return renderTrips();
       case 'rtCarDraw': { const d = CAR_DECKS[S.rtDeck], seen = qzSeenSet(S.rtDeck);
         let pool = d.cards.map((c, i) => i).filter(i => !seen.has(qzId(S.rtDeck, i)));
@@ -4764,12 +4504,6 @@ async function rtAct(act, b, id){
       case 'rtQzGive': S.qz.revealed = true; return renderTrips();
       case 'rtScore': { const sc = { ...(S.rtScoreMem ?? carScore(t)) }; sc[id] = Math.max(0, (sc[id] || 0) + +b.dataset.k); setCarScore(t, sc); return renderTrips(); }
       case 'rtScoreReset': if (!confirm('점수판을 0으로 돌릴까요?')) return; setCarScore(t, {}); return renderTrips();
-      case 'rtDriveOpen': S.rtDriveOpen = !b.parentNode.open; return;
-      case 'rtDrvPick': { S.rtDrvSel ??= [...(S.rt.state.drive_members || [])]; S.rtDrvSel = S.rtDrvSel.includes(id) ? S.rtDrvSel.filter(x => x !== id) : [...S.rtDrvSel, id]; S.rtDriveOpen = true; return renderTrips(); }
-      case 'rtDriveCfg': await call('rt_save_drive_cfg', { p_trip:t.id, p_members:S.rtDrvSel ?? S.rt.state.drive_members ?? [], p_every:+$('#dv-e').value }); S.rtDrvSel = null; S.rtDriveOpen = false; toast('운전 순서를 저장했어요'); return done();
-      case 'rtDriveGo': await call('rt_drive_start', { p_trip:t.id, p_member:id }); toast(`🚗 ${memName(id)} 운전 시작! 안전운전`); return done();
-      case 'rtDriveStop': await call('rt_drive_stop', { p_trip:t.id }); toast('🅿️ 운전 끝! 수고했어요'); return done();
-      case 'rtDriveDel': if (!confirm('이 운전 기록을 지울까요?')) return; await call('rt_drive_delete', { p_id:id }); return done();
       case 'rtPenAdd': await call('rt_save_penalty', { p_id:null, p_text:$('#pen-t').value, p_active:true }); S.rtRuleOpen = true; return done();
       case 'rtPenTog': { const p = S.rt.penalties.find(x => x.id === id); await call('rt_save_penalty', { p_id:id, p_text:p.text, p_active:!p.active }); S.rtRuleOpen = true; return done(); }
       case 'rtPenDel': if (!confirm('이 벌칙을 지울까요?')) return; await call('rt_delete_penalty', { p_id:id }); S.rtRuleOpen = true; return done();
