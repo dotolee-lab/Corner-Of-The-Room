@@ -668,14 +668,13 @@ button.jw{font-family:inherit;font-size:11px;background:none;cursor:pointer;line
 .pp-item span{flex:1}
 .pp-item small{font-size:11px;color:var(--sub)}
 .pp-item.added{opacity:.5;cursor:default}
-.rt-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:14px 0 6px}
+.rt-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:14px 0 6px}
 .rt-grid button{position:relative;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;padding:8px 4px;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
 .rt-grid button i{font-style:normal;font-size:20px;line-height:1.2}
 .rt-grid button span{font-size:12px;font-weight:700;white-space:nowrap}
 .rt-grid button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .rt-grid .gate-dot{position:absolute;top:6px;right:8px;margin:0}
-@media (max-width:900px){.rt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (max-width:600px){.rt-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.rt-grid button span{font-size:11px}}
+@media (max-width:600px){.rt-grid button span{font-size:11px}}
 .meal-panel .rt-band small{flex-basis:100%;font-size:11px}
 .gate-h.meal.latest{border-left-color:var(--accent)}
 .car-decks{margin:12px 0}
@@ -2844,7 +2843,7 @@ function openTrip(id, preset = {}){
       <label>출발<input id="ft3" type="date" value="${t.start_date || ''}"></label>
       <label>도착<input id="ft4" type="date" value="${t.end_date || ''}"></label>
       <div class="full"><div class="flabel">함께 가는 사람</div>${memChecks(t.member_ids || [], 'tm')}</div>
-      <label class="full rt-mode"><span><input type="checkbox" id="ft-rnd" ${t.is_random ? 'checked' : ''}> 🎲 랜덤 여행 모드</span><small>운명의 시계 · 찬스 카드 · 운명의 질문 · 식사/취침 룰렛 · 축구 퀴즈 탭이 생겨요</small></label>
+      <label class="full rt-mode"><span><input type="checkbox" id="ft-rnd" ${t.is_random ? 'checked' : ''}> 🎲 랜덤 여행 모드</span><small>운명의 시계 · 찬스 카드 · 운명의 질문 · 축구 퀴즈 탭이 생겨요</small></label>
       <label class="full">대표 사진 주소 (선택)<input id="ft5" value="${esc(t.cover_url || '')}" placeholder="https://… 이미지 링크, 비우면 색으로 표시"></label>
       <label class="full">메모 (선택)<textarea id="ft6" rows="2">${esc(t.memo || '')}</textarea></label>
     </div>
@@ -3908,15 +3907,14 @@ async function loadRandom(tid){
 function randomHTML(t){
   if (!S.rt || S.rt.tid !== t.id){ loadRandom(t.id).then(() => { if (S.tripTab === 'random' && S.tripId === t.id) renderTrips(); }); return '<div class="panel ac-locked">🎲<br>불러오는 중…</div>'; }
   if (S.rt.err) return `<div class="panel ac-locked">🎲<br>랜덤 여행 기능을 쓰려면 Supabase에서 <b>12_random_trip.sql</b>과 <b>13_gate_mission.sql</b>을 실행해주세요<br><small>${esc(S.rt.err)}</small></div>`;
-  if (!['clock', 'cards', 'fate', 'meal', 'sleep', 'car'].includes(S.rtTab)) S.rtTab = 'clock';
+  if (!['clock', 'cards', 'fate', 'car'].includes(S.rtTab)) S.rtTab = 'clock';
   const pend = clockPending();
-  const tabs = [['clock', '⏰', '운명의 시계', pend], ['cards', '🃏', '찬스 카드'], ['fate', '🎱', '운명의 질문'],
-    ['meal', '🍽', '식사 룰렛'], ['sleep', '🛏', '취침 룰렛'], ['car', '⚽', '축구 퀴즈']];
+  const tabs = [['clock', '⏰', '운명의 시계', pend], ['cards', '🃏', '찬스 카드'], ['fate', '🎱', '운명의 질문'], ['car', '⚽', '축구 퀴즈']];
   const needEx = S.rtTab === 'meal' && S.rt.exErr;
   const body = S.rtTab === 'clock' && (S.rt.clockErr || S.rt.state.clock_every == null) ? `<div class="panel ac-locked">⏰<br>운명의 시계를 쓰려면 Supabase에서 <b>22_fate_clock.sql</b>을 실행해주세요${S.rt.clockErr ? `<br><small>${esc(S.rt.clockErr)}</small>` : ''}</div>`
-    : pend && S.rt.state.clock_lock && ['meal', 'sleep', 'fate'].includes(S.rtTab) ? clockLockHTML()
+    : pend && S.rt.state.clock_lock && S.rtTab === 'fate' ? clockLockHTML()
     : needEx ? `<div class="panel ac-locked">🎲<br>이 기능을 쓰려면 Supabase에서 <b>16_trip_extras.sql</b>을 실행해주세요<br><small>${esc(S.rt.exErr)}</small></div>`
-    : { cards:rtCards, clock:rtClock, fate:rtFate, meal:rtMeal, sleep:rtSleep, car:rtCar }[S.rtTab](t);
+    : { cards:rtCards, clock:rtClock, fate:rtFate, car:rtCar }[S.rtTab](t);
   setTimeout(bindGate);
   return `<div class="rt-grid">${tabs.map(([k, e, l, dot]) => `<button class="${S.rtTab === k ? 'on' : ''}" data-act="rtTab" data-k="${k}"><i>${e}</i><span>${l}</span>${dot ? '<b class="gate-dot"></b>' : ''}</button>`).join('')}</div>${body}`;
 }
@@ -3949,14 +3947,12 @@ const CLOCK_SLOTS = [
   { k:'go', e:'🚗', n:'계속 이동', d:'하던 대로 계속 가요', w:3, on:true },
   { k:'dest', e:'🔀', n:'목적지 변경', d:'근처 1~2시간 거리의 새 목적지로!', w:2, on:true },
   { k:'stay', e:'⏸', n:'여기서 1시간', d:'지금 있는 곳에서 1시간 놀기', w:2, on:true },
-  { k:'uturn', e:'↩️', n:'유턴', d:'왔던 방향으로 30분 되돌아가기', w:1, on:true },
-  { k:'fork', e:'🧭', n:'갈림길 주사위', d:'다음 갈림길에서 이 방향으로', w:2, on:true },
-  { k:'rest', e:'☕', n:'다음 휴게소 정차', d:'무조건 다음 휴게소·카페에 정차', w:2, on:true },
-  { k:'road', e:'🛣', n:'국도 모드', d:'1시간 동안 고속도로 금지', w:1, on:true },
-  { k:'nomap', e:'🗺', n:'지도 금지', d:'30분 동안 지도 앱 없이 이동', w:1, on:true },
-  { k:'eat', e:'🍽', n:'지금 먹기', d:'바로 식사 룰렛 돌리기', w:2, on:true },
-  { k:'sleep', e:'🏨', n:'오늘은 여기서 잔다', d:'바로 취침 룰렛 돌리기', w:1, on:true },
-  { k:'driver', e:'🔄', n:'운전자 교체', d:'지금 바로 운전자 바꾸기', w:2, on:true },
+  { k:'uturn', e:'↩️', n:'유턴', d:'왔던 방향으로 30분 되돌아가기', w:1, on:false },
+  { k:'fork', e:'🧭', n:'갈림길 주사위', d:'다음 갈림길에서 이 방향으로', w:2, on:false },
+  { k:'rest', e:'☕', n:'다음 휴게소 정차', d:'무조건 다음 휴게소·카페에 정차', w:2, on:false },
+  { k:'road', e:'🛣', n:'국도 모드', d:'1시간 동안 고속도로 금지', w:1, on:false },
+  { k:'nomap', e:'🗺', n:'지도 금지', d:'30분 동안 지도 앱 없이 이동', w:1, on:false },
+  { k:'driver', e:'🔄', n:'운전자 교체', d:'지금 바로 운전자 바꾸기', w:2, on:false },
   { k:'bonus', e:'🎁', n:'보너스', d:'돌린 사람에게 찬스 카드 1장', w:1, on:true },
   { k:'penalty', e:'💥', n:'벌칙', d:'돌린 사람이 벌칙 목록에서 하나', w:1, on:false },
 ];
@@ -4001,8 +3997,6 @@ function rtClock(t){
         ${c.vetoed_by ? `<small>🙅 ${esc(shortName(memName(c.vetoed_by)))}의 거부권으로 무효</small>` : ''}</div></div>`; };
   const actions = last && !last.vetoed_by ? (() => { const k = last.slot?.k; const b = [];
     if (k === 'dest') b.push(last.sub ? `<a class="btn small" href="https://map.naver.com/p/directions/-/${encodeURIComponent(last.sub)}" target="_blank" rel="noopener">🗺 ${esc(last.sub)} 길찾기 ↗</a>` : '<span class="note">근처 1~2시간 거리에서 다 같이 새 목적지를 정해요</span>');
-    if (k === 'eat') b.push('<button class="btn small primary" data-act="rtTab" data-k="meal">🍽 식사 룰렛으로</button>');
-    if (k === 'sleep') b.push('<button class="btn small primary" data-act="rtTab" data-k="sleep">🏨 취침 룰렛으로</button>');
     if (st.clock_veto && vetoCard && !pend) b.push(`<button class="btn small" data-act="rtClockVeto" data-id="${last.id}">🙅 거부권으로 무효</button>`);
     return b.length ? `<div class="gate-btns" style="margin-top:8px">${b.join('')}</div>` : ''; })() : '';
   return `<div class="clock-card ${pend ? 'due' : ''}">
@@ -4015,11 +4009,11 @@ function rtClock(t){
     ${done.length > 1 ? `<h2 class="sec">🕐 운명의 타임라인</h2><div class="gate-hist">${done.slice(1).map(c => `<div class="gate-h clock-h ${c.vetoed_by ? 'vetoed' : ''}"><span class="gate-hs">${esc(c.slot?.e || '🎡')}</span>
       <div class="gate-hm"><b>${esc(c.slot?.n || '')}${c.sub ? ` · ${esc(c.sub)}` : ''}${c.vetoed_by ? ' <span class="dim">(무효)</span>' : ''}</b><small>${new Date(c.spun_at).toLocaleString('ko-KR', { month:'numeric', day:'numeric', hour:'numeric', minute:'2-digit' })} · ${esc(shortName(memName(c.spun_by)))}${c.manual ? '' : ' · ⏰ 정기'}</small></div>
       ${isAdmin() ? `<button class="icon" data-act="rtClockDel" data-id="${c.id}" title="삭제">✕</button>` : ''}</div>`).join('')}</div>` : ''}
-    <details class="panel rt-manage" ${S.rtClockOpen ? 'open' : ''}><summary data-act="rtClockOpen">⚙️ 시계 규칙 <small class="dim">${fmtMin(st.clock_every)}마다 · ${st.clock_from}~${st.clock_to}시 · ${st.clock_lock ? '안 돌리면 다른 룰렛 잠금' : '알림만'} · 거부권 ${st.clock_veto ? '가능' : '불가'}</small></summary>
+    <details class="panel rt-manage" ${S.rtClockOpen ? 'open' : ''}><summary data-act="rtClockOpen">⚙️ 시계 규칙 <small class="dim">${fmtMin(st.clock_every)}마다 · ${st.clock_from}~${st.clock_to}시 · ${st.clock_lock ? '안 돌리면 운명의 질문 잠금' : '알림만'} · 거부권 ${st.clock_veto ? '가능' : '불가'}</small></summary>
       <div class="form gate-form">
         <label>간격<select id="ck-ev">${[30, 60, 90, 120, 150, 180].map(m => `<option value="${m}" ${st.clock_every === m ? 'selected' : ''}>${fmtMin(m)}마다</option>`).join('')}</select></label>
         <label>활동 시간<span class="gate-hrs"><select id="ck-f">${Array.from({ length:24 }, (_, x) => `<option ${st.clock_from === x ? 'selected' : ''}>${x}</option>`).join('')}</select>시 ~ <select id="ck-to">${Array.from({ length:24 }, (_, x) => x + 1).map(x => `<option ${st.clock_to === x ? 'selected' : ''}>${x}</option>`).join('')}</select>시</span></label>
-        <label>돌릴 차례인데 안 돌리면?<select id="ck-lk"><option value="1" ${st.clock_lock ? 'selected' : ''}>🔒 식사·취침 룰렛, 운명의 질문 잠금</option><option value="0" ${st.clock_lock ? '' : 'selected'}>🔔 알림만</option></select></label>
+        <label>돌릴 차례인데 안 돌리면?<select id="ck-lk"><option value="1" ${st.clock_lock ? 'selected' : ''}>🔒 운명의 질문 잠금</option><option value="0" ${st.clock_lock ? '' : 'selected'}>🔔 알림만</option></select></label>
         <label>거부권 카드<select id="ck-vt"><option value="0" ${st.clock_veto ? '' : 'selected'}>🙅 룰렛 결과에는 못 써요</option><option value="1" ${st.clock_veto ? 'selected' : ''}>🙅 무효로 하고 다시 돌리기 가능</option></select></label>
       </div>
       <div class="row" style="justify-content:flex-start"><button class="btn small primary" data-act="rtClockRule">규칙 저장</button><button class="btn small" data-act="rtClockSlots">🎡 칸 편집 (${slots.length}/${clockSlots().length}칸 사용)</button></div>
@@ -4068,7 +4062,7 @@ function openClockSlots(t){
       await loadRandom(t.id); closeModal(); renderTrips(); toast('🎡 칸을 저장했어요'); }
     catch(e){ $('#merr').textContent = errMsg(e); } };
 }
-const clockLockHTML = () => `<div class="panel ac-locked">🔒<br><b>운명의 시계부터 돌려주세요!</b><br><small>돌릴 차례가 지나면 다른 룰렛은 잠겨요</small><br><button class="btn primary" data-act="rtTab" data-k="clock" style="margin-top:12px">⏰ 운명의 시계로</button></div>`;
+const clockLockHTML = () => `<div class="panel ac-locked">🔒<br><b>운명의 시계부터 돌려주세요!</b><br><small>돌릴 차례가 지나면 운명의 질문은 잠겨요</small><br><button class="btn primary" data-act="rtTab" data-k="clock" style="margin-top:12px">⏰ 운명의 시계로</button></div>`;
 
 // ----- 🃏 찬스 카드 -----
 function rtCards(t){
