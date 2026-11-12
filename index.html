@@ -4088,7 +4088,21 @@ function openSession(id, plan){
 // ================= 🎲 랜덤 여행 모드 =================
 const fmtMin = m => m < 60 ? `${m}분` : `${Math.floor(m / 60)}시간${m % 60 ? ` ${m % 60}분` : ''}`;
 
+// 요청 1번으로 모두 불러오기 (26_rt_sync.sql). 아직 실행 전이면 예전 방식으로
 async function loadRandom(tid){
+  let b = null;
+  try { b = await call('rt_bundle', { p_trip:tid }); } catch(e){}
+  if (!b?.hash) return loadRandomOld(tid);
+  const coreErr = ['cities', 'spins', 'types', 'state', 'counts'].map(k => b[k + 'Err']).find(Boolean);
+  if (coreErr){ S.rt = { err:coreErr }; return; }
+  const gids = new Set(b.gates.map(g => g.id));
+  S.rt = { tid, hash:b.hash, cities:b.cities, spins:b.spins, types:b.types, used:b.used, gates:b.gates, gateVotes:b.gateVotes.filter(v => gids.has(v.gate_id)),
+    penalties:b.penalties, counts:b.counts, poolStats:b.poolStats,
+    state:b.state[0] || { gate_trigger:'move', gate_every:120, gate_from:10, gate_to:20, gate_limit:30, gate_fail:'penalty', gate_verify:'either' },
+    myCards:b.myCards, myPool:b.myPool, culprit:b.culprit, mealCats:b.mealCats, meals:b.meals, cardLog:b.cardLog, sleeps:b.sleeps, fates:b.fates,
+    clock:b.clock, darts:b.darts, dartErr:b.dartsErr || null, clockErr:b.clockErr || null, exErr:b.mealsErr || b.mealCatsErr || null };
+}
+async function loadRandomOld(tid){
   try { await call('rt_clock_tick', { p_trip:tid }); } catch(e){}
   const pub = await Promise.all([
     sb.from('rt_cities').select('*').order('id'), sb.from('rt_spins').select('*').eq('trip_id', tid),
@@ -4750,12 +4764,13 @@ setInterval(async () => {
       _gateBusy = false;
     } else if (S.rt?.state?.gate_fail === 'block') el.textContent = '⛔ 시간 초과!';
   }
-  if (S.cat === 'travel' && S.tripTab === 'random' && S.rt?.tid === S.tripId && !S.rt.err && Date.now() - _gateTickAt > 30000 && !_gateBusy){
+  if (S.cat === 'travel' && S.tripTab === 'random' && S.rt?.tid === S.tripId && !S.rt.err && document.visibilityState === 'visible' && Date.now() - _gateTickAt > 30000 && !_gateBusy){
     _gateTickAt = Date.now();
     const sig = () => JSON.stringify([S.rt.gates, S.rt.gateVotes, S.rt.spins, S.rt.used, S.rt.culprit, S.rt.meals, S.rt.sleeps, S.rt.fates, S.rt.clock, S.rt.darts, S.rt.state, S.rt.counts, S.rt.cardLog]);
     const myBefore = (S.rt.myCards || []).filter(c => !c.used_at).length;
     const before = sig();
     try {
+      if (S.rt.hash && await call('rt_sync', { p_trip:S.rt.tid }) === S.rt.hash) return;   // 바뀐 게 없으면 끝 (요청 1번)
       await loadRandom(S.rt.tid);
       const typing = document.activeElement?.matches('input,textarea,select') || $('#modal')?.classList.contains('open');
       if (!typing && !S.dartBusy && !S.dartAim && before !== sig()){
@@ -5415,6 +5430,7 @@ async function refreshAll(silent){
   finally { _refreshing = false; document.body.classList.remove('refreshing'); }
 }
 document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') _gateTickAt = 0;   // 화면으로 돌아오면 랜덤 탭 바로 확인
   if (document.visibilityState === 'visible' && S.token && Date.now() - (S.lastLoad || 0) > 60000) refreshAll(true);
 });
 (() => {   // 홈 화면 앱(PWA)에서 위에서 아래로 당기면 새로고침
