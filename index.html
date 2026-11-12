@@ -791,6 +791,32 @@ a.btn{text-decoration:none;color:var(--ink)}
 .pf-btns{display:flex;gap:6px;flex-wrap:wrap}.pf-up{cursor:pointer}
 .pf-side input{font-size:13px}
 .pf-wait{animation:float 1.2s ease-in-out infinite}
+.ph-bar{display:flex;align-items:center;gap:10px;margin:14px 0 8px}.ph-up{cursor:pointer}.ph-cnt{margin-left:auto;font-weight:800;color:var(--sub);font-size:14px}
+.ph-prog{display:none;position:relative;height:30px;border-radius:999px;background:var(--chip);overflow:hidden;margin-bottom:10px}
+.ph-prog.on{display:block}.ph-prog span{position:absolute;inset:0 auto 0 0;background:var(--soft);transition:width .3s}
+.ph-prog b{position:relative;display:block;text-align:center;line-height:30px;font-size:13px}
+.ph-who{margin:4px 0 10px}.ph-who .on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.ph-day{margin:14px 0}.ph-day .day-h small{color:var(--sub);font-weight:500;margin-left:4px}
+.ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px;margin-top:8px}
+.ph-th{position:relative;aspect-ratio:1;border:0;padding:0;background:var(--chip);border-radius:8px;overflow:hidden;cursor:pointer}
+.ph-th img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}.ph-th:hover img{transform:scale(1.04)}
+.ph-th i{position:absolute;right:5px;bottom:5px;width:20px;height:20px;border-radius:50%;color:#fff;font-style:normal;font-size:11px;font-weight:800;line-height:20px;text-align:center;box-shadow:0 0 0 2px rgba(255,255,255,.85)}
+.ph-th em{position:absolute;left:5px;bottom:4px;font-style:normal;font-size:13px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))}
+.ph-meter{margin:22px 0 8px}.ph-meter div{height:6px;border-radius:999px;background:var(--chip);overflow:hidden}.ph-meter span{display:block;height:100%;background:var(--accent)}
+.ph-meter small{display:block;margin-top:6px;font-size:12px;color:var(--sub)}
+#ph-lb{position:fixed;inset:0;z-index:300;background:#0b0a09;color:#fff;display:flex;flex-direction:column}
+#ph-lb .lb-top{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));font-weight:700;font-size:14px}
+#ph-lb .lb-top button{background:none;border:0;color:#fff;font-size:22px;cursor:pointer;padding:4px 8px}
+#ph-lb .lb-img{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:0 8px}
+#ph-lb .lb-img img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px}
+#ph-lb .lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:64px;border:0;border-radius:12px;background:rgba(255,255,255,.12);color:#fff;font-size:34px;cursor:pointer}
+#ph-lb .prev{left:10px}#ph-lb .next{right:10px}
+#ph-lb .lb-info{padding:12px 16px;padding-bottom:max(14px,env(safe-area-inset-bottom));font-size:14px}
+#ph-lb .lb-info i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+#ph-lb .lb-info p{margin:6px 0 0;color:#e8e2d6}
+#ph-lb .lb-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+#ph-lb .lb-btns > *{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:999px;padding:7px 13px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none}
+@media (max-width:600px){.ph-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}.ph-th{border-radius:4px}#ph-lb .lb-nav{display:none}}
 .bg-list{display:flex;flex-direction:column;gap:6px;margin:12px 0 4px}
 .bg-row{display:flex;gap:6px;align-items:center}
 .card-log{display:flex;flex-direction:column;gap:4px;font-size:13px}
@@ -1367,6 +1393,8 @@ function onMainClick(e){
     case 'tvBack': S.tripId = null; renderTrips(); break;
     case 'tvEditTrip': openTrip(id); break;
     case 'tvTab': S.tripTab = b.dataset.k; renderTrips(); break;
+    case 'phWho': S.phWho = id || null; renderTrips(); break;
+    case 'phOpen': phView(id); break;
     case 'tvPlan': openPlan(b.dataset.id ? id : null); break;
     case 'tvExp': openExpense(b.dataset.id ? id : null); break;
     case 'tvRev': openReview(b.dataset.id ? id : null); break;
@@ -2491,13 +2519,157 @@ function tripCard(t){
     </div></button>`;
 }
 
+// ----- 📸 여행 사진첩 -----
+const PH_FREE_GB = 1;
+async function loadPhotos(tid){
+  const [r, all] = await Promise.all([
+    sb.from('tv_photos').select('*').eq('trip_id', tid),
+    sb.from('tv_photos').select('bytes'),
+  ]);
+  S.ph = { tid, err:r.error?.message || null, list:(r.data || []).sort((a, b) => (a.taken_at || '').localeCompare(b.taken_at || '') || a.id - b.id),
+    total:(all.data || []).reduce((s, x) => s + (x.bytes || 0), 0) };
+  phCleanTrash();
+}
+let _phTrashAt = 0;
+async function phCleanTrash(){
+  if (Date.now() - _phTrashAt < 60000) return; _phTrashAt = Date.now();
+  try {
+    const r = await sb.from('tv_photo_trash').select('path').limit(200);
+    if (r.error || !r.data?.length) return;
+    await sb.storage.from('cor-photos').remove(r.data.map(x => x.path));
+    await call('tv_photo_trash_done', {});
+  } catch(e){}
+}
+const phList = () => (S.ph?.list || []).filter(p => !S.phWho || p.member_id === S.phWho);
+const phMB = b => b >= 1e9 ? `${(b / 1e9).toFixed(2)}GB` : `${Math.max(0.1, b / 1e6).toFixed(1)}MB`;
+const phDay = p => { const d = new Date(p.taken_at || p.created_at); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+const phTime = p => { const d = new Date(p.taken_at || p.created_at); return `${d.getMonth() + 1}월 ${d.getDate()}일 ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+function photosHTML(t){
+  if (!S.ph || S.ph.tid !== t.id){ loadPhotos(t.id).then(() => { if (S.tripTab === 'photos' && S.tripId === t.id) renderTrips(); }); return '<div class="panel ac-locked">📸<br>불러오는 중…</div>'; }
+  if (S.ph.err) return `<div class="panel ac-locked">📸<br>사진첩을 쓰려면 Supabase에서 <b>25_photos.sql</b>을 실행해주세요<br><small>${esc(S.ph.err)}</small></div>`;
+  const all = S.ph.list, list = phList(), mems = [...new Set(all.map(p => p.member_id))];
+  const days = {}; list.forEach((p, i) => (days[phDay(p)] ||= []).push([p, i]));
+  const head = d => { const idx = t.start_date ? dDiff(d, t.start_date) + 1 : null; return `${idx && idx > 0 && (!t.end_date || d <= t.end_date) ? `<b>${idx}일차</b> · ` : ''}${fmtDay(d)}`; };
+  const pct = Math.min(100, S.ph.total / (PH_FREE_GB * 1e9) * 100);
+  return `<div class="ph-bar">
+      <label class="btn primary ph-up">📷 사진 올리기<input type="file" accept="image/*" multiple id="ph-file" hidden></label>
+      <span class="ph-cnt">📸 ${all.length}장</span>
+    </div>
+    <div class="ph-prog" id="ph-prog"></div>
+    ${mems.length > 1 ? `<div class="rt-chips ph-who"><button class="${S.phWho ? '' : 'on'}" data-act="phWho" data-id="">전체</button>${mems.map(id => `<button class="${S.phWho === id ? 'on' : ''}" data-act="phWho" data-id="${id}">${esc(shortName(memName(id)))} ${all.filter(p => p.member_id === id).length}</button>`).join('')}</div>` : ''}
+    ${list.length ? Object.entries(days).map(([d, ps]) => `<div class="ph-day"><div class="day-h">${head(d)} <small>${ps.length}장</small></div>
+      <div class="ph-grid">${ps.map(([p, i]) => `<button class="ph-th" data-act="phOpen" data-id="${i}"><img src="${esc(p.thumb_url)}" alt="" loading="lazy">${p.caption ? '<em>💬</em>' : ''}<i style="background:${dartColor(p.member_id)}">${esc(shortName(memName(p.member_id)).slice(0, 1))}</i></button>`).join('')}</div></div>`).join('')
+      : `<div class="panel empty">📸<br>아직 사진이 없어요<br><small>여러 장을 한 번에 골라서 올릴 수 있어요. 찍은 날짜별로 자동 정리돼요</small></div>`}
+    <div class="ph-meter"><div><span style="width:${pct.toFixed(1)}%"></span></div><small>전체 사진 저장공간 ${phMB(S.ph.total)} / 무료 ${PH_FREE_GB}GB 사용 중 · 사진은 1600px로 줄여서 저장돼요</small></div>`;
+}
+function bindPhotos(){ const f = $('#ph-file'); if (f) f.onchange = () => { const fs = [...f.files]; f.value = ''; phUpload(fs); }; }
+// 사진 정보(EXIF)에서 찍은 시각 읽기
+async function exifDate(file){
+  try {
+    const b = new DataView(await file.slice(0, 196608).arrayBuffer());
+    if (b.getUint16(0) !== 0xFFD8) return null;
+    let o = 2;
+    while (o < b.byteLength - 10){
+      const m = b.getUint16(o), len = b.getUint16(o + 2);
+      if (m === 0xFFE1 && b.getUint32(o + 4) === 0x45786966){
+        const t = o + 10, le = b.getUint16(t) === 0x4949, g16 = p => b.getUint16(t + p, le), g32 = p => b.getUint32(t + p, le);
+        const str = p => { let s = ''; for (let i = 0; i < 19; i++) s += String.fromCharCode(b.getUint8(t + p + i)); return s; };
+        const scan = (ifd, tags) => { const n = g16(ifd), out = {}; for (let i = 0; i < n; i++){ const e = ifd + 2 + i * 12, tag = g16(e); if (tags.includes(tag)) out[tag] = g32(e + 8); } return out; };
+        const i0 = scan(g32(4), [0x8769, 0x0132]); let raw = i0[0x0132] ? str(i0[0x0132]) : null;
+        if (i0[0x8769]){ const ex = scan(i0[0x8769], [0x9003]); if (ex[0x9003]) raw = str(ex[0x9003]); }
+        const mm = raw && raw.match(/^(\d{4}):(\d\d):(\d\d) (\d\d):(\d\d):(\d\d)/);
+        if (mm){ const d = new Date(+mm[1], mm[2] - 1, +mm[3], +mm[4], +mm[5], +mm[6]); if (!isNaN(d) && mm[1] > 2000) return d; }
+        return null;
+      }
+      if ((m & 0xFF00) !== 0xFF00) break;
+      o += 2 + len;
+    }
+  } catch(e){}
+  return null;
+}
+async function phMake(file){
+  const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = URL.createObjectURL(file); });
+  const draw = (max, q) => { const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    return new Promise(ok => c.toBlob(b => ok({ b, w:c.width, h:c.height }), 'image/jpeg', q)); };
+  const full = await draw(1600, 0.8), thumb = await draw(400, 0.7);
+  URL.revokeObjectURL(img.src);
+  return { full, thumb };
+}
+async function phUpload(files){
+  const t = S.trips.find(x => x.id === S.tripId); if (!t || !files.length) return;
+  if (S.phBusy) return toast('올리는 중이에요. 잠시만요');
+  S.phBusy = true; let ok = 0, fail = 0, lastErr = '';
+  const prog = () => { const el = $('#ph-prog'); if (el){ el.classList.add('on'); el.innerHTML = `<span style="width:${((ok + fail) / files.length * 100).toFixed(0)}%"></span><b>📤 ${ok + fail}/${files.length}장 올리는 중…</b>`; } };
+  prog();
+  for (const f of files){
+    try {
+      const [when, im] = await Promise.all([exifDate(f), phMake(f)]);
+      const base = `photos/${t.id}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      const st = sb.storage.from('cor-photos');
+      const u1 = await st.upload(`${base}.jpg`, im.full.b, { contentType:'image/jpeg', upsert:false }); if (u1.error) throw u1.error;
+      const u2 = await st.upload(`${base}_t.jpg`, im.thumb.b, { contentType:'image/jpeg', upsert:false }); if (u2.error) throw u2.error;
+      await call('tv_add_photo', { p_trip:t.id, p_d:{ path:`${base}.jpg`, thumb_path:`${base}_t.jpg`,
+        url:st.getPublicUrl(`${base}.jpg`).data.publicUrl, thumb_url:st.getPublicUrl(`${base}_t.jpg`).data.publicUrl,
+        w:im.full.w, h:im.full.h, bytes:im.full.b.size + im.thumb.b.size,
+        taken_at:(when || new Date(f.lastModified || Date.now())).toISOString() } });
+      ok++;
+    } catch(e){ fail++; lastErr = errMsg(e); }
+    prog();
+  }
+  S.phBusy = false;
+  await loadPhotos(t.id); if (S.tripTab === 'photos') renderTrips();
+  if (fail) alert(`${ok}장 올렸고 ${fail}장은 실패했어요.\n${lastErr}`); else toast(`📸 ${ok}장 올렸어요!`);
+}
+// 크게 보기
+function phView(i){
+  const list = phList(); if (!list.length) return phClose();
+  S.phIdx = (i + list.length) % list.length;
+  const p = list[S.phIdx], mine = p.member_id === S.me || isAdmin();
+  let lb = $('#ph-lb');
+  if (!lb){ lb = document.createElement('div'); lb.id = 'ph-lb'; document.body.appendChild(lb); phBindLb(lb); }
+  lb.innerHTML = `<div class="lb-top"><span>${S.phIdx + 1} / ${list.length}</span><button data-lb="close" aria-label="닫기">✕</button></div>
+    <div class="lb-img"><img src="${esc(p.url)}" alt=""></div>
+    <button class="lb-nav prev" data-lb="prev" aria-label="이전">‹</button><button class="lb-nav next" data-lb="next" aria-label="다음">›</button>
+    <div class="lb-info">
+      <div><i style="background:${dartColor(p.member_id)}"></i><b>${esc(memName(p.member_id))}</b> · ${phTime(p)}</div>
+      ${p.caption ? `<p>${esc(p.caption)}</p>` : ''}
+      <div class="lb-btns">
+        <button data-lb="cover">⭐ 대표 사진으로</button>
+        <a href="${esc(p.url)}" target="_blank" rel="noopener">⬇️ 크게 열기</a>
+        ${mine ? `<button data-lb="cap">✏️ 설명</button><button data-lb="del">🗑 삭제</button>` : ''}
+      </div>
+    </div>`;
+  document.body.style.overflow = 'hidden';
+}
+function phClose(){ if (!$('#ph-lb')) return; $('#ph-lb').remove(); document.body.style.overflow = ''; if (S.tripTab === 'photos') renderTrips(); }
+function phBindLb(lb){
+  lb.onclick = async e => {
+    const b = e.target.closest('[data-lb]'); if (!b) return;
+    const p = phList()[S.phIdx], t = S.trips.find(x => x.id === S.tripId), k = b.dataset.lb;
+    try {
+      if (k === 'close') return phClose();
+      if (k === 'prev') return phView(S.phIdx - 1);
+      if (k === 'next') return phView(S.phIdx + 1);
+      if (k === 'cover'){ await call('tv_set_cover', { p_trip:t.id, p_url:p.url }); await loadTravel(); toast('⭐ 대표 사진으로 정했어요'); return; }
+      if (k === 'cap'){ const c = prompt('사진 설명', p.caption || ''); if (c === null) return; await call('tv_photo_caption', { p_id:p.id, p_caption:c }); await loadPhotos(t.id); return phView(S.phIdx); }
+      if (k === 'del'){ if (!confirm('이 사진을 지울까요?')) return; await call('tv_delete_photo', { p_id:p.id }); _phTrashAt = 0; await loadPhotos(t.id); renderTrips(); toast('사진을 지웠어요');
+        return phList().length ? phView(Math.min(S.phIdx, phList().length - 1)) : phClose(); }
+    } catch(err){ alert(errMsg(err)); }
+  };
+  let sx = null;
+  lb.addEventListener('touchstart', e => { sx = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive:true });
+  lb.addEventListener('touchend', e => { if (sx == null) return; const dx = e.changedTouches[0].clientX - sx; sx = null; if (Math.abs(dx) > 50) phView(S.phIdx + (dx < 0 ? 1 : -1)); });
+}
+document.addEventListener('keydown', e => { if (!$('#ph-lb')) return; if (e.key === 'Escape') phClose(); if (e.key === 'ArrowLeft') phView(S.phIdx - 1); if (e.key === 'ArrowRight') phView(S.phIdx + 1); });
+
 // ----- 여행 상세 -----
 function renderTrip(){
   const t = S.trips.find(x => x.id === S.tripId);
   S.tripTab ??= 'plan';
   if (S.tripTab === 'random' && !t.is_random) S.tripTab = 'plan';
   const st = tripStatus(t), n = nights(t);
-  const body = { plan:planHTML, money:moneyHTML, review:reviewHTML, random:randomHTML }[S.tripTab](t);
+  const body = { plan:planHTML, money:moneyHTML, review:reviewHTML, photos:photosHTML, random:randomHTML }[S.tripTab](t);
   $('#main').innerHTML = `
     <button class="link" data-act="tvBack" style="margin-top:16px">← 여행 기록</button>
     <div class="trip-head" style="${coverStyle(t)}">
@@ -2515,9 +2687,11 @@ function renderTrip(){
       <button class="${S.tripTab === 'plan' ? 'on' : ''}" data-act="tvTab" data-k="plan">🗓 일정</button>
       <button class="${S.tripTab === 'money' ? 'on' : ''}" data-act="tvTab" data-k="money">💸 정산</button>
       <button class="${S.tripTab === 'review' ? 'on' : ''}" data-act="tvTab" data-k="review">⭐ 후기</button>
+      <button class="${S.tripTab === 'photos' ? 'on' : ''}" data-act="tvTab" data-k="photos">📸 사진</button>
       ${t.is_random ? `<button class="${S.tripTab === 'random' ? 'on' : ''}" data-act="tvTab" data-k="random">🎲 랜덤</button>` : ''}
     </div></div>
     ${body}`;
+  if (S.tripTab === 'photos') bindPhotos();
 }
 
 // 일정
@@ -2897,7 +3071,7 @@ function openTrip(id, preset = {}){
     } catch(e){ $('#merr').textContent = errMsg(e); }
   };
   if (id) $('#del').onclick = async () => {
-    if (!confirm('이 여행의 일정, 정산, 후기가 모두 지워져요. 삭제할까요?')) return;
+    if (!confirm('이 여행의 일정, 정산, 후기, 사진이 모두 지워져요. 삭제할까요?')) return;
     try { await tvCall('tv_delete_trip', { p_id:id }); S.tripId = null; tvDone(); } catch(e){ $('#merr').textContent = errMsg(e); }
   };
 }
