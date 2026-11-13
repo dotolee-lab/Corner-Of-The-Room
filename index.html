@@ -2061,7 +2061,7 @@ function todoRow(m){
 // ---------- 방구석 아카데미 ----------
 const AC_CATS = ['작품상','감독상','각본상','촬영상','음악상','미술상','남우주연상','여우주연상','조연상'];
 const AC_ICON = { 작품상:'🎬', 감독상:'🎥', 각본상:'✍️', 촬영상:'📷', 음악상:'🎵', 미술상:'🎨', 남우주연상:'🤵', 여우주연상:'👗', 조연상:'🌟' };
-const acNorm = t => String(t || '').replace(/\(.*?\)/g, '').replace(/[\s:·.,!?~\-]/g, '').toLowerCase();
+const acNorm = t => String(t || '').normalize('NFC').replace(/[\u200b-\u200f\ufeff]/g, '').replace(/\(.*?\)/g, '').replace(/[\s:·.,!?~\-]/g, '').toLowerCase();
 const acYears = () => [...new Set([new Date().getFullYear(), ...S.rounds.map(r => r.year), ...S.ballots.map(b => b.year)])].sort((a, b) => b - a);
 const ballotOf = (y, m) => S.ballots.find(b => b.year === y && b.member_id === m);
 const acRound = y => y >= 2020 ? `제 ${y - 2019}회` : '';
@@ -2987,17 +2987,19 @@ function openPoolTx(id, kind){
 function reviewHTML(t){
   S.rvKind ??= '전체';
   const all = S.reviews.filter(r => r.trip_id === t.id);
-  const list = all.filter(r => S.rvKind === '전체' || r.kind === S.rvKind);
-  const groups = [];
-  list.forEach(r => {
-    const k = r.kind + '|' + acNorm(r.name);
+  // 같은 장소 이름이면 종류가 달라도 한 카드로 모아요 (종류는 가장 많이 고른 걸로)
+  let groups = [];
+  all.forEach(r => {
+    const k = acNorm(r.name);
     let g = groups.find(x => x.k === k);
-    if (!g){ g = { k, kind:r.kind, name:r.name, items:[] }; groups.push(g); }
+    if (!g){ g = { k, name:r.name, items:[] }; groups.push(g); }
     g.items.push(r);
   });
+  groups.forEach(g => { const c = {}; g.items.forEach(r => c[r.kind] = (c[r.kind] || 0) + 1); g.kind = Object.keys(c).sort((a, b) => c[b] - c[a])[0]; });
+  if (S.rvKind !== '전체') groups = groups.filter(g => g.kind === S.rvKind);
   groups.forEach(g => { const v = g.items.map(r => r.stars).filter(x => x != null).map(Number); g.avg = mean(v); });
   groups.sort((a, b) => (b.avg ?? -1) - (a.avg ?? -1));
-  const kinds = ['전체', ...TV_KINDS.filter(k => all.some(r => r.kind === k))];
+  const kinds = ['전체', ...TV_KINDS.filter(k => groups.some(g => g.kind === k) || S.rvKind === k)];
   return `<div class="toolbar"><div class="chips">${kinds.map(k => `<button class="chip ${S.rvKind === k ? 'on' : ''}" data-act="rvKind" data-k="${k}">${k === '전체' ? '전체' : TV_ICON[k] + ' ' + k}</button>`).join('')}</div>
       <button class="btn small primary" data-act="tvRev">+ 후기 쓰기</button></div>
     <div class="rv-grid">${groups.map(g => `
@@ -3151,8 +3153,10 @@ function openReview(id){
   openModal(`<h3>${id ? '후기 수정' : '후기 쓰기'}</h3>
     <div class="form">
       <label>종류<select id="fr1">${TV_KINDS.map(k => `<option ${k === r.kind ? 'selected' : ''}>${k}</option>`).join('')}</select></label>
-      <label>장소 이름<input id="fr2" value="${esc(r.name || '')}" placeholder="예) 침차이키"></label>
+      <label>장소 이름<input id="fr2" value="${esc(r.name || '')}" placeholder="예) 침차이키" list="fr2-list" autocomplete="off"></label>
     </div>
+    <datalist id="fr2-list">${[...new Map(S.reviews.filter(x => x.trip_id === t.id).map(x => [acNorm(x.name), x])).values()].map(x => `<option value="${esc(x.name)}">`).join('')}</datalist>
+    <p class="note" id="fr2-hint" style="margin:-4px 0 6px"></p>
     <div class="picker" id="pk"></div><div class="pv" id="pv"></div>
     <textarea id="fr3" rows="3" placeholder="한줄평">${esc(r.comment || '')}</textarea>
     <p class="err" id="merr"></p>
@@ -3164,6 +3168,11 @@ function openReview(id){
   };
   draw();
   $('#pk').onclick = e => { const b = e.target.closest('button[data-v]'); if (b){ val = +b.dataset.v; draw(); } };
+  // 이미 누가 후기를 쓴 장소면 알려주고 종류도 맞춰줘요
+  const hint = () => { const n = acNorm($('#fr2').value), same = n && S.reviews.filter(x => x.trip_id === t.id && x.id !== id && acNorm(x.name) === n);
+    $('#fr2-hint').innerHTML = same?.length ? `🔗 <b>${esc(same[0].name)}</b>에 ${same.map(x => esc(shortName(memName(x.member_id)))).join(', ')}의 후기가 있어요. 같은 카드로 모여요` : '';
+    if (same?.length && !id) $('#fr1').value = same[0].kind; };
+  $('#fr2').oninput = hint; hint();
   $('#cancel').onclick = closeModal;
   $('#save').onclick = async () => {
     try { await tvCall('tv_save_review', { p_id:id ?? null, p_trip_id:t.id, p_d:{ kind:$('#fr1').value, name:$('#fr2').value, stars:val, comment:$('#fr3').value } }); tvDone(); }
